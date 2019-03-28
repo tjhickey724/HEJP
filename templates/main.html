@@ -1,0 +1,39 @@
+<html>
+  <body>
+    <h1>Select Demo</h1>
+    <form method="POST" action="/">
+      <input type="text" name="Demo" value="1">
+      <input type="submit" value="Run Query">
+    </form>
+
+    <h1>Books</h1>
+    <table>
+      {% for row in rows %}
+        <tr>
+          <td>
+            {{book.title}}
+          </td>
+
+          <td>
+            <form method="POST" action="./update" style="display: inline">
+              <input type="hidden" value="{{book.title}}" name="oldtitle">
+              <input type="text" value="{{book.title}}" name="newtitle">
+              <input type="submit" value="Update">
+            </form>
+          </td>
+
+          <td>
+            {{book.year}}
+          </td>
+
+          <td>
+            <form method="POST" action="./delete" style="display: inline">
+              <input type="hidden" value="{{book.title}}" name="title">
+              <input type="submit" value="Delete">
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+    </table>
+  </body>
+</html>

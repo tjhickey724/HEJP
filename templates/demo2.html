@@ -1,0 +1,36 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="demo2.css">
+</head>
+
+<body>
+
+    <h1>Results for Query:</h1>
+    <b>{{query}}</b>
+    <br>
+    <div class="chart">
+
+    </div>
+
+<script src="https://d3js.org/d3.v5.js"></script>
+
+<script type="text/javascript">
+    const results = {{rows}}
+    const vals = results.map(function(x){return(x[2]/1000)})
+    const data = [30, 86, 168, 281, 303, 365]
+    console.log('results=')
+    console.dir(results)
+    console.log(JSON.stringify(vals))
+    
+    d3.select(".chart")
+    .selectAll("div")
+    .data(results)
+      .enter()
+      .append("div")
+      .style("width", function(d) { return d[2]/1000 * d[1] * 2 + "px"; })
+      .text(function(d) { return '' + d[0]+"/"+d[2]; });
+
+</script>
+
+</body>
+</html>

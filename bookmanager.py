@@ -17,7 +17,7 @@ db = SQLAlchemy(app)
 
 class Book(db.Model):
     title = db.Column(db.String(80), unique=True, nullable=False, primary_key=True)
-    year  = db.Column(db.String(8), unique=True, nullable=False, primary_key=True)
+    year  = db.Column(db.String(8), unique=False, nullable=False, primary_key=True)
 
     def __repr__(self):
         return "<Title: {}, Year: {}>".format(self.title,self.year)
