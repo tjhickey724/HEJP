@@ -84,7 +84,7 @@ def home():
 
 @app.route('/demo1', methods=["GET", "POST"])
 def demo1():
-    z = demo(1)
+    z = demo(5)
     return render_template("demo1.html", query=query1, rows=z)
 
 @app.route('/demo2', methods=["GET", "POST"])
@@ -104,17 +104,63 @@ def demo3():
         year = request.form.getlist('year')
         fos = request.form.getlist('fos')
         dept = request.form.getlist('dept')
+        query = "SELECT count(*) from hej where "
+        query += makeBoolean(jobtype)+" and "
+        query += makeBoolean(fos)+" and "
+        query += makeYears(year)+" and "
+        query += makeBoolean(dept)+" and "
+        query += makeBoolean(fac)
+        query += " group by year"
+        z = queryAll(query)
+        z1 = [x[0] for x in z]
+        z2 = [makeObj(x) for x in z1]
+        vals = []
+        for i in range(0,len(year)):
+            vals += [makeObj2(year[i],z1[i])]
+        print(query)
+        print(z)
+        print(z1)
+        print(z2)
+        print(vals)
+        years = [int(y) for y in year]
+        return render_template("demo3b.html", query=query, year=years, z1=z1)
 
-        return(render_template("demo3a.html",fac=fac,year=year,fos=fos,dept=dept))
+def makeObj(x):
+    z={}
+    z["date"]="1-May-12"
+    z["close"]=x
+    return z
+def makeObj2(y,x):
+    z={}
+    z["date"]="1-Jan-"+str(y)
+    z["close"]=x
+    return z
 
+def makeBoolean(list):
+    if (list==[]):
+        return "true"
+    result = "("
+    for i in range(0,len(list)-1):
+        result+= list[i]+"=1 or "
+    result += list[len(list)-1]+" = 1 ) "
+    return result
+
+def makeYears(list):
+    if (list==[]):
+        return "true"
+    result = "("
+    for i in range(0,len(list)-1):
+        result+= " year = "+list[i]+" or "
+    result += " year = "+ list[len(list)-1]+" ) "
+    return result
 
 def demo(n):
     switcher = {
     1: "SELECT year,faculty, count(*) as N from hej where faculty=1 group by faculty,year;",
     2: "SELECT fulltimecontingent, count(*) from hej where year =2010 group by  fulltimecontingent",
     3: "SELECT parttimecontingent, count(*) from hej where year =2010 group by  parttimecontingent",
-    4: "SELECT year,count(*) from hej where (tenured=1 or tenure_track=1) group by year;",
-    
+    4: "SELECT year,count(*) from hej where (tenured=1 or tenured_track=1) group by year;",
+    5: "SELECT count(*) from hej where (tenured = 1 or tenured_track =1) and (year=2007 or year=2012 or year=2017) group by year"
     }
     z = queryAll(switcher.get(n,0))
     return z
