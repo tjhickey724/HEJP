@@ -15,9 +15,67 @@ app = Flask(__name__,
             static_url_path='',
             static_folder='static')
 
+faculty_status ="""
+tenured
+tenured_track
+fulltimecontingent
+parttimecontingent""".split("\n")
+
+
+fields_of_study ="""fs_life_sciences
+fs_physical_sciences_and_earth_s
+fs_mathematics_and_computer_scie
+fs_psychology_and_social_science
+fs_engineering
+fs_education
+fs_humanities_and_arts
+fs_others""".split("\n")
+
+departments ="""agriculturalsciencesandnaturalre
+biologicalandbiomedicalsciences
+healthsciences
+chemistry
+geosciencesatmosphericandoceansc
+physicsandastronomy
+computerandinformationsciences
+mathematicsandstatistics
+psychology
+anthropology
+economics
+politicalscienceandgovernment
+sociology
+othersocialsciences
+aerospaceaeronauticalandastronau
+bioengineeringandbiomedicalengin
+chemicalengineering
+civilengineering
+electricalelectronicsandcommunic
+industrialandmanufacturingengine
+materialsscienceengineering
+mechanicalengineering
+otherengineering
+educationadministration
+educationresearch
+teachereducation
+teachingfields
+othereducation
+foreignlanguagesandliterature
+history
+letters
+otherhumanitiesandarts
+businessmanagementandadministrat
+communication
+""".split("\n")
+
+
+print(faculty_status)
+print(fields_of_study)
+print(departments)
+
 
 
 query1 = "SELECT year,faculty, count(*) as N from hej where faculty=1 group by faculty,year;"
+
 
 @app.route('/',methods=["GET"])
 def home():
@@ -35,7 +93,19 @@ def demo2():
     results = [[x[0],x[1],x[2]] for x in z]
     return render_template("demo2.html", query=query1, rows=results)
 
+@app.route('/demo3', methods=["GET", "POST"])
+def demo3():
+    if request.method=="GET":
+        return render_template("demo3.html",faculty_status=faculty_status,fields_of_study=fields_of_study, departments=departments)
+    else:
+        print(request.form)
+        jobtype = request.form.getlist('jobtype')
+        fac = request.form.getlist('fac')
+        year = request.form.getlist('year')
+        fos = request.form.getlist('fos')
+        dept = request.form.getlist('dept')
 
+        return(render_template("demo3a.html",fac=fac,year=year,fos=fos,dept=dept))
 
 
 def demo(n):
@@ -44,6 +114,7 @@ def demo(n):
     2: "SELECT fulltimecontingent, count(*) from hej where year =2010 group by  fulltimecontingent",
     3: "SELECT parttimecontingent, count(*) from hej where year =2010 group by  parttimecontingent",
     4: "SELECT year,count(*) from hej where (tenured=1 or tenure_track=1) group by year;",
+    
     }
     z = queryAll(switcher.get(n,0))
     return z
@@ -80,6 +151,8 @@ def queryAll(query):
             conn.close()
             print('Database connection closed.')
         return result
+
+
 
 
 if __name__ == "__main__":

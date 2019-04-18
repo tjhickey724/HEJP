@@ -1,0 +1,34 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="demo2.css">
+</head>
+
+<body>
+
+    <h1>What do you want to count?</h1>
+    <form method="post" action="demo3">
+    <h2>Faculty Status</h2>
+        {% for item in fac %}
+              <input type="checkbox" name="fac" value="{{item}}"> {{item}}<br>
+           {% endfor %}
+    <h2>Year</h2>
+    {% for item in year %}
+          <input type="checkbox" name="year" value="{{item}}"> {{item}}<br>
+    {% endfor %}
+    <h2>Field of Study</h2>
+    {% for item in fos %}
+          <input type="checkbox" name="fos" value="{{item}}"> {{item}}<br>
+    {% endfor %}
+    <h2>Departments</h2>
+    {% for item in dept %}
+          <input type="checkbox" name="dept" value="{{item}}"> {{item}}<br>
+    {% endfor %}
+    <input type="submit">
+</form>
+
+<script type="text/javascript">
+
+</script>
+
+</body>
+</html>
