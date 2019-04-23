@@ -6,3 +6,20 @@
   margin: 10px;
   color: white;
 }
+
+section {
+  display:flex;
+  flex-wrap: wrap;
+  flex: 400px;
+}
+
+article {
+  border:thin solid blue;
+  background-color: yellow;
+  margin:5px;
+  padding:5px;
+}
+
+button {
+  background-color:red
+}

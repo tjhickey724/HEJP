@@ -1,5 +1,4 @@
 import os
-
 from flask import Flask
 from flask import redirect
 from flask import render_template
@@ -7,6 +6,7 @@ from flask import request
 import psycopg2
 import timeit
 
+from occupations import occupations
 
 project_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -67,6 +67,49 @@ businessmanagementandadministrat
 communication
 """.split("\n")
 
+careerareas = [
+    "Agriculture, Horticulture, & the Outdoors",
+    "Business Management and Operations",
+    "Clerical and Administrative",
+    "Community and Social Services",
+    "Construction, Extraction, and Architecture",
+    "Customer and Client Support",
+    "Design, Media, and Writing",
+    "Education and Training",
+    "Engineering",
+    "Finance",
+    "Health Care including Nursing",
+    "Hospitality, Food, and Tourism",
+    "Human Resources",
+    "Information Technology",
+    "Law, Compliance, and Public Safety",
+    "Maintenance, Repair, and Installation",
+    "Manufacturing and Production",
+    "Marketing and Public Relations",
+    "Performing Arts",
+    "Personal Services",
+    "Planning and Analysis",
+    "Sales",
+    "Science and Research",
+    "Transportation",
+    "na"]
+
+ipedssectornames = [
+    "Public, 4-year or above",
+    "Private not-for-profit, less-than 2-year",
+    "Administrative Unit",
+    "NULL",
+    "Private for-profit",
+    "Private not-for-profit, 2-year",
+    "Private for-profit, 4-year or above",
+    "Public, 2-year",
+    "Public, less-than 2-year",
+    "Private for-profit, less-than 2-year",
+    "Private for-profit, 2-year",
+    "Private not-for-profit, 4-year or above",
+    "Sector unknown (not active"
+]
+
 
 print(faculty_status)
 print(fields_of_study)
@@ -96,28 +139,48 @@ def demo2():
 @app.route('/demo3', methods=["GET", "POST"])
 def demo3():
     if request.method=="GET":
-        return render_template("demo3.html",faculty_status=faculty_status,fields_of_study=fields_of_study, departments=departments)
+        return render_template("demo3.html",faculty_status=faculty_status,fields_of_study=fields_of_study, departments=departments,careerareas=careerareas,ipedssectornames=ipedssectornames,occupations=occupations)
     else:
         print(request.form)
         jobtype = request.form.getlist('jobtype')
+        staff = request.form.getlist('staff')
         fac = request.form.getlist('fac')
         year = request.form.getlist('year')
         fos = request.form.getlist('fos')
         dept = request.form.getlist('dept')
-        query = "SELECT count(*) from hej where "
+        divinc = request.form.getlist('diversityandinclusion')
+        rsh1 = request.form.getlist('isresearch1institution')
+        careerarea = request.form.getlist('careerarea')
+        ipeds = request.form.getlist('ipedssectornames')
+        occs = request.form.getlist('occupations')
+        min_ed = request.form.get('minimumedurequirements')
+        max_ed = request.form.get('maximumedurequirements')
+        min_exp = request.form.get('minimumexperiencerequirements')
+        print('min ed = '+min_ed)
+        query = "SELECT count(*) from hej,maintable where (hej.jobid=maintable.jobid) and "
         query += makeBoolean(jobtype)+" and "
+        if (staff!=[]):
+          query += " (faculty=0 and postdoctoral=0) and "
         query += makeBoolean(fos)+" and "
         query += makeYears(year)+" and "
         query += makeBoolean(dept)+" and "
-        query += makeBoolean(fac)
-        query += " group by year"
+        query += makeBoolean(fac) + " and "
+        query += makeBoolean(divinc+rsh1) + " and "
+        query += makeCareerAreas(careerarea) + " and "
+        query += makeStrings('ipedssectorname',ipeds) + " and "
+        query += makeStrings('occupation',occs) + " and "
+        query += "minimumedurequirements >= "+min_ed+" and "
+        query += "maximumedurequirements <= "+max_ed+" and "
+        query += "minimumexperiencerequirements >= "+min_exp
+        query += " group by hej.year"
+        print(query)
         z = queryAll(query)
         z1 = [x[0] for x in z]
         z2 = [makeObj(x) for x in z1]
         vals = []
         for i in range(0,len(year)):
             vals += [makeObj2(year[i],z1[i])]
-        print(query)
+
         print(z)
         print(z1)
         print(z2)
@@ -150,8 +213,30 @@ def makeYears(list):
         return "true"
     result = "("
     for i in range(0,len(list)-1):
-        result+= " year = "+list[i]+" or "
-    result += " year = "+ list[len(list)-1]+" ) "
+        result+= " hej.year = "+list[i]+" or "
+    result += " hej.year = "+ list[len(list)-1]+" ) "
+    return result
+
+def makeCareerAreas(list):
+    if (list==[]):
+        return "true"
+    result = "("
+    for i in range(0,len(list)-1):
+        result+= " maintable.careerarea = '"+list[i]+"' or "
+    result += " maintable.careerarea = '"+ list[len(list)-1]+"' ) "
+    print('result is '+result)
+    return result
+
+def makeStrings(columnname,list):
+    print("in makeStrings")
+    print(list)
+    if (list==[]):
+        return "true"
+    result = "("
+    for i in range(0,len(list)-1):
+        result+= " "+columnname + " = '"+list[i]+"' or "
+    result += " "+columnname + " = '"+ list[len(list)-1]+"' ) "
+    print('result is '+result)
     return result
 
 def demo(n):

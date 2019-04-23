@@ -5,9 +5,9 @@
 
 <body>
 
-    <h1>What do you want to count?</h1>
+    <h1>What kind of jobs listing are you interested in?</h1>
     <form method="post" action="demo3">
-    <h2>Faculty Status</h2>
+    <h2>Employment Status</h2>
         {% for item in fac %}
               <input type="checkbox" name="fac" value="{{item}}"> {{item}}<br>
            {% endfor %}
@@ -19,10 +19,11 @@
     {% for item in fos %}
           <input type="checkbox" name="fos" value="{{item}}"> {{item}}<br>
     {% endfor %}
-    <h2>Departments</h2>
+    <h2>Detailed Fields of Study</h2>
     {% for item in dept %}
           <input type="checkbox" name="dept" value="{{item}}"> {{item}}<br>
     {% endfor %}
+    
     <input type="submit">
 </form>
 
