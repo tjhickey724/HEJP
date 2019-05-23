@@ -175,6 +175,10 @@ def demo3():
         query += " group by hej.year"
         print(query)
         z = queryAll(query)
+        print(z)
+        if (z==[]):
+            print("no results")
+            return render_template("noResults.html",query=query)
         z1 = [x[0] for x in z]
         z2 = [makeObj(x) for x in z1]
         vals = []
