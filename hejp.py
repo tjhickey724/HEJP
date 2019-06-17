@@ -6,6 +6,8 @@ from flask import request
 import psycopg2
 import timeit
 
+from fieldValues import faculty_status, fields_of_study, departments, careerareas,ipedssectornames
+
 from occupations import occupations
 
 project_dir = os.path.dirname(os.path.abspath(__file__))
@@ -15,105 +17,6 @@ app = Flask(__name__,
             static_url_path='',
             static_folder='static')
 
-faculty_status ="""
-tenured
-tenured_track
-fulltimecontingent
-parttimecontingent""".split("\n")
-
-
-fields_of_study ="""fs_life_sciences
-fs_physical_sciences_and_earth_s
-fs_mathematics_and_computer_scie
-fs_psychology_and_social_science
-fs_engineering
-fs_education
-fs_humanities_and_arts
-fs_others""".split("\n")
-
-departments ="""agriculturalsciencesandnaturalre
-biologicalandbiomedicalsciences
-healthsciences
-chemistry
-geosciencesatmosphericandoceansc
-physicsandastronomy
-computerandinformationsciences
-mathematicsandstatistics
-psychology
-anthropology
-economics
-politicalscienceandgovernment
-sociology
-othersocialsciences
-aerospaceaeronauticalandastronau
-bioengineeringandbiomedicalengin
-chemicalengineering
-civilengineering
-electricalelectronicsandcommunic
-industrialandmanufacturingengine
-materialsscienceengineering
-mechanicalengineering
-otherengineering
-educationadministration
-educationresearch
-teachereducation
-teachingfields
-othereducation
-foreignlanguagesandliterature
-history
-letters
-otherhumanitiesandarts
-businessmanagementandadministrat
-communication
-""".split("\n")
-
-careerareas = [
-    "Agriculture, Horticulture, & the Outdoors",
-    "Business Management and Operations",
-    "Clerical and Administrative",
-    "Community and Social Services",
-    "Construction, Extraction, and Architecture",
-    "Customer and Client Support",
-    "Design, Media, and Writing",
-    "Education and Training",
-    "Engineering",
-    "Finance",
-    "Health Care including Nursing",
-    "Hospitality, Food, and Tourism",
-    "Human Resources",
-    "Information Technology",
-    "Law, Compliance, and Public Safety",
-    "Maintenance, Repair, and Installation",
-    "Manufacturing and Production",
-    "Marketing and Public Relations",
-    "Performing Arts",
-    "Personal Services",
-    "Planning and Analysis",
-    "Sales",
-    "Science and Research",
-    "Transportation",
-    "na"]
-
-ipedssectornames = [
-    "Public, 4-year or above",
-    "Private not-for-profit, less-than 2-year",
-    "Administrative Unit",
-    "NULL",
-    "Private for-profit",
-    "Private not-for-profit, 2-year",
-    "Private for-profit, 4-year or above",
-    "Public, 2-year",
-    "Public, less-than 2-year",
-    "Private for-profit, less-than 2-year",
-    "Private for-profit, 2-year",
-    "Private not-for-profit, 4-year or above",
-    "Sector unknown (not active"
-]
-
-
-print(faculty_status)
-print(fields_of_study)
-print(departments)
 
 
 
@@ -141,6 +44,76 @@ def facnonfac():
     z = demo(1)
     results = [[x[0],x[1],x[2]] for x in z]
     return render_template("demo2.html", query=query1, rows=results)
+
+@app.route('/chartdemo', methods=["GET","POST"])
+def chartdemo():
+    if request.method=="GET":
+        return render_template("chartdemoForm.html",ipedssectornames=ipedssectornames)
+    else:
+        print(request.form)
+        year = request.form.getlist('year')
+        ipeds = request.form.getlist('ipedssectornames')
+        query = "SELECT hej.year,hej.faculty+2*hej.postdoctoral as facStatus,count(*) from hej,maintable where (hej.jobid=maintable.jobid) and "
+        query += makeYears(year)+" and "
+        query += makeStrings('ipedssectorname',ipeds)
+        query += " group by hej.year, facStatus"
+        print(query)
+        z = queryAll(query)
+        print("Results of query are:")
+        if (z==[]):
+            print("no results")
+            return render_template("noResults.html",query=query)
+        else:
+            print(z)
+        years = [int(y) for y in year]
+        r = [(y,list(a[2] for a in [b for b in z if b[1]==y])) for y in [0,1,2]]
+        print("r=")
+        print(r)
+        print('years='+str(years))
+        return render_template("chartdemoResult.html",
+                  ipedssectornames=ipedssectornames,
+                  query=query, years=years, z=z, r=r)
+
+
+
+@app.route('/chartdemoORIG', methods=["GET"])
+def chartdemoORIG():
+    return render_template("chartdemoORIG.html")
+
+
+@app.route('/demo4', methods=["GET", "POST"])
+def demo4():
+    print("in demo4")
+    if request.method=="GET":
+        return render_template("demo4.html",ipedssectornames=ipedssectornames)
+    else:
+        print(request.form)
+        year = request.form.getlist('year')
+        ipeds = request.form.getlist('ipedssectornames')
+        query = "SELECT count(*) from hej,maintable where (hej.jobid=maintable.jobid) and "
+        query += makeYears(year)+" and "
+        query += makeStrings('ipedssectorname',ipeds)
+        query += " group by hej.year"
+        print(query)
+        z = queryAll(query)
+        print(z)
+        if (z==[]):
+            print("no results")
+            return render_template("noResults.html",query=query)
+        z1 = [x[0] for x in z]
+        z2 = [makeObj(x) for x in z1]
+        vals = []
+        for i in range(0,len(year)):
+            vals += [makeObj2(year[i],z1[i])]
+
+        print(z)
+        print(z1)
+        print(z2)
+        print(vals)
+        years = [int(y) for y in year]
+        return render_template("demo4b.html", query=query, year=years, z1=z1)
+
+
 
 @app.route('/demo3', methods=["GET", "POST"])
 def demo3():
@@ -197,6 +170,8 @@ def demo3():
         print(vals)
         years = [int(y) for y in year]
         return render_template("demo3b.html", query=query, year=years, z1=z1)
+
+
 
 def makeObj(x):
     z={}

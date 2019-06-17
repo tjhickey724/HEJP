@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>Stacked Bar Chart with Groups</title>
+
+	<script src="Chart.min.js"></script>
+	<script src="utils.js"></script>
+	<style>
+	canvas {
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+	</style>
+	<link rel="stylesheet" type="text/css" href="/demo2.css">
+</head>
+
+<body>
+	<h1> Faculty/Staff/Postdoc Growth</h1>
+	<div style="width: 75%">
+		<canvas id="canvas"></canvas>
+	</div>
+
+  <hr>
+
+	<form method="post" action="/chartdemo">
+
+	  <section>
+
+	      <article>
+	          <h2>Year</h2>
+	          {% for item in [2007,2010,2011,2012,2013,2014,2015,2016,2017] %}
+	                <input type="checkbox" name="year" value="{{item}}"> {{item}}<br>
+	          {% endfor %}
+	      </article>
+
+	      <article>
+	            <h2>IPEDS Sector</h2>
+	            {% for item in ipedssectornames %}
+	                  <input type="checkbox" name="ipedssectornames" value="{{item}}"> {{item}}<br>
+	              {% endfor%}
+	      </article>
+
+	  </section>
+
+	  <button><h1>Generate Query</h1></button>
+	</form>
+
+
+	<script>
+		var barChartData = {
+			labels: {{years}},
+			datasets: [
+				{
+					label: 'Staff',
+					backgroundColor: window.chartColors.red,
+					stack: 'Stack 0',
+					data: {{r[0][1]}}
+				},
+				{
+					label: 'Faculty',
+					backgroundColor: window.chartColors.blue,
+					stack: 'Stack 0',
+					data: {{r[1][1]}}
+				},
+				{
+					label: 'Postdocs',
+					backgroundColor: window.chartColors.green,
+					stack: 'Stack 0',
+					data: {{r[2][1]}}
+				}
+
+		  ]
+
+		};
+		window.onload = function() {
+			var ctx = document.getElementById('canvas').getContext('2d');
+			window.myBar = new Chart(ctx, {
+				type: 'bar',
+				data: barChartData,
+				options: {
+					title: {
+						display: true,
+						text: 'Growth of Faculty, Staff, and Postdoc Job Listings'
+					},
+					tooltips: {
+						mode: 'index',
+						intersect: false
+					},
+					responsive: true,
+					scales: {
+						xAxes: [{
+							stacked: true,
+						}],
+						yAxes: [{
+							stacked: true
+						}]
+					}
+				}
+			});
+		};
+
+		document.getElementById('randomizeData').addEventListener('click', function() {
+			barChartData.datasets.forEach(function(dataset) {
+				dataset.data = dataset.data.map(function() {
+					return randomScalingFactor();
+				});
+			});
+			window.myBar.update();
+		});
+	</script>
+
+</body>
+
+</html>

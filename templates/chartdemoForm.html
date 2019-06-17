@@ -1,0 +1,34 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="demo2.css">
+</head>
+
+<body>
+
+      <h1>Comparison of Faculty/Staff by year</h1>
+<form method="post" action="/chartdemo">
+
+  <section>
+
+      <article>
+          <h2>Year</h2>
+          {% for item in [2007,2010,2011,2012,2013,2014,2015,2016,2017] %}
+                <input type="checkbox" name="year" value="{{item}}"> {{item}}<br>
+          {% endfor %}
+      </article>
+
+      <article>
+            <h2>IPEDS Sector</h2>
+            {% for item in ipedssectornames %}
+                  <input type="checkbox" name="ipedssectornames" value="{{item}}"> {{item}}<br>
+              {% endfor%}
+      </article>
+
+  </section>
+
+  <button><h1>Generate Query</h1></button>
+</form>
+
+
+</body>
+</html>
