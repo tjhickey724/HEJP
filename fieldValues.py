@@ -6,6 +6,8 @@ fulltimecontingent
 parttimecontingent""".split("\n")
 
 
+year_range = ['2007','2010','2011','2012','2013','2014','2015','2016','2017']
+
 fields_of_study ="""fs_life_sciences
 fs_physical_sciences_and_earth_s
 fs_mathematics_and_computer_scie

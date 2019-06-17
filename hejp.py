@@ -6,7 +6,7 @@ from flask import request
 import psycopg2
 import timeit
 
-from fieldValues import faculty_status, fields_of_study, departments, careerareas,ipedssectornames
+from fieldValues import year_range, faculty_status, fields_of_study, departments, careerareas,ipedssectornames
 
 from occupations import occupations
 
@@ -51,8 +51,8 @@ def chartdemo():
         return render_template("chartdemoForm.html",ipedssectornames=ipedssectornames)
     else:
         print(request.form)
-        year = request.form.getlist('year')
-        ipeds = request.form.getlist('ipedssectornames')
+        year = filter(request.form.getlist('year'),year_range)
+        ipeds = filter(request.form.getlist('ipedssectornames'),ipedssectornames)
         query = "SELECT hej.year,hej.faculty+2*hej.postdoctoral as facStatus,count(*) from hej,maintable where (hej.jobid=maintable.jobid) and "
         query += makeYears(year)+" and "
         query += makeStrings('ipedssectorname',ipeds)
@@ -172,6 +172,8 @@ def demo3():
         return render_template("demo3b.html", query=query, year=years, z1=z1)
 
 
+def filter(list,whitelist):
+    return [x for x in list if x in whitelist]
 
 def makeObj(x):
     z={}
