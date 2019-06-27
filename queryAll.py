@@ -24,7 +24,7 @@ def queryAll(query):
     result = None
     try:
         # read connection parameters
-        conn_string = "host='localhost' dbname='data1000' user='postgres' password='postgres'"
+        conn_string = "host='localhost' dbname='HEJP' user='postgres' password='a12s34d56'"
 
 
         # connect to the PostgreSQL server

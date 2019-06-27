@@ -1,4 +1,3 @@
-
 faculty_status ="""
 tenured
 tenured_track
@@ -17,41 +16,42 @@ fs_education
 fs_humanities_and_arts
 fs_others""".split("\n")
 
-departments ="""agriculturalsciencesandnaturalre
-biologicalandbiomedicalsciences
-healthsciences
-chemistry
-geosciencesatmosphericandoceansc
-physicsandastronomy
-computerandinformationsciences
-mathematicsandstatistics
-psychology
-anthropology
-economics
-politicalscienceandgovernment
-sociology
-othersocialsciences
-aerospaceaeronauticalandastronau
-bioengineeringandbiomedicalengin
-chemicalengineering
-civilengineering
-electricalelectronicsandcommunic
-industrialandmanufacturingengine
-materialsscienceengineering
-mechanicalengineering
-otherengineering
-educationadministration
-educationresearch
-teachereducation
-teachingfields
-othereducation
-foreignlanguagesandliterature
-history
-letters
-otherhumanitiesandarts
-businessmanagementandadministrat
-communication
-""".split("\n")
+departments = [
+    "Agricultural sciences and natural sciences",
+    "Biological and biomedica sciences",
+    "Health sciences",
+    "Chemistry",
+    "Geosciences, atmospheric, and ocean sciences",
+    "Physics and astronomy",
+    "Computer and information sciences",
+    "Mathematics and statistics",
+    "Psychology",
+    "Anthropology",
+    "Economics",
+    "Political science and government",
+    "Sociology",
+    "Other social sciences",
+    "Aerospace, aeronautical, and astronautical engineering",
+    "Bioengineering and biomedical engineering",
+    "Chemical engineering",
+    "Civil engineering",
+    "Electrical, electronics, and communication",
+    "Industrial and manufacturing engineering",
+    "Materials science engineering",
+    "Mechanical engineering",
+    "Other engineering",
+    "Education administration",
+    "Education research",
+    "Teacher education",
+    "Teaching fields",
+    "Other education",
+    "Foreign languages and literature",
+    "History",
+    "Letters",
+    "Other humanities and arts",
+    "Business management and administration",
+    "Communication"
+]
 
 careerareas = [
     "Agriculture, Horticulture, & the Outdoors",
@@ -96,7 +96,9 @@ ipedssectornames = [
     "Sector unknown (not active"
 ]
 
-
-print(faculty_status)
-print(fields_of_study)
-print(departments)
+institutionType = [
+    "R1 Universities",
+    "4-year Institutions",
+    "2-year Institutions",
+    "All Higher Education"
+]
