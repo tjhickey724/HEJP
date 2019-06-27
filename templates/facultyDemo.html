@@ -1,0 +1,153 @@
+
+<!doctype html>
+<html>
+
+<head>
+	<title>Stacked Bar Chart with Groups</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<!-- <script src="/Users/apple/node_modules/Chart.js"></script> -->
+	<!-- <script src="utils.js"></script> -->
+	<style>
+	canvas {
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+	</style>
+	<link rel="stylesheet" type="text/css" href="/demo2.css">
+</head>
+
+<body>
+	<h1> Share of faculty vs. Non-faculty</h1>
+	<div style="width: 75%">
+		<canvas id="canvas"></canvas>
+	</div>
+
+  <hr>
+
+	<form method="post" action="/faculty">
+
+	  <section>
+
+	      <article>
+	          <h2>Year</h2>
+	          {% for item in year_range %}
+	                <input type="checkbox" name="year" value="{{item}}"> {{item}}<br>
+	          {% endfor %}
+	      </article>
+<!--
+	      <article>
+	            <h2>IPEDS Sector</h2>
+	            {% for item in ipedssectornames %}
+	                  <input type="checkbox" name="ipedssectornames" value="{{item}}"> {{item}}<br>
+	            {% endfor%}
+	      </article> -->
+
+        <article>
+              <h2>Insitution Type</h2>
+              {% for item in institutionType %}
+                    <input type="checkbox" name="institution" value="{{item}}"> {{item}}<br>
+              {% endfor%}
+        </article>
+
+        <article>
+              <h2>Scale</h2>
+              {% for item in ["Percentage", "Number"]%}
+                    <input type="radio" name="scale" value="{{item}}"> {{item}}<br>
+              {% endfor%}
+        </article>
+
+	  </section>
+
+	  <button><h1>Generate Query</h1></button>
+	</form>
+
+
+	<script>
+		var barChartData = {
+			labels: {{years}},
+			datasets: [
+				{
+					label: 'faculty',
+					backgroundColor: 'rgb(255, 255, 132)',
+					stack: 'Stack 0',
+					// data: [{{result[0][1][0]}}, {{result[1][1][0]}}]
+          data: {{result[0][1]}}
+				},
+        {
+          label: 'non-faculty',
+          backgroundColor: 'rgb(255, 99, 132)',
+          stack: 'Stack 0',
+          // data: [{{result[0][1][1]}}, {{result[1][1][1]}}]
+          data: {{result[1][1]}}
+        }
+		  ]
+		};
+
+		window.onload = function() {
+			var ctx = document.getElementById('canvas').getContext('2d');
+			window.myBar = new Chart(ctx, {
+				type: 'bar',
+				data: barChartData,
+				options: {
+					title: {
+						display: true,
+						text: 'Share of Faculty vs Non-Faculty'
+					},
+					tooltips: {
+						mode: 'index',
+						intersect: false
+					},
+					responsive: true,
+
+   //        options: {
+   //     scales: {
+   //
+   //         yAxes: [{
+   //         ticks: {
+   //
+   //                min: 0,
+   //                max: 100,
+   //                callback: function(value){return value+ "%"}
+   //             },
+   //             scaleLabel: {
+   //                display: true,
+   //                labelString: "Percentage"
+   //             }
+   //         }]
+   //     }
+   // }
+					scales: {
+						xAxes: [{
+							stacked: true,
+						}],
+						yAxes: [{
+              // ticks: {
+              //     min: 0,
+              //     max: 100,
+              //     callback: function(value){return value+ "%"}
+              // }
+              //             scaleLabel: {
+              //                display: true,
+              //                labelString: "Percentage"
+              //             }
+							stacked: true
+						}]
+					}
+				}
+			});
+		};
+
+		// document.getElementById('randomizeData').addEventListener('click', function() {
+		// 	barChartData.datasets.forEach(function(dataset) {
+		// 		dataset.data = dataset.data.map(function() {
+		// 			return randomScalingFactor();
+		// 		});
+		// 	});
+		// 	window.myBar.update();
+		// });
+	</script>
+
+</body>
+
+</html>

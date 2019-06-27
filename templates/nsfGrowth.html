@@ -1,0 +1,15 @@
+<html>
+
+	<form method="post" action="/nsfGrowth">
+    <section>
+      <article>
+      <h2>Fields of Study</h2>
+      {% for item in departments %}
+            <input type="checkbox" name="departments" value="{{item}}"> {{item}}<br>
+      {% endfor%}
+      </article>
+    </section>
+
+    <button><h1>Generate Query</h1></button>
+  </form>
+</html>
