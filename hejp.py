@@ -19,85 +19,9 @@ app = Flask(__name__,
             static_folder='static')
 
 
-# query1 = "SELECT year,faculty, count(*) as N from hej where faculty=1 group by faculty,year;"
-#
-#
-#
 @app.route('/',methods=["GET"])
 def home():
     return render_template("home.html")
-
-#
-# @app.route('/demo1', methods=["GET", "POST"])
-# def demo1():
-#     z = demo(6)
-#     return render_template("demo1.html", query=query1, rows=z)
-
-# @app.route('/demo2', methods=["GET", "POST"])
-# def demo2():
-#     z = demo(1)
-#     results = [[x[0],x[1],x[2]] for x in z]
-#     return render_template("demo2.html", query=query1, rows=results)
-#
-# @app.route('/demo3', methods=["GET", "POST"])
-# def demo3():
-#     if request.method=="GET":
-#         return render_template("demo3.html",faculty_status=faculty_status,fields_of_study=fields_of_study, departments=departments,careerareas=careerareas,ipedssectornames=ipedssectornames,occupations=occupations)
-#     else:
-#         print(request.form)
-#         jobtype = request.form.getlist('jobtype')
-#         staff = request.form.getlist('staff')
-#         fac = request.form.getlist('fac')
-#         year = request.form.getlist('year')
-#         fos = request.form.getlist('fos')
-#         dept = request.form.getlist('dept')
-#         divinc = request.form.getlist('diversityandinclusion')
-#         rsh1 = request.form.getlist('isresearch1institution')
-#         careerarea = request.form.getlist('careerarea')
-#         ipeds = request.form.getlist('ipedssectornames')
-#         occs = request.form.getlist('occupations')
-#         min_ed = request.form.get('minimumedurequirements')
-#         max_ed = request.form.get('maximumedurequirements')
-#         min_exp = request.form.get('minimumexperiencerequirements')
-#         print('min ed = '+min_ed)
-#         query = "SELECT count(*) from hej,maintable where (hej.jobid=maintable.jobid) and "
-#         query += makeBoolean(jobtype)+" and "
-#         if (staff!=[]):
-#           query += " (faculty=0 and postdoctoral=0) and "
-#         query += makeBoolean(fos)+" and "
-#         query += makeYears(year)+" and "
-#         query += makeBoolean(dept)+" and "
-#         query += makeBoolean(fac) + " and "
-#         query += makeBoolean(divinc+rsh1) + " and "
-#         query += makeCareerAreas(careerarea) + " and "
-#         query += makeStrings('ipedssectorname',ipeds) + " and "
-#         query += makeStrings('occupation',occs) + " and "
-#         query += "minimumedurequirements >= "+min_ed+" and "
-#         query += "maximumedurequirements <= "+max_ed+" and "
-#         query += "minimumexperiencerequirements >= "+min_exp
-#         query += " group by hej.year"
-#         print(query)
-#         z = queryAll(query)
-#         print(z)
-#         if (z==[]):
-#             print("no results")
-#             return render_template("noResults.html",query=query)
-#         z1 = [x[0] for x in z]
-#         z2 = [makeObj(x) for x in z1]
-#         vals = []
-#         for i in range(0,len(year)):
-#             vals += [makeObj2(year[i],z1[i])]
-#
-#         print(z)
-#         print(z1)
-#         print(z2)
-#         print(vals)
-#         years = [int(y) for y in year]
-#         return render_template("demo3b.html", query=query, year=years, z1=z1)
-
-
-# queryR1 = queryfaculty + "AND maintable.isresearch1institution = 1; "
-# queryAll = queryfaculty
 
 @app.route('/demo4', methods=["GET", "POST"])
 def demo4():
@@ -185,11 +109,39 @@ def nsfGrowthResult():
     # if request.method=="GET":
     return render_template("nsfGrowthResult.html")
 
+@app.route('/largestNSF', methods=["GET","Post"])
+def largestNSF():
+    if request.method=="GET":
+        largestNSF = ['Business management and administration', 'Biological and biomedical sciences', 'Health sciences']
+        fieldString = ""
+        fieldArray = ""
+        for nsf in largestNSF:
+            fieldString += "SUM(" + makeFields(nsf) + "), "
+            fieldArray += makeFields(nsf) + ", "
+        fieldString = fieldString[0: len(fieldString)-2]
+        fieldArray = fieldArray[0: len(fieldArray)-2]
+        queryLargestNSFResult = queryAll(queryLargestNSF(fieldString, fieldArray))
+        resultList = list(queryLargestNSFResult[0])
+        print(resultList)
+        return render_template("largestNSF.html", largestNSF = largestNSF, largestNSFResult = resultList)
+
+def queryLargestNSF(fieldString, fieldArray) :
+    queryLargestNSF = "SELECT " + fieldString + " FROM "
+	# queryLargestNSF += "SELECT maintable.jobid, fouryear, dummytable.* FROM maintable"
+    queryLargestNSF += "(SELECT maintable.jobid, fouryear, " + fieldArray
+    queryLargestNSF += " FROM maintable "
+    queryLargestNSF += "RIGHT JOIN dummytable ON maintable.jobid = dummytable.jobid "
+    queryLargestNSF += "WHERE fouryear = 1 "
+    queryLargestNSF += "AND postdoctoral = 0 "
+    queryLargestNSF += "AND (maintable.year = 2017) "
+    queryLargestNSF += ")AS selected;"
+    return queryLargestNSF
+
 # queries: NSF Growth, share of faculty vs non faculty
-def queryNSFGrowth(fieldString):
-    queryNSFGrowth = "SELECT year," + "SUM(" + makeFields(fieldString)+") FROM"
+def queryNSFGrowth(f):
+    queryNSFGrowth = "SELECT year," + "SUM(" + makeFields(f) +") FROM"
     queryNSFGrowth += "(SELECT dummytable.year, "
-    queryNSFGrowth += makeFields(fieldString)
+    queryNSFGrowth += makeFields(f)
     queryNSFGrowth += "FROM dummytable "
     queryNSFGrowth += "WHERE (dummytable.healthsciences != 1 OR dummytable.numberofdetailedfieldsofstudy > 1) "
     queryNSFGrowth += "AND dummytable.faculty = 1 "
@@ -216,6 +168,8 @@ def makeFields(fieldString):
     result = ""
     # for i in range (0, len(fields)):
     #     fieldString = fields[i]
+    if fieldString == "Health sciences":
+       result += "healthsciences, "
     if fieldString == "Teacher education":
        result += "teachereducation, "
     if fieldString == "Sociology":
