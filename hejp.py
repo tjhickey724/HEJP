@@ -23,12 +23,12 @@ app = Flask(__name__,
 def home():
     return render_template("home.html")
 
-@app.route('/demo4', methods=["GET", "POST"])
-def demo4():
-    if request.method=="GET":
-        return render_template("demo4.html")
-    else:
-        return redirect(url_for('faculty.html'))
+# @app.route('/demo4', methods=["GET", "POST"])
+# def demo4():
+#     if request.method=="GET":
+#         return render_template("demo4.html")
+#     else:
+#         return redirect(url_for('faculty.html'))
 
 
 @app.route('/faculty', methods=["GET", "POST"])
@@ -75,8 +75,10 @@ def nsfGrowth():
         # fields = []
         # result: (2007, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0)
         # groupNSF = [sum(x) for x in zip(*queryNSFResult)]
-        return render_template('nsfGrowth.html', departments = departments)
+        years = [int(y) for y in year_range]
+        return render_template('nsfGrowth.html', departments = departments, years = years)
     else:
+        requestedYears = request.form.getlist('years')
         requestedDepartments = request.form.getlist('departments')
         # queryfields = queryNSFGrowth(requestedDepartments)
         queryFieldResult = []
@@ -84,9 +86,9 @@ def nsfGrowth():
         # departmentList = [makeStrings(requestedDepartments)]
         for field in requestedDepartments:
             # print(queryNSFGrowth(field))
-            queryFieldResult += queryAll(queryNSFGrowth(field))
+            queryFieldResult += queryAll(queryNSFGrowth(field, requestedYears))
         # group count for each field by year
-        # grouped results: [(2007, [[2443], [3335]]), (2017, [[5089], [8843]])]
+        # grouped results:
         fieldDict = OrderedDict()
         for year, *fieldCount in queryFieldResult:
             if year in fieldDict:
@@ -96,10 +98,11 @@ def nsfGrowth():
         # print(fieldDict)
         finalFieldDict = [(year, fieldCount) for year, fieldCount in fieldDict.items()]
         print(finalFieldDict)
+        # [(2011, [[2432], [3635]]), (2012, [[3380], [4587]]), (2015, [[2936], [5201]]), (2016, [[2706], [6491]])]
         # print(queryFieldResult)
         # [Physics and astronomy, Computer and information science, Electrial electronics and communication, Teaching Fields]
         # result: [(2007, 2443), (2017, 5089), (2007, 3335), (2017, 8843), (2007, 636), (2017, 1915), (2007, 466), (2017, 875)]
-        return render_template('nsfGrowthResult.html', departments = departments, queryFieldResult = queryFieldResult, finalFieldDict = finalFieldDict, requestedDepartments = requestedDepartments)
+        return render_template('nsfGrowthResult.html', departments = departments, queryFieldResult = queryFieldResult, finalFieldDict = finalFieldDict, requestedDepartments = requestedDepartments, requestedYears = requestedYears, years = year_range)
     #
     # else:
     #     return redirect(url_for('faculty.html'))
@@ -108,6 +111,30 @@ def nsfGrowth():
 def nsfGrowthResult():
     # if request.method=="GET":
     return render_template("nsfGrowthResult.html")
+
+@app.route('/allfaculty', methods=["GET","Post"])
+def allfaculty():
+    if request.method=="GET":
+        return render_template("allfaculty.html", years = year_range, facultyStatus = faculty_status, institutionType = institutionType)
+    else:
+        requestedYears = request.form.getlist('years')
+        requestedFaculty = request.form.getlist('status')
+        queryFacultyResult = []
+        institutionList = ["R1 Universities","4-year Institutions","2-year Institutions","All Higher Education"]
+        for institution in institutionList:
+            queryFacultyResult += queryAll(queryAllFaculty(requestedFaculty, requestedYears, institution))
+        print(queryFacultyResult)
+        #[(2012, 852), (2014, 1504), (2012, 5565), (2014, 7541), (2012, 1427), (2014, 2365), (2012, 7045), (2014, 9978)]
+
+        groupedFaculty = OrderedDict()
+        for year, count in queryFacultyResult:
+            if year in groupedFaculty:
+                groupedFaculty[year].append(count)
+            else:
+                groupedFaculty[year] = [count]
+        finalFaculty = [(year, count) for year, count in groupedFaculty.items()]
+        print(finalFaculty)
+        return render_template("allfacultyResult.html", groupedFaculty = finalFaculty, requestedYears = requestedYears, requestedFaculty = requestedFaculty, institutionType = institutionList)
 
 @app.route('/largestNSF', methods=["GET","Post"])
 def largestNSF():
@@ -125,6 +152,25 @@ def largestNSF():
         print(resultList)
         return render_template("largestNSF.html", largestNSF = largestNSF, largestNSFResult = resultList)
 
+def queryAllFaculty (requestedFaculty, requestedYears, institution):
+    queryAllFaculty = "SELECT year, COUNT(" + makeFacultyStatus(requestedFaculty) + ") FROM"
+    queryAllFaculty += "(SELECT maintable.year, ipedssectorname, "
+    queryAllFaculty += "isresearch1institution, "
+    queryAllFaculty += "postdoctoral, faculty, healthsciences, "
+    queryAllFaculty += "numberofdetailedfieldsofstudy, "
+    queryAllFaculty += makeFacultyStatus(requestedFaculty)
+    queryAllFaculty += "FROM maintable "
+    queryAllFaculty += "INNER JOIN dummytable on maintable.jobid = dummytable.jobid "
+    queryAllFaculty += "WHERE postdoctoral != 1 AND faculty = 1 "
+    queryAllFaculty += "AND (numberofdetailedfieldsofstudy > 2 OR healthsciences != 1) "
+    queryAllFaculty += "AND "+ makeYears(requestedYears)
+    queryAllFaculty += "AND (ipedssectorname NOT LIKE 'NULL' AND ipedssectorname NOT LIKE '%Sector unknown (not active%') "
+    queryAllFaculty += "AND " + getFacultyDummy(requestedFaculty)
+    queryAllFaculty += "AND " + getInstitutionDummy(institution)
+    queryAllFaculty += ") AS selected "
+    queryAllFaculty += "GROUP BY year;"
+    return queryAllFaculty
+
 def queryLargestNSF(fieldString, fieldArray) :
     queryLargestNSF = "SELECT " + fieldString + " FROM "
 	# queryLargestNSF += "SELECT maintable.jobid, fouryear, dummytable.* FROM maintable"
@@ -138,7 +184,7 @@ def queryLargestNSF(fieldString, fieldArray) :
     return queryLargestNSF
 
 # queries: NSF Growth, share of faculty vs non faculty
-def queryNSFGrowth(f):
+def queryNSFGrowth(f, requestedYears):
     queryNSFGrowth = "SELECT year," + "SUM(" + makeFields(f) +") FROM"
     queryNSFGrowth += "(SELECT dummytable.year, "
     queryNSFGrowth += makeFields(f)
@@ -146,7 +192,7 @@ def queryNSFGrowth(f):
     queryNSFGrowth += "WHERE (dummytable.healthsciences != 1 OR dummytable.numberofdetailedfieldsofstudy > 1) "
     queryNSFGrowth += "AND dummytable.faculty = 1 "
     queryNSFGrowth += "AND dummytable.postdoctoral = 0 "
-    queryNSFGrowth += "AND dummytable.year = 2007 OR dummytable.year = 2017 ) AS selected "
+    queryNSFGrowth += "AND " + makeYears(requestedYears) + " ) AS selected "
     queryNSFGrowth += "GROUP BY year"
     return queryNSFGrowth
 
@@ -161,6 +207,16 @@ def queryFaculty ():
     queryfaculty += "AND maintable.careerarea NOT LIKE 'Health Care including Nursing' "
     queryfaculty += "AND (dummytable.numberofdetailedfieldsofstudy > 2 OR dummytable.healthsciences !=1) "
     return queryfaculty
+
+def makeFacultyStatus (requestedFaculty):
+    if (requestedFaculty == []):
+        return "true"
+    if (requestedFaculty[0] == 'Full-Time Contingent Positions'):
+        return "fulltimecontingent "
+    if (requestedFaculty[0] == 'Part-Time Contingent Positions'):
+        return "parttimecontingent "
+    if (requestedFaculty[0] == 'Tenure Line Positions'):
+        return "tenureline "
 
 def makeFields(fieldString):
     # if (fields== []):
@@ -208,7 +264,7 @@ def makeFields(fieldString):
        result += "biologicalandbiomedicalsciences, "
     if fieldString == "Bioengineering and biomedical engineering":
        result += "bioengineeringandbiomedicalengin, "
-    if fieldString == "Agricultural sciences and natural resources":
+    if fieldString == "Agricultural sciences and natural sciences":
        result += "agriculturalsciencesandnaturalre, "
     if fieldString == "Aerospace, aeronautical, and astronautical engineering":
        result += "aerospaceaeronauticalandastronau, "
@@ -241,6 +297,15 @@ def makeFields(fieldString):
     result = result[0: len(result)-2] +   " "
     return result
 
+def getFacultyDummy(requestedFaculty):
+    if (requestedFaculty ==[]):
+        return "true"
+    if (requestedFaculty[0] == 'Full-Time Contingent Positions'):
+        return "fulltimecontingent = 1"
+    if (requestedFaculty[0] == 'Part-Time Contingent Positions'):
+        return "parttimecontingent = 1"
+    if (requestedFaculty[0] == 'Tenure Line Positions'):
+        return "tenureline = 1"
 
 def makeYears(year):
     if (year==[]):
@@ -259,6 +324,16 @@ def makeStrings(list):
         result.append(list[i])
     print(result)
     return result
+
+def getInstitutionDummy(institution):
+    if (institution == 'All Higher Education'):
+        return "true"
+    if (institution == 'R1 Universities'):
+        return "isresearch1institution = 1"
+    if (institution == '4-year Institutions'):
+        return "fouryear = 1"
+    if (institution == '2-year Institutions'):
+        return "twoyear = 1"
 
 def chooseInstitution(institution):
     if (institution==[] or institution[0] == 'All Higher Education'):

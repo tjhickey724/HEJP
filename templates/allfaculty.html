@@ -1,0 +1,32 @@
+<html>
+<form method = "post" action = "/allfaculty">
+  <section>
+    <article>
+  <h2>Faculty Status</h2>
+  {% for item in facultyStatus %}
+        <input type="checkbox" name="status" value="{{item}}"> {{item}}<br>
+        <!-- <option value = "{{item}}">{{item}}</option> -->
+  {% endfor%}
+</article>
+</section>
+<!-- <section>
+<article>
+      <h2>Insitution Type</h2>
+      {% for item in institutionType %}
+            <input type="checkbox" name="institution" value="{{item}}"> {{item}}<br>
+      {% endfor%}
+</article>
+</section> -->
+
+<section>
+  <article>
+  <h2>Years</h2>
+  {% for item in years %}
+        <input type="checkbox" name="years" value="{{item}}"> {{item}}<br>
+  {% endfor%}
+  </article>
+</section>
+<button><h1>Generate Query</h1></button>
+</form>
+
+</html>

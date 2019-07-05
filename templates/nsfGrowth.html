@@ -1,14 +1,34 @@
 <html>
-
+<!-- <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+<script
+  src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+<script src="semantic/dist/semantic.min.js"></script> -->
 	<form method="post" action="/nsfGrowth">
-    <section>
-      <article>
+    <!-- <div class = "ui form">
+			<div class = "departments">
+			<label>Fields of Study></label>  -->
+			<!-- <select multiple ="" class = "ui dropdown"> -->
+      <section>
+        <article>
       <h2>Fields of Study</h2>
       {% for item in departments %}
             <input type="checkbox" name="departments" value="{{item}}"> {{item}}<br>
+						<!-- <option value = "{{item}}">{{item}}</option> -->
       {% endfor%}
-      </article>
-    </section>
+    </article>
+	</section>
+
+
+		<section>
+			<article>
+			<h2>Years</h2>
+			{% for item in years %}
+						<input type="checkbox" name="years" value="{{item}}"> {{item}}<br>
+			{% endfor%}
+			</article>
+		</section>
 
     <button><h1>Generate Query</h1></button>
   </form>

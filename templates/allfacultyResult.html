@@ -2,7 +2,7 @@
 <html>
 
 <head>
-	<title>NSF Growth Chart</title>
+	<title>All Faculty Openings</title>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 	<!-- <script src="../../utils.js"></script> -->
 	<!-- <script src="../../../dist/Chart.min.js"></script>
@@ -39,21 +39,21 @@
 
 		var horizontalBarChartData = {
 			// labels: ["sociology", "anthropology","literature", "history"],
-			labels: {{requestedDepartments|safe}},
+			labels: {{institutionType|safe}},
 			datasets: [
 			{
 				label: {{requestedYears[0]}},
 				backgroundColor: 'rgb(255, 255, 132)',
 				borderColor: 'rgb(255, 255, 132)',
 				borderWidth: 1,
-				data: {{finalFieldDict[0][1]}}
-				// [(2007, [[2443], [3335]]), (2017, [[5089], [8843]])]
-			},
+				data: {{groupedFaculty[0][1]}}
+				// [(2010, [3030, 13264, 827, 14131]), (2013, [6530, 23942, 1552, 25605])]
+      },
 			{
 				label: {{requestedYears[1]}},
 				backgroundColor: 'rgb(255, 100, 132)',
 				borderColor: 'rgb(255, 100, 132)',
-				data: {{finalFieldDict[1][1]}}
+				data: {{groupedFaculty[1][1]}}
 			}]
 		};
 		window.onload = function() {
@@ -75,7 +75,7 @@
 					},
 					title: {
 						display: true,
-						text: 'NSF Growth Chart'
+						text: {{requestedFaculty|safe}},
 					}
 				}
 			});
@@ -127,27 +127,7 @@
 		// 	window.myHorizontalBar.update();
 		// });
 	</script>
-	<form method="post" action="/nsfGrowth">
-		<section>
-			<article>
-			<h2>Fields of Study</h2>
-			{% for item in departments %}
-						<input type="checkbox" name="departments" value="{{item}}"> {{item}}<br>
-			{% endfor%}
-			</article>
-		</section>
 
-		<section>
-			<article>
-			<h2>Years</h2>
-			{% for item in years %}
-						<input type="checkbox" name="years" value="{{item}}"> {{item}}<br>
-			{% endfor%}
-			</article>
-		</section>
-
-		<button><h1>Generate Query</h1></button>
-	</form>
 </body>
 
 </html>

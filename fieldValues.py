@@ -1,8 +1,4 @@
-faculty_status ="""
-tenured
-tenured_track
-fulltimecontingent
-parttimecontingent""".split("\n")
+faculty_status =['Tenure Line Positions', 'Full-Time Contingent Positions', 'Part-Time Contingent Positions']
 
 
 year_range = ['2007','2010','2011','2012','2013','2014','2015','2016','2017']
@@ -18,7 +14,7 @@ fs_others""".split("\n")
 
 departments = [
     "Agricultural sciences and natural sciences",
-    "Biological and biomedica sciences",
+    "Biological and biomedical sciences",
     "Health sciences",
     "Chemistry",
     "Geosciences, atmospheric, and ocean sciences",
