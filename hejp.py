@@ -358,7 +358,8 @@ def queryAll(query):
     result = None
     try:
         # read connection parameters
-        conn_string = "host='localhost' dbname='HEJP' user='postgres' password='a12s34d56'"
+        #conn_string = "host='localhost' dbname='HEJP' user='postgres' password='a12s34d56'"
+        conn_string = "dbname='hejp' user='hejp' password='hejp2019zzyy'"
 
 
         # connect to the PostgreSQL server
@@ -389,4 +390,4 @@ def queryAll(query):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0',debug=True)
