@@ -1,14 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<script src="https://code.jquery.com/jquery-1.12.3.min.js" integrity="sha256-aaODHAgvwQW1bFOGXMeX+pC4PZIPsvn2h1sArYOhgXQ=" crossorigin="anonymous"></script>
+  <script href="static/js/nsfGrowth.js"></script>
+</head>
 <html>
 
 	<form method="post" action="/nsfGrowth">
-    <section>
-      <article>
+      <section>
+        <article>
       <h2>Fields of Study</h2>
-      {% for item in departments %}
-            <input type="checkbox" name="departments" value="{{item}}"> {{item}}<br>
-      {% endfor%}
-      </article>
-    </section>
+			<fieldset id ="all_fields">
+			<ul id = 'fields'>
+				<li class = "lifeSciences"><input type="checkbox" name="fields_of_study" value="Life sciences"> Life sciences
+				<ul class = "sub-lifeSciences">
+				{% for item in lifeSciences %}
+            	<li><a>{{item}}</a><br></li>
+				{% endfor %}
+				</ul>
+				</li>
+			</ul>
+			<ul id = 'fields'>
+				<li class = "physicalSciences"><input type="checkbox" name="fields_of_study" value="Physical sciences and earth sciences"> Physical sciences and earth sciences
+				<ul class = "sub-physicalSciences">
+				{% for item in physicalSciences %}
+            	<li><a>{{item}}</a><br></li>
+				{% endfor %}
+				</ul>
+				</li>
+			</ul>
+			<ul id = 'fields'>
+				<li class = "math"><input type="checkbox" name="fields_of_study" value="Mathematics and computer sciences"> Mathematics and computer sciences
+				<ul class = "sub-math">
+				{% for item in math %}
+							<li><a>{{item}}</a><br></li>
+				{% endfor %}
+				</ul>
+				</li>
+			</ul>
+			<ul id = 'fields'>
+				<li class = "psychology"><input type="checkbox" name="fields_of_study" value="Psychology and social sciences"> Psychology and social sciences
+				<ul class = "sub-psychology">
+				{% for item in psychology %}
+            	<li><a>{{item}}</a><br></li>
+				{% endfor %}
+				</ul>
+				</li>
+			</ul>
+			<ul id = 'fields'>
+				<li class = "engineering"><input type="checkbox" name="fields_of_study" value="Engineering"> Engineering
+				<ul class = "sub-engineering">
+				{% for item in engineering %}
+            	<li><a>{{item}}</a><br></li>
+				{% endfor %}
+				</ul>
+				</li>
+			</ul>
+			<ul id = 'fields'>
+				<li class = "education"><input type="checkbox" name="fields_of_study" value="Education"> Education
+				<ul class = "sub-education">
+				{% for item in education %}
+            	<li><a>{{item}}</a><br></li>
+				{% endfor %}
+				</ul>
+				</li>
+			</ul>
+			<ul id = 'fields'>
+				<li class = "humanities"><input type="checkbox" name="fields_of_study" value="Humanities and arts"> Humanities and arts
+				<ul class = "sub-humanities">
+				{% for item in humanities %}
+            	<li><a>{{item}}</a><br></li>
+				{% endfor %}
+				</ul>
+				</li>
+			</ul>
+			<ul id = 'fields'>
+				<li class = "others"><input type="checkbox" name="fields_of_study" value="Others"> Others
+				<ul class = "sub-others">
+				{% for item in others %}
+            	<li><a>{{item}}</a><br></li>
+				{% endfor %}
+				</ul>
+				</li>
+			</ul>
+		</fieldset>
+		<a rel = "all_fields" href = "#select_all"> Select All</a>
+    </article>
+	</section>
+
+
+		<section>
+			<article>
+			<h2>Years</h2>
+			{% for item in years %}
+						<input type="checkbox" name="years" value="{{item}}"> {{item}}<br>
+			{% endfor%}
+			</article>
+		</section>
 
     <button><h1>Generate Query</h1></button>
   </form>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+
+
+  <head>
+    	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+      <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.5.0"></script>
+  </head>
+  <body>
+    <div id="container" style="width: 75%;">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <script>
+
+
+      var barChartData = {
+        // labels: ["sociology", "anthropology","literature", "history"],
+        labels: {{requestedScience|safe}},
+        datasets: [
+        {
+          label: {{requestedYears[0]}},
+          backgroundColor: 'rgb(255, 255, 132)',
+          borderColor: 'rgb(255, 255, 132)',
+          borderWidth: 1,
+          strokeColor: "#79D1CF",
+          fillColor: "#79D1CF",
+          stack: 'Stack 0',
+          yAxisID: 'A',
+          data:{{final_science[0][1][2]}}
+          // data: {{final_science[0][1]}}
+          // [(2007, [[102, 287, 902], [62, 24, 321]]), (2014, [[442, 1242, 2091], [189, 347, 699]])]
+        },
+        {
+          label: 'Tenure_Line Share(%)',
+          backgroundColor: 'rgb(245, 66, 66)',
+          borderColor: 'rgb(245, 66, 66)',
+          stack: 'Stack 1',
+          strokeColor: "#79D1CF",
+          fillColor: "#79D1CF",
+          yAxisID: 'B',
+          data: {{final_science[0][1][1]}}
+
+          // data: {{final_science[1][1]}}
+        },
+        {
+          label: 'Contingent Share(%)',
+          backgroundColor: 'rgb(245, 141, 66)',
+          borderColor: 'rgb(245, 141, 66)',
+          stack: 'Stack 2',
+          strokeColor: "#79D1CF",
+          fillColor: "#79D1CF",
+          yAxisID: 'B',
+          data: {{final_science[0][1][0]}}
+
+          // data: {{final_science[1][1]}}
+        },
+        {
+          label: {{requestedYears[1]}},
+          backgroundColor: 'rgb(66, 245, 173)',
+          borderColor: 'rgb(66, 245, 173)',
+          borderWidth: 1,
+          stack: 'Stack 3',
+          strokeColor: "#79D1CF",
+          fillColor: "#79D1CF",
+          yAxisID: 'A',
+          data: {{final_science[1][1][2]}}
+          // data: {{final_science[0][1]}}
+          // [(2007, [[102, 287, 902], [62, 24, 321]]), (2014, [[442, 1242, 2091], [189, 347, 699]])]
+        },
+        {
+          label: 'Tenure_Line Share(%)',
+          backgroundColor: 'rgb(66, 138, 245)',
+          borderColor: 'rgb(66, 138, 245)',
+          stack: 'Stack 4',
+          strokeColor: "#79D1CF",
+          fillColor: "#79D1CF",
+          yAxisID: 'B',
+          data: {{final_science[1][1][1]}}
+
+          // data: {{final_science[1][1]}}
+        },
+        {
+          label: 'Contingent Share(%)',
+          backgroundColor: 'rgb(72, 66, 245)',
+          borderColor: 'rgb(72, 66, 245)',
+          stack:'Stack 5',
+          strokeColor: "#79D1CF",
+          fillColor: "#79D1CF",
+          yAxisID: 'B',
+          data: {{final_science[1][1][0]}}
+
+          // data: {{final_science[1][1]}}
+        }]
+      };
+      window.onload = function() {
+        var ctx = document.getElementById('canvas').getContext('2d');
+        var myChart = new Chart(ctx, {
+          type: 'bar',
+          data: barChartData,
+
+          options: {
+            // Elements options apply to all of the options unless overridden in a dataset
+            // In this case, we are setting the border of each horizontal bar to be 2px wide
+            elements: {
+              rectangle: {
+                borderWidth: 2,
+              }
+            },
+            responsive: true,
+            legend: {
+              position: 'right',
+            },
+            title: {
+              display: true,
+              text: {{requestedScience|safe}},
+            },
+            plugins: {
+					    datalabels: {
+						  color: 'black',
+              anchor: 'end',
+              align: 'bottom',
+						  display: function(context) {
+							  return context.dataset.data[context.dataIndex];
+						  },
+						  font: {
+							   weight: 'bold'
+						  },
+						  formatter: Math.round
+					  }
+				 },
+            scales: {
+  						yAxes: [{
+  							type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+  							display: true,
+  							position: 'left',
+  							id: 'A',
+  						},
+              {
+  							type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+  							display: true,
+  							position: 'right',
+  							id: 'B',
+                ticks: {
+                    min: 0,
+                    max: this.max,// Your absolute max value
+                    callback: function (value) {
+                      return (value / this.max * 100).toFixed(0) + '%'; // convert it to percentage
+                    },
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Percentage',
+              }
+  					}],
+          }
+        }
+      });
+    }
+
+    </script>
+    <form method = "post" action = "/science">
+      <section>
+        <article>
+      <h2>Science Departments</h2>
+      {% for item in all_sciences %}
+            <input type="checkbox" name="sciences" value="{{item}}"> {{item}}<br>
+      {% endfor%}
+    </article>
+    </section>
+
+    <section>
+      <article>
+      <h2>Years</h2>
+      {% for item in year_range %}
+            <input type="checkbox" name="years" value="{{item}}"> {{item}}<br>
+      {% endfor%}
+      </article>
+    </section>
+    <button><h1>Generate Query</h1></button>
+    </form>
+
+    </html>
+  </body>
+</html>

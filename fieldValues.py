@@ -1,24 +1,57 @@
-faculty_status ="""
-tenured
-tenured_track
-fulltimecontingent
-parttimecontingent""".split("\n")
+faculty_status =['Tenure Line Positions', 'Full-Time Contingent Positions', 'Part-Time Contingent Positions']
 
 
 year_range = ['2007','2010','2011','2012','2013','2014','2015','2016','2017']
 
-fields_of_study ="""fs_life_sciences
-fs_physical_sciences_and_earth_s
-fs_mathematics_and_computer_scie
-fs_psychology_and_social_science
-fs_engineering
-fs_education
-fs_humanities_and_arts
-fs_others""".split("\n")
+fields_of_study = [
+    "Life sciences",
+    "Physical sciences and earth sciences",
+    "Mathematics and computer sciences",
+    "Psychology and social sciences",
+    "Engineering",
+    "Education",
+    "Humanities and arts",
+    "Others"
+]
+
+database_fields = [
+    "agriculturalsciencesandnaturalre",
+    "biologicalandbiomedicalsciences",
+    "chemistry",
+    "geosciencesatmosphericandoceansc",
+    "physicsandastronomy",
+    "computerandinformationsciences",
+    "mathematicsandstatistics",
+    "psychology",
+    "anthropology",
+    "economics",
+    "politicalscienceandgovernment",
+    "sociology",
+    "othersocialsciences",
+    "aerospaceaeronauticalandastronau",
+    "bioengineeringandbiomedicalengin",
+    "chemicalengineering",
+    "civilengineering",
+    "electricalelectronicsandcommunic",
+    "industrialandmanufacturingengine",
+    "materialsscienceengineering",
+    "mechanicalengineering",
+    "otherengineering",
+    "educationadministration",
+    "educationresearch",
+    "teachereducation",
+    "teachingfields",
+    "othereducation",
+    "foreignlanguagesandliterature",
+    "history",
+    "letters",
+    "businessmanagementandadministrat",
+    "communication"
+]
 
 departments = [
     "Agricultural sciences and natural sciences",
-    "Biological and biomedica sciences",
+    "Biological and biomedical sciences",
     "Health sciences",
     "Chemistry",
     "Geosciences, atmospheric, and ocean sciences",
@@ -101,4 +134,73 @@ institutionType = [
     "4-year Institutions",
     "2-year Institutions",
     "All Higher Education"
+]
+
+combinedFieldsWithDept = [
+#life sciences
+    [
+        "Life sciences",
+        "Agricultural sciences and natural sciences",
+        "Biological and biomedical sciences",
+        "Health sciences"
+    ],
+# physical sciences and earth sciences
+    [
+        "Physical sciences and earth sciences",
+        "Chemistry",
+        "Geosciences, atmospheric, and ocean sciences",
+        "Physics and astronomy"
+    ],
+# Mathematics and computer sciences
+    [
+        "Mathematics and computer sciences",
+        "Computer and information sciences",
+        "Mathematics and statistics"
+    ],
+# Psychology and social sciences
+    [
+        "Psychology and social sciences",
+        "Psychology",
+        "Anthropology",
+        "Economics",
+        "Political science and government",
+        "Sociology",
+        "Other social sciences"
+    ],
+# Engineering
+    [
+        "Engineering",
+        "Aerospace, aeronautical, and astronautical engineering",
+        "Bioengineering and biomedical engineering",
+        "Chemical engineering",
+        "Civil engineering",
+        "Electrical, electronics, and communication",
+        "Industrial and manufacturing engineering",
+        "Materials science engineering",
+        "Mechanical engineering",
+        "Other engineering"
+    ],
+# education
+    [
+        "Education",
+        "Education administration",
+        "Education research",
+        "Teacher education",
+        "Teaching fields",
+        "Other education"
+    ],
+# humanities and arts
+    [
+        "Humanities and arts",
+        "Foreign languages and literature",
+        "History",
+        "Letters",
+        "Other humanities and arts"
+    ],
+# others
+    [
+        "Others",
+        "Business management and administration",
+        "Communication"
+    ]
 ]

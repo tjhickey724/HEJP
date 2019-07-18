@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>All Faculty Openings</title>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+	<style>
+	canvas {
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+	</style>
+</head>
+
+<body>
+	<div id="container" style="width: 75%;">
+		<canvas id="canvas"></canvas>
+	</div>
+
+	<script>
+
+
+		var horizontalBarChartData = {
+			// labels: ["sociology", "anthropology","literature", "history"],
+			labels: {{institutionType|safe}},
+			datasets: [
+			{
+				label: {{requestedYears[0]}},
+				backgroundColor: 'rgb(255, 255, 132)',
+				borderColor: 'rgb(255, 255, 132)',
+				borderWidth: 1,
+				data: {{groupedFaculty[0][1]}}
+				// [(2010, [3030, 13264, 827, 14131]), (2013, [6530, 23942, 1552, 25605])]
+      },
+			{
+				label: {{requestedYears[1]}},
+				backgroundColor: 'rgb(255, 100, 132)',
+				borderColor: 'rgb(255, 100, 132)',
+				data: {{groupedFaculty[1][1]}}
+			}]
+		};
+		window.onload = function() {
+			var ctx = document.getElementById('canvas').getContext('2d');
+			window.myHorizontalBar = new Chart(ctx, {
+				type: 'horizontalBar',
+				data: horizontalBarChartData,
+				options: {
+					// Elements options apply to all of the options unless overridden in a dataset
+					// In this case, we are setting the border of each horizontal bar to be 2px wide
+					elements: {
+						rectangle: {
+							borderWidth: 2,
+						}
+					},
+					responsive: true,
+					legend: {
+						position: 'right',
+					},
+					title: {
+						display: true,
+						text: {{requestedFaculty|safe}},
+					}
+				}
+			});
+		};
+
+	</script>
+
+</body>
+
+</html>

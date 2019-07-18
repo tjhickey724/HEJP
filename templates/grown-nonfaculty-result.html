@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+</head>
+<body>
+  <div id="container" style="width: 75%;">
+    <canvas id="canvas"></canvas>
+  </div>
+
+<script>
+
+
+  var barChartData = {
+    // labels: ["sociology", "anthropology","literature", "history"],
+    labels: {{selected_area|safe}},
+    datasets: [
+
+    {
+      label: {{years[0]}},
+      backgroundColor: 'rgb(245, 66, 66)',
+      borderColor: 'rgb(245, 66, 66)',
+      stack: 'Stack 0',
+      data: {{final_group_nonfaculty[0][1]}}
+
+    },
+    {
+      label: {{years[1]}},
+      backgroundColor: 'rgb(245, 141, 66)',
+      borderColor: 'rgb(245, 141, 66)',
+      stack: 'Stack 1',
+      data: {{final_group_nonfaculty[1][1]}}
+
+    }]
+  };
+  window.onload = function() {
+    var ctx = document.getElementById('canvas').getContext('2d');
+    window.Bar = new Chart(ctx, {
+      type: 'bar',
+      data: barChartData,
+      options: {
+        // Elements options apply to all of the options unless overridden in a dataset
+        // In this case, we are setting the border of each horizontal bar to be 2px wide
+        elements: {
+          rectangle: {
+            borderWidth: 2,
+          }
+        },
+        responsive: true,
+        legend: {
+          position: 'right',
+        },
+        title: {
+          display: true,
+          text: 'Grown nonfaculty for {{institution|safe}}'
+        }
+      }
+    });
+  };
+</script>
+<form method = "post" action = "/grown-nonfaculty">
+  <section>
+    <article>
+  <h2>Institution Type</h2>
+  {% for item in institutionType %}
+        <input type="radio" name="institutionType" value="{{item}}"> {{item}}<br>
+  {% endfor%}
+</article>
+</section>
+
+
+<section>
+  <article>
+  <h2>Years</h2>
+  {% for item in year_range %}
+        <input type="checkbox" name="years" value="{{item}}"> {{item}}<br>
+  {% endfor%}
+  </article>
+</section>
+<button><h1>Generate Query</h1></button>
+</form>
+</body>
+</html>

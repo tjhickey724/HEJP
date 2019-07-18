@@ -4,11 +4,6 @@
 <head>
 	<title>NSF Growth Chart</title>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-	<!-- <script src="../../utils.js"></script> -->
-	<!-- <script src="../../../dist/Chart.min.js"></script>
-	<script src="../../utils.js"></script> -->
-	<!-- <script src="Chart.min.js"></script> -->
-	<!-- <script src="utils.js"></script> -->
 	<style>
 	canvas {
 		-moz-user-select: none;
@@ -22,27 +17,14 @@
 	<div id="container" style="width: 75%;">
 		<canvas id="canvas"></canvas>
 	</div>
-	<!-- <button id="randomizeData">Randomize Data</button>
-	<button id="addDataset">Add Dataset</button>
-	<button id="removeDataset">Remove Dataset</button>
-	<button id="addData">Add Data</button>
-	<button id="removeData">Remove Data</button> -->
-	<script>
-		// var Departments = {{departments}}
-		// var color = Chart.helpers.color;
-		// const department = [];
-		// const departmentList = {{departmentList }};
-		// for (var i = 0; i <departmentList.length; i++) {
-		// 	deparments.push(departmentList[i]);
-		// 	console.log(i + " " +deparmentList[i])
-		// }
 
+	<script>
 		var horizontalBarChartData = {
 			// labels: ["sociology", "anthropology","literature", "history"],
 			labels: {{requestedDepartments|safe}},
 			datasets: [
 			{
-				label: '2007',
+				label: {{requestedYears[0]}},
 				backgroundColor: 'rgb(255, 255, 132)',
 				borderColor: 'rgb(255, 255, 132)',
 				borderWidth: 1,
@@ -50,7 +32,7 @@
 				// [(2007, [[2443], [3335]]), (2017, [[5089], [8843]])]
 			},
 			{
-				label: '2017',
+				label: {{requestedYears[1]}},
 				backgroundColor: 'rgb(255, 100, 132)',
 				borderColor: 'rgb(255, 100, 132)',
 				data: {{finalFieldDict[1][1]}}
@@ -62,8 +44,6 @@
 				type: 'horizontalBar',
 				data: horizontalBarChartData,
 				options: {
-					// Elements options apply to all of the options unless overridden in a dataset
-					// In this case, we are setting the border of each horizontal bar to be 2px wide
 					elements: {
 						rectangle: {
 							borderWidth: 2,
@@ -80,53 +60,102 @@
 				}
 			});
 		};
-		// document.getElementById('randomizeData').addEventListener('click', function() {
-		// 	var zero = Math.random() < 0.2 ? true : false;
-		// 	horizontalBarChartData.datasets.forEach(function(dataset) {
-		// 		dataset.data = dataset.data.map(function() {
-		// 			return zero ? 0.0 : randomScalingFactor();
-		// 		});
-		// 	});
-		// 	window.myHorizontalBar.update();
-		// });
-		// var colorNames = Object.keys(window.chartColors);
-		// document.getElementById('addDataset').addEventListener('click', function() {
-		// 	var colorName = colorNames[horizontalBarChartData.datasets.length % colorNames.length];
-		// 	var dsColor = window.chartColors[colorName];
-		// 	var newDataset = {
-		// 		label: 'Dataset ' + (horizontalBarChartData.datasets.length + 1),
-		// 		backgroundColor: color(dsColor).alpha(0.5).rgbString(),
-		// 		borderColor: dsColor,
-		// 		data: []
-		// 	};
-		// 	for (var index = 0; index < horizontalBarChartData.labels.length; ++index) {
-		// 		newDataset.data.push(randomScalingFactor());
-		// 	}
-		// 	horizontalBarChartData.datasets.push(newDataset);
-		// 	window.myHorizontalBar.update();
-		// });
-		// document.getElementById('addData').addEventListener('click', function() {
-		// 	if (horizontalBarChartData.datasets.length > 0) {
-		// 		var month = MONTHS[horizontalBarChartData.labels.length % MONTHS.length];
-		// 		horizontalBarChartData.labels.push(month);
-		// 		for (var index = 0; index < horizontalBarChartData.datasets.length; ++index) {
-		// 			horizontalBarChartData.datasets[index].data.push(randomScalingFactor());
-		// 		}
-		// 		window.myHorizontalBar.update();
-		// 	}
-		// });
-		// document.getElementById('removeDataset').addEventListener('click', function() {
-		// 	horizontalBarChartData.datasets.pop();
-		// 	window.myHorizontalBar.update();
-		// });
-		// document.getElementById('removeData').addEventListener('click', function() {
-		// 	horizontalBarChartData.labels.splice(-1, 1); // remove the label first
-		// 	horizontalBarChartData.datasets.forEach(function(dataset) {
-		// 		dataset.data.pop();
-		// 	});
-		// 	window.myHorizontalBar.update();
-		// });
+
 	</script>
+	<form method="post" action="/nsfGrowth">
+			<section>
+				<article>
+			<h2>Fields of Study</h2>
+			<fieldset id ="all_fields">
+			<ul id = 'fields'>
+				<li class = "lifeSciences"><input type="checkbox" name="fields_of_study" value="Life sciences"> Life sciences
+				<ul class = "sub-lifeSciences">
+				{% for item in lifeSciences %}
+							<li><a>{{item}}</a><br></li>
+				{% endfor %}
+				</ul>
+				</li>
+			</ul>
+			<ul id = 'fields'>
+				<li class = "physicalSciences"><input type="checkbox" name="fields_of_study" value="Physical sciences and earth sciences"> Physical sciences and earth sciences
+				<ul class = "sub-physicalSciences">
+				{% for item in physicalSciences %}
+							<li><a>{{item}}</a><br></li>
+				{% endfor %}
+				</ul>
+				</li>
+			</ul>
+			<ul id = 'fields'>
+				<li class = "math"><input type="checkbox" name="fields_of_study" value="Mathematics and computer sciences"> Mathematics and computer sciences
+				<ul class = "sub-math">
+				{% for item in math %}
+							<li><a>{{item}}</a><br></li>
+				{% endfor %}
+				</ul>
+				</li>
+			</ul>
+			<ul id = 'fields'>
+				<li class = "psychology"><input type="checkbox" name="fields_of_study" value="Psychology and social sciences"> Psychology and social sciences
+				<ul class = "sub-psychology">
+				{% for item in psychology %}
+							<li><a>{{item}}</a><br></li>
+				{% endfor %}
+				</ul>
+				</li>
+			</ul>
+			<ul id = 'fields'>
+				<li class = "engineering"><input type="checkbox" name="fields_of_study" value="Engineering"> Engineering
+				<ul class = "sub-engineering">
+				{% for item in engineering %}
+							<li><a>{{item}}</a><br></li>
+				{% endfor %}
+				</ul>
+				</li>
+			</ul>
+			<ul id = 'fields'>
+				<li class = "education"><input type="checkbox" name="fields_of_study" value="Education"> Education
+				<ul class = "sub-education">
+				{% for item in education %}
+							<li><a>{{item}}</a><br></li>
+				{% endfor %}
+				</ul>
+				</li>
+			</ul>
+			<ul id = 'fields'>
+				<li class = "humanities"><input type="checkbox" name="fields_of_study" value="Humanities and arts"> Humanities and arts
+				<ul class = "sub-humanities">
+				{% for item in humanities %}
+							<li><a>{{item}}</a><br></li>
+				{% endfor %}
+				</ul>
+				</li>
+			</ul>
+			<ul id = 'fields'>
+				<li class = "others"><input type="checkbox" name="fields_of_study" value="Others"> Others
+				<ul class = "sub-others">
+				{% for item in others %}
+							<li><a>{{item}}</a><br></li>
+				{% endfor %}
+				</ul>
+				</li>
+			</ul>
+		</fieldset>
+		<a rel = "all_fields" href = "#select_all"> Select All</a>
+		</article>
+	</section>
+
+
+		<section>
+			<article>
+			<h2>Years</h2>
+			{% for item in years %}
+						<input type="checkbox" name="years" value="{{item}}"> {{item}}<br>
+			{% endfor%}
+			</article>
+		</section>
+
+		<button><h1>Generate Query</h1></button>
+	</form>
 </body>
 
 </html>
