@@ -14,6 +14,10 @@ from fieldValues import *
 from occupations import occupations
 from nsfFields import *
 from parse import *
+from skillField import *
+import pandas as pd
+import numpy as np
+from collections import Counter
 
 project_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -70,19 +74,14 @@ def demo4a():
 @app.route('/nsfGrowth', methods=["GET", "POST"])
 def nsfGrowth():
     if request.method=="GET":
-        # queryNSFResult = queryAll(queryNSFGrowth())
-        # years = [int(y) for y in (2007, 2017)]
-        # fields = []
-        # result: (2007, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0)
-        # groupNSF = [sum(x) for x in zip(*queryNSFResult)]
         years = [int(y) for y in year_range]
         return render_template('nsfGrowth.html', fields_of_study = fields_of_study, years = years, math = math, psychology = psychology, others = others, engineering = engineering, humanities = humanities, education = education, physicalSciences = physicalSciences, lifeSciences = lifeSciences)
     else:
         requestedYears = request.form.getlist('years')
-        requestedDepartments = request.form.getlist("fields_of_study")
+        requestedDepartments = request.form.getlist('fields_of_study')
+        requestedFields = request.form.getlist('nsf_subject')
         # queryfields = queryNSFGrowth(requestedDepartments)
         queryFieldResult = []
-        # [&#39;Computer and information sciences&#39;]
         # departmentList = [makeStrings(requestedDepartments)]
         for field in requestedDepartments:
             # print(queryNSFGrowth(field))
@@ -179,7 +178,6 @@ def science_opening():
         query_science_opening.append(contingent)
         query_science_opening.append(tenureline)
         query_science_opening.append(total_year_result)
-        print(query_science_opening)
 
         groupedFirst = []
         for n in query_science_opening:
@@ -229,6 +227,55 @@ def grown_nonfaculty():
         final_group_nonfaculty = [(y, data) for y, data in group_nonfaculty.items()]
         return render_template("grown-nonfaculty-result.html", year_range = year_range, institutionType = institutionType, years = requestedYears, institution = requestedInstitution, query_nonfaculty = query_nonfaculty, final_group_nonfaculty = final_group_nonfaculty, selected_area = selected_area)
 
+@app.route('/career', methods = ["GET", "Post"])
+def career():
+    if request.method == "GET":
+        return render_template("career.html", year_range = year_range, institutionType = institutionType)
+    else:
+        requestedYears = request.form.getlist('years')
+        requestedInstitution = request.form.get('institutionType')
+        queryCareerResult = queryAll(queryCareer(requestedYears, requestedInstitution))
+        year1 = int(requestedYears[0])
+        year2 = int(requestedYears[1])
+        year1Result = OrderedDict()
+        year2Result = OrderedDict()
+        for year, count, name in queryCareerResult:
+            if year == year1:
+                if name in year1Result:
+                    year1Result[name].append(count)
+                else:
+                    year1Result[name] = count
+            if year == year2:
+                if name in year2Result:
+                    year2Result[name].append(count)
+                else:
+                    year2Result[name] = count
+        year1Result = [(name, count) for name, count in year1Result.items()]
+        year2Result = [(name, count) for name, count in year2Result.items()]
+        year1Result = year1Result[:10]
+        year2Result = year2Result[:10]
+        year1max = [r[1] for r in year1Result[:1]]
+        year2max = [r[1] for r in year2Result[:1]]
+        # cluster_name1 = [r[0] for r in year1Result]
+        # cluster_name2 = [r[0] for r in year2Result]
+        # count1 = [r[1] for r in year1Result]
+        # count2 = [r[1] for r in year2Result]
+        # share1 = [(x / year1max[0]) * 100 for x in count1]
+        # share2 = [(x / year1max[0]) * 100 for x in count2]
+        # year1Final = [cluster_name1, count1, share1]
+        # year2Final = [cluster_name2, count2, share2]
+        # count = [r[1] for r in year2Result]
+        share2 = [round(((x / year2max[0]) * 100), 1) for x in [r[1] for r in year2Result]]
+        year2Final = []
+        for i in range(0,9):
+            year2Final.append((share2[i],) + year2Result[i])
+        print(year2Final)
+        return render_template("careerResult.html", requestedYears = requestedYears, requestedInstitution = requestedInstitution, year_range = year_range, institutionType = institutionType, year2Final = year2Final)
+
+@app.route('/careerResult', methods = ["GET", "Post"])
+def careerResult():
+    if request.method == "GET":
+        return render_template("careerResult.html")
 
 def queryAll(query):
     """ Connect to the PostgreSQL database server """
@@ -252,7 +299,7 @@ def queryAll(query):
 
         # display the PostgreSQL database server version
         result = cur.fetchall()
-        print(result)
+        # print(result)
 
      # close the communication with the PostgreSQL
         cur.close()

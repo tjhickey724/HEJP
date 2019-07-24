@@ -121,6 +121,15 @@ def makeYears(year):
     result += " dummytable.year = "+ year[len(year)-1]+" ) "
     return result
 
+def makeYearsMain(year):
+    if (year==[]):
+        return "true"
+    result = "("
+    for i in range(0,len(year)-1):
+        result+= "maintable.year = "+year[i]+" or "
+    result += " maintable.year = "+ year[len(year)-1]+" ) "
+    return result
+
 def makeStrings(list):
     if (list==[]):
         return "true"
@@ -139,6 +148,16 @@ def getInstitutionDummy(institution):
         return "fouryear = 1"
     if (institution == '2-year Institutions'):
         return "twoyear = 1"
+
+def getInstitutionType(institution):
+    if (institution == 'All Higher Education'):
+        return "true"
+    if (institution == 'R1 Universities'):
+        return "isresearch1institution"
+    if (institution == '4-year Institutions'):
+        return "fouryear"
+    if (institution == '2-year Institutions'):
+        return "twoyear"
 
 def chooseInstitution(institution):
     if (institution==[] or institution[0] == 'All Higher Education'):
