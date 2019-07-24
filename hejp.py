@@ -256,21 +256,16 @@ def career():
         year2Result = year2Result[:10]
         year1max = [r[1] for r in year1Result[:1]]
         year2max = [r[1] for r in year2Result[:1]]
-        # cluster_name1 = [r[0] for r in year1Result]
-        # cluster_name2 = [r[0] for r in year2Result]
-        # count1 = [r[1] for r in year1Result]
-        # count2 = [r[1] for r in year2Result]
-        # share1 = [(x / year1max[0]) * 100 for x in count1]
-        # share2 = [(x / year1max[0]) * 100 for x in count2]
-        # year1Final = [cluster_name1, count1, share1]
-        # year2Final = [cluster_name2, count2, share2]
-        # count = [r[1] for r in year2Result]
         share2 = [round(((x / year2max[0]) * 100), 1) for x in [r[1] for r in year2Result]]
         year2Final = []
         for i in range(0,9):
             year2Final.append((share2[i],) + year2Result[i])
+        share1 = [round(((x / year1max[0]) * 100), 1) for x in [r[1] for r in year1Result]]
+        year1Final = []
+        for i in range(0,9):
+            year1Final.append((share1[i],) + year1Result[i])
         print(year2Final)
-        return render_template("careerResult.html", requestedYears = requestedYears, requestedInstitution = requestedInstitution, year_range = year_range, institutionType = institutionType, year2Final = year2Final)
+        return render_template("careerResult.html", requestedYears = requestedYears, requestedInstitution = requestedInstitution, year_range = year_range, institutionType = institutionType, year1Final = year1Final, year2Final = year2Final)
 
 @app.route('/careerResult', methods = ["GET", "Post"])
 def careerResult():
