@@ -136,12 +136,11 @@ def makeStrings(list):
     result = []
     for i in range(0,len(list)):
         result.append(list[i])
-    print(result)
     return result
 
 def getInstitutionDummy(institution):
     if (institution == 'All Higher Education'):
-        return "true"
+        return "true "
     if (institution == 'R1 Universities'):
         return "isresearch1institution = 1"
     if (institution == '4-year Institutions'):
@@ -151,7 +150,7 @@ def getInstitutionDummy(institution):
 
 def getInstitutionType(institution):
     if (institution == 'All Higher Education'):
-        return "true"
+        return "true "
     if (institution == 'R1 Universities'):
         return "isresearch1institution"
     if (institution == '4-year Institutions'):

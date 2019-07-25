@@ -7,13 +7,13 @@ from nsfFields import *
 from parse import *
 
 def queryCareer(years, institution):
-    queryCareer = "SELECT year, COUNT(skill_cluster_name), skill_cluster_name from "
+    queryCareer = "SELECT year, Count(skill_cluster_name), skill_cluster_name from "
     queryCareer += "(SELECT occupation, " + getInstitutionType(institution) + ", maintable.year,  "
     queryCareer += "skillname, is_specialized_skill, is_software_skill, skill_cluster_name "
     queryCareer += "FROM maintable "
     queryCareer += "INNER JOIN skilltable on maintable.jobid = skilltable.jobid "
     queryCareer += "WHERE occupation LIKE 'Career Counselor' "
-    queryCareer += "AND " + getInstitutionDummy(institution)
+    queryCareer += "AND " + getInstitutionDummy(institution) + " "
     queryCareer += "AND " + makeYearsMain(years) + " "") As selected "
     queryCareer += "GROUP BY year, skill_cluster_name "
     queryCareer += "ORDER BY COUNT(skill_cluster_name) DESC"

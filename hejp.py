@@ -271,15 +271,14 @@ def career():
             return render_template("careerResult.html", requestedYears = requestedYears, requestedInstitution = requestedInstitution, year_range = year_range, institutionType = institutionType, year1Final = year1Final, year2Final = year2Final, type1 = type1)
         if requestedVisualization == "fastest_growing":
             queryTable = pd.DataFrame(queryCareerResult, columns =['Year', 'Count', 'SkillName'])
-            year1table = queryTable[queryTable['Year'] == int(requestedYears[0])].sort_values(by=['Count'], ascending=False)
-            year2table = queryTable[queryTable['Year'] == int(requestedYears[1])].sort_values(by=['Count'], ascending=False)
+            year1table = queryTable[queryTable['Year'] == year1].sort_values(by=['Count'], ascending=False)
+            year2table = queryTable[queryTable['Year'] == year2].sort_values(by=['Count'], ascending=False)
             max1 = year1table['Count'].iloc[0]
             max2 = year2table['Count'].iloc[0]
             year2table = year2table.merge(year1table, on = 'SkillName', how = 'inner')
             year2table['Adjusted_share1'] = [x / max1 for x in year2table['Count_y']]
             year2table['Adjusted_share2'] = [x / max2 for x in year2table['Count_x']]
-            year2table['growth'] = round((np.true_divide(year2table['Adjusted_share2']- year2table['Adjusted_share1'], year2table['Adjusted_share2']))
-                                    * 100, 2)
+            year2table['growth'] = round((np.true_divide(year2table['Adjusted_share2']- year2table['Adjusted_share1'], year2table['Adjusted_share2'])) * 100, 2)
             year2table = year2table.sort_values(by=['growth'], ascending=False)
             subset = year2table[['SkillName','Count_y', 'Count_x', 'growth']]
             year2table = subset.to_records(index = False).tolist()
