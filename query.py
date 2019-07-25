@@ -6,6 +6,32 @@ from occupations import occupations
 from nsfFields import *
 from parse import *
 
+def queryphdShare(year, institution):
+    queryphdShare = "SELECT careerarea, count(careerarea) FROM "
+    queryphdShare += "(SELECT faculty, maintable.year, fouryear, minimumedurequirements, "
+    queryphdShare += "careerarea, occupation, jobtitle, ipedsinstitutionname "
+    queryphdShare += "From maintable "
+    queryphdShare += "INNER JOIN dummytable on maintable.jobid = dummytable.jobid "
+    queryphdShare += "WHERE faculty = 0 "
+    queryphdShare += "AND " + getInstitutionDummy(institution)
+    queryphdShare += "AND minimumedurequirements = 21 "
+    queryphdShare += "AND " + makeYearsMain(year)
+    queryphdShare += "AND (careerarea NOT ILIKE '%Health Care including Nursing%' AND careerarea NOT LIKE 'na') "
+    queryphdShare += "AND careerarea NOT ILIKE '%attorney%' "
+    queryphdShare += "AND occupation NOT ILIKE '%attorney%' "
+    queryphdShare += "AND jobtitle NOT ILIKE '%attorney%' "
+    queryphdShare += "AND jobtitle NOT ILIKE '%title ix%' "
+    queryphdShare += "AND jobtitle NOT ILIKE '%director of advancement%' "
+    queryphdShare += "AND jobtitle NOT ILIKE '%finance manager%' "
+    queryphdShare += "AND jobtitle NOT ILIKE '%financial manager%' "
+    queryphdShare += "AND occupation NOT ILIKE '%financial manager%' "
+    queryphdShare += "AND careerarea NOT ILIKE '%financial manager%' "
+    queryphdShare += "AND ipedsinstitutionname NOT ILIKE '%law%' "
+    queryphdShare += "AND ipedsinstitutionname NOT ILIKE '%medical%') As selected "
+    queryphdShare += "GROUP BY careerArea "
+    queryphdShare += "ORDER BY COUNT(careerArea) DESC "
+    return queryphdShare
+
 def queryCareer(years, institution):
     queryCareer = "SELECT year, Count(skill_cluster_name), skill_cluster_name from "
     queryCareer += "(SELECT occupation, " + getInstitutionType(institution) + ", maintable.year,  "

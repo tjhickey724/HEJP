@@ -306,6 +306,26 @@ def careerResult2():
     if request.method == "GET":
         return render_template("careerResult2.html")
 
+@app.route('/nonfaculty-phd', methods = ["GET", "Post"])
+def nonfaculty_phd():
+    if request.method == "GET":
+        return render_template("nonfaculty-phd.html", year_range = year_range, institutionType = institutionType)
+    else:
+        requestedYear = request.form.get('years')
+        requestedInstitution = request.form.get('institutionType')
+        queryphdShare_result = queryAll(queryphdShare([requestedYear], requestedInstitution))
+        career_area = []
+        count = []
+        for i in range(0, len(queryphdShare_result)):
+            career_area.append(queryphdShare_result[i][0])
+            count.append(queryphdShare_result[i][1])
+        phdshare = [career_area, count]
+        return render_template("nonfaculty-phd-result.html", year_range = year_range, institutionType = institutionType, phdshare = phdshare)
+
+@app.route('/nonfaculty-phd-result', methods = ["GET", "Post"])
+def nonfaculty_phd_result():
+    return render_template("nonfaculty-phd-result.html")
+
 def queryAll(query):
     """ Connect to the PostgreSQL database server """
     conn = None

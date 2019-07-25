@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <style>
+  /* form{
+    margin-left: 20px;
+    margin-top: 20px;
+  } */
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.5.0"></script>
+  <script src="https://cdn.jsdelivr.net/gh/emn178/chartjs-plugin-labels/src/chartjs-plugin-labels.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</head>
+<div class="jumbotron">
+  <h1 class="display-4">Non-faculty job postings in higher education requesting PhDs</h1>
+</div>
+
+<body>
+
+	<div id="canvas-holder" style="width:40%">
+		<canvas id="chart-area"></canvas>
+	</div>
+
+	<script>
+		var randomScalingFactor = function() {
+			return Math.round(Math.random() * 100);
+		};
+		var config = {
+			type: 'pie',
+			data: {
+				datasets: [{
+					data: {{phdshare[1]}},
+					backgroundColor: [
+						'rgb(168, 56, 50)',
+            'rgb(168, 50, 50)',
+            'rgb(168, 50, 85)',
+            'rgb(168, 50, 166)',
+            'rgb(115, 50, 168)',
+            'rgb(50, 83, 200)',
+            'rgb(50, 83, 80)',
+            'rgb(50, 83, 60)',
+            'rgb(50, 168, 66)',
+            'rgb(87, 168, 50)',
+            'rgb(87, 168, 60)',
+            'rgb(162, 168, 50)',
+            'rgb(168, 154, 50)',
+            'rgb(200, 56, 50)',
+            'rgb(255, 56, 50)',
+            'rgb(168, 30, 50)',
+            'rgb(168, 100, 50)',
+            'rgb(168, 60, 50)',
+            'rgb(168, 120, 50)',
+            'rgb(168, 56, 30)',
+            'rgb(168, 56, 60)',
+            'rgb(168, 56, 120)',
+					],
+					label: 'Dataset 1'
+				}],
+				labels: {{phdshare[0]|safe}}
+			},
+			options: {
+				responsive: true,
+        plugins: {
+          labels:[
+            {
+              render: 'label',
+              position: 'outside'
+            },
+            {
+              render: 'percentage'
+            }
+          ]
+        }
+			}
+		};
+    window.onload = function() {
+			var ctx = document.getElementById('chart-area').getContext('2d');
+			window.myPie = new Chart(ctx, config);
+		};
+	</script>
+
+<!-- <form method = "post" action = "/nonfaculty-phd" >
+<div class="form-group">
+  <h4>Institution Type</h4>
+  {% for item in institutionType %}
+        <input type="radio" name="institutionType" value="{{item}}">
+        <label>{{item}}</label><br>
+  {% endfor%}
+</div>
+  <div class="form-group">
+    <h4>Years</h4>
+    {% for item in year_range %}
+          <input type="radio" name="years" value="{{item}}">
+          <label>{{item}}</label>
+    {% endfor%}
+  </div>
+  <div class="form-group">
+  <button type="submit" class="btn btn-info">Generate Query</button>
+  </div>
+</form> -->
+</body>
+
+</html>
