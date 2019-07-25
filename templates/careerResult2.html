@@ -23,9 +23,12 @@
   <h1 class="display-4">Career Counselor Skill Clusters</h1>
 </div>
 
-<div id="container" style="width: 75%;">
-  <canvas id="canvas"></canvas>
-</div>
+<div class = "row">
+  <div class = "col-sm-8">
+    <div id="container" style="width: 100%;">
+      <canvas id="canvas"></canvas>
+    </div>
+  </div>
 
 <script>
   // var growth_percent = {{final[2]}}
@@ -81,7 +84,29 @@
     });
   };
 </script>
-
+<div class="col-sm-4">
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Rank</th>
+        <th scope="col">Skill Name</th>
+        <th scope="col">Percentage Growth</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% set cnt = [0] %}
+        {% for item in year2table %}
+          {% if cnt.append(cnt.pop() + 1) %} {% endif %}
+          <tr>
+            <th scope="row">{{cnt[0]}}</th>
+            <td>{{item[0]}}</td>
+            <td>{{item[3]}}%</td>
+          </tr>
+      {% endfor%}
+    </tbody>
+  </table>
+</div>
+</div>
 
 <form method = "post" action = "/career" >
   <div class="form-group">

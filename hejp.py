@@ -294,7 +294,7 @@ def career():
                 growth.append(year2table[i][3])
                 i = i + 1
             final = [skill_name, year1count, year2count, growth]
-            return render_template("careerResult2.html", requestedYears = requestedYears, requestedInstitution = requestedInstitution, year_range = year_range, institutionType = institutionType, final = final)
+            return render_template("careerResult2.html", requestedYears = requestedYears, requestedInstitution = requestedInstitution, year_range = year_range, institutionType = institutionType, final = final, year2table = year2table[:10])
 
 @app.route('/careerResult', methods = ["GET", "Post"])
 def careerResult():
