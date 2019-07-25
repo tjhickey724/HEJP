@@ -14,11 +14,7 @@ This site includes 9 interactive graphs:
 8. Distribution of 2017 Non-faculty PhD postings
 9. Mental and Health Specialities
 
-Built with:
-Flask
-PostgreSQL
-Chart.js
-Bootstrap
+Built with: Flask, PostgreSQL, Chart.js, Bootstrap
 
 
 
