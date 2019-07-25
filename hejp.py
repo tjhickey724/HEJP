@@ -316,9 +316,15 @@ def nonfaculty_phd():
         queryphdShare_result = queryAll(queryphdShare([requestedYear], requestedInstitution))
         career_area = []
         count = []
+        other_count = 0;
         for i in range(0, len(queryphdShare_result)):
-            career_area.append(queryphdShare_result[i][0])
-            count.append(queryphdShare_result[i][1])
+            if i < 9:
+                career_area.append(queryphdShare_result[i][0])
+                count.append(queryphdShare_result[i][1])
+            else:
+                other_count += queryphdShare_result[i][1]
+        career_area.append('Others')
+        count.append(other_count)
         phdshare = [career_area, count]
         return render_template("nonfaculty-phd-result.html", year_range = year_range, institutionType = institutionType, phdshare = phdshare)
 

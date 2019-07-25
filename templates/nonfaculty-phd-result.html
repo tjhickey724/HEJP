@@ -6,13 +6,12 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
   <style>
-  /* form{
+  form{
     margin-left: 20px;
     margin-top: 20px;
-  } */
+  }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.5.0"></script>
   <script src="https://cdn.jsdelivr.net/gh/emn178/chartjs-plugin-labels/src/chartjs-plugin-labels.js"></script>
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
@@ -24,7 +23,7 @@
 
 <body>
 
-	<div id="canvas-holder" style="width:40%">
+	<div id="canvas-holder" style="width:80%">
 		<canvas id="chart-area"></canvas>
 	</div>
 
@@ -38,14 +37,14 @@
 				datasets: [{
 					data: {{phdshare[1]}},
 					backgroundColor: [
-						'rgb(168, 56, 50)',
+						'rgb(235, 186, 52)',
             'rgb(168, 50, 50)',
             'rgb(168, 50, 85)',
             'rgb(168, 50, 166)',
             'rgb(115, 50, 168)',
             'rgb(50, 83, 200)',
             'rgb(50, 83, 80)',
-            'rgb(50, 83, 60)',
+            'rgb(100, 83, 60)',
             'rgb(50, 168, 66)',
             'rgb(87, 168, 50)',
             'rgb(87, 168, 60)',
@@ -71,10 +70,15 @@
           labels:[
             {
               render: 'label',
-              position: 'outside'
+              position: 'outside',
+              fontSize: 14,
+              fontColor: '#000',
             },
             {
-              render: 'percentage'
+              render: 'percentage',
+              precision: 1,
+              fontColor: 'white',
+              fontStyle: 'bold',
             }
           ]
         }
@@ -86,7 +90,7 @@
 		};
 	</script>
 
-<!-- <form method = "post" action = "/nonfaculty-phd" >
+<form method = "post" action = "/nonfaculty-phd" >
 <div class="form-group">
   <h4>Institution Type</h4>
   {% for item in institutionType %}
@@ -104,7 +108,7 @@
   <div class="form-group">
   <button type="submit" class="btn btn-info">Generate Query</button>
   </div>
-</form> -->
+</form>
 </body>
 
 </html>
