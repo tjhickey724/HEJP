@@ -3,7 +3,7 @@
 
 This is the code for our project to create a visualizer for higher education jobs listing data. 
 
-This site includes 9 interactive graphs:
+This project visualizes 9 interactive graphs:
 1. Share of faculty vs non-faculty
 2. NSF Growth
 3. All faculty openings
