@@ -234,43 +234,78 @@ def career():
     else:
         requestedYears = request.form.getlist('years')
         requestedInstitution = request.form.get('institutionType')
-        queryCareerResult = queryAll(queryCareer(requestedYears, requestedInstitution))
+        requestedVisualization = request.form.get('visualizationType')
         year1 = int(requestedYears[0])
         year2 = int(requestedYears[1])
-        year1Result = OrderedDict()
-        year2Result = OrderedDict()
-        for year, count, name in queryCareerResult:
-            if year == year1:
-                if name in year1Result:
-                    year1Result[name].append(count)
-                else:
-                    year1Result[name] = count
-            if year == year2:
-                if name in year2Result:
-                    year2Result[name].append(count)
-                else:
-                    year2Result[name] = count
-        year1Result = [(name, count) for name, count in year1Result.items()]
-        year2Result = [(name, count) for name, count in year2Result.items()]
-        year1Result = year1Result[:10]
-        year2Result = year2Result[:10]
-        year1max = [r[1] for r in year1Result[:1]]
-        year2max = [r[1] for r in year2Result[:1]]
-        share2 = [round(((x / year2max[0]) * 100), 1) for x in [r[1] for r in year2Result]]
-        year2Final = []
-        for i in range(0,9):
-            year2Final.append((share2[i],) + year2Result[i])
-        share1 = [round(((x / year1max[0]) * 100), 1) for x in [r[1] for r in year1Result]]
-        year1Final = []
-        for i in range(0,9):
-            year1Final.append((share1[i],) + year1Result[i])
-        print(year2Final)
-        return render_template("careerResult.html", requestedYears = requestedYears, requestedInstitution = requestedInstitution, year_range = year_range, institutionType = institutionType, year1Final = year1Final, year2Final = year2Final)
+        type1 = False
+        queryCareerResult = queryAll(queryCareer(requestedYears, requestedInstitution))
+        if requestedVisualization == "most_requested_skill":
+            type1 = True
+            year1Result = OrderedDict()
+            year2Result = OrderedDict()
+            for year, count, name in queryCareerResult:
+                if year == year1:
+                    if name in year1Result:
+                        year1Result[name].append(count)
+                    else:
+                        year1Result[name] = count
+                if year == year2:
+                    if name in year2Result:
+                        year2Result[name].append(count)
+                    else:
+                        year2Result[name] = count
+            year1Result = [(name, count) for name, count in year1Result.items()]
+            year2Result = [(name, count) for name, count in year2Result.items()]
+            year1Result = year1Result[:10]
+            year2Result = year2Result[:10]
+            year1max = [r[1] for r in year1Result[:1]]
+            year2max = [r[1] for r in year2Result[:1]]
+            share2 = [round(((x / year2max[0]) * 100), 1) for x in [r[1] for r in year2Result]]
+            year2Final = []
+            for i in range(0,10):
+                year2Final.append((share2[i],) + year2Result[i])
+            share1 = [round(((x / year1max[0]) * 100), 1) for x in [r[1] for r in year1Result]]
+            year1Final = []
+            for i in range(0,10):
+                year1Final.append((share1[i],) + year1Result[i])
+            return render_template("careerResult.html", requestedYears = requestedYears, requestedInstitution = requestedInstitution, year_range = year_range, institutionType = institutionType, year1Final = year1Final, year2Final = year2Final, type1 = type1)
+        if requestedVisualization == "fastest_growing":
+            queryTable = pd.DataFrame(queryCareerResult, columns =['Year', 'Count', 'SkillName'])
+            year1table = queryTable[queryTable['Year'] == int(requestedYears[0])].sort_values(by=['Count'], ascending=False)
+            year2table = queryTable[queryTable['Year'] == int(requestedYears[1])].sort_values(by=['Count'], ascending=False)
+            max1 = year1table['Count'].iloc[0]
+            max2 = year2table['Count'].iloc[0]
+            year2table = year2table.merge(year1table, on = 'SkillName', how = 'inner')
+            year2table['Adjusted_share1'] = [x / max1 for x in year2table['Count_y']]
+            year2table['Adjusted_share2'] = [x / max2 for x in year2table['Count_x']]
+            year2table['growth'] = round((np.true_divide(year2table['Adjusted_share2']- year2table['Adjusted_share1'], year2table['Adjusted_share2']))
+                                    * 100, 2)
+            year2table = year2table.sort_values(by=['growth'], ascending=False)
+            subset = year2table[['SkillName','Count_y', 'Count_x', 'growth']]
+            year2table = subset.to_records(index = False).tolist()
+            skill_name = []
+            year1count = []
+            year2count = []
+            growth = []
+            i = 0
+            for ele in year2table[:10]:
+                skill_name.append(year2table[i][0])
+                year1count.append(year2table[i][1])
+                year2count.append(year2table[i][2])
+                growth.append(year2table[i][3])
+                i = i + 1
+            final = [skill_name, year1count, year2count, growth]
+            return render_template("careerResult2.html", requestedYears = requestedYears, requestedInstitution = requestedInstitution, year_range = year_range, institutionType = institutionType, final = final)
 
 @app.route('/careerResult', methods = ["GET", "Post"])
 def careerResult():
     if request.method == "GET":
         return render_template("careerResult.html")
+
+@app.route('/careerResult2', methods = ["GET", "Post"])
+def careerResult2():
+    if request.method == "GET":
+        return render_template("careerResult2.html")
 
 def queryAll(query):
     """ Connect to the PostgreSQL database server """
