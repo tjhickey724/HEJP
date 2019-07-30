@@ -314,6 +314,8 @@ def nonfaculty_phd():
         requestedYear = request.form.get('years')
         requestedInstitution = request.form.get('institutionType')
         queryphdShare_result = queryAll(queryphdShare([requestedYear], requestedInstitution))
+        queryphdJob_result = queryAll(queryphdJob([requestedYear], requestedInstitution))
+        queryphdJob_result = queryphdJob_result[0:8]
         career_area = []
         count = []
         other_count = 0;

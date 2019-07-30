@@ -8,29 +8,40 @@ from parse import *
 
 def queryphdShare(year, institution):
     queryphdShare = "SELECT careerarea, count(careerarea) FROM "
-    queryphdShare += "(SELECT faculty, maintable.year, fouryear, minimumedurequirements, "
-    queryphdShare += "careerarea, occupation, jobtitle, ipedsinstitutionname "
-    queryphdShare += "From maintable "
-    queryphdShare += "INNER JOIN dummytable on maintable.jobid = dummytable.jobid "
-    queryphdShare += "WHERE faculty = 0 "
-    queryphdShare += "AND " + getInstitutionDummy(institution)
-    queryphdShare += "AND minimumedurequirements = 21 "
-    queryphdShare += "AND " + makeYearsMain(year)
-    queryphdShare += "AND (careerarea NOT ILIKE '%Health Care including Nursing%' AND careerarea NOT LIKE 'na') "
-    queryphdShare += "AND careerarea NOT ILIKE '%attorney%' "
-    queryphdShare += "AND occupation NOT ILIKE '%attorney%' "
-    queryphdShare += "AND jobtitle NOT ILIKE '%attorney%' "
-    queryphdShare += "AND jobtitle NOT ILIKE '%title ix%' "
-    queryphdShare += "AND jobtitle NOT ILIKE '%director of advancement%' "
-    queryphdShare += "AND jobtitle NOT ILIKE '%finance manager%' "
-    queryphdShare += "AND jobtitle NOT ILIKE '%financial manager%' "
-    queryphdShare += "AND occupation NOT ILIKE '%financial manager%' "
-    queryphdShare += "AND careerarea NOT ILIKE '%financial manager%' "
-    queryphdShare += "AND ipedsinstitutionname NOT ILIKE '%law%' "
-    queryphdShare += "AND ipedsinstitutionname NOT ILIKE '%medical%') As selected "
+    queryphdShare += commonQueryPhd(year, institution)
     queryphdShare += "GROUP BY careerArea "
     queryphdShare += "ORDER BY COUNT(careerArea) DESC "
     return queryphdShare
+
+def queryphdJob(year, institution):
+    queryphdJob = "SELECT occupation, count(occupation) FROM "
+    queryphdJob += commonQueryPhd(year, institution)
+    queryphdJob += "GROUP BY occupation "
+    queryphdJob += "ORDER BY COUNT(occupation) DESC "
+    return queryphdJob
+
+def commonQueryPhd(year, institution):
+    queryphd = "(SELECT faculty, maintable.year, fouryear, minimumedurequirements, "
+    queryphd += "careerarea, occupation, jobtitle, ipedsinstitutionname "
+    queryphd += "From maintable "
+    queryphd += "INNER JOIN dummytable on maintable.jobid = dummytable.jobid "
+    queryphd += "WHERE faculty = 0 "
+    queryphd += "AND " + getInstitutionDummy(institution)
+    queryphd += "AND minimumedurequirements = 21 "
+    queryphd += "AND " + makeYearsMain(year)
+    queryphd += "AND (careerarea NOT ILIKE '%Health Care including Nursing%' AND careerarea NOT LIKE 'na') "
+    queryphd += "AND careerarea NOT ILIKE '%attorney%' "
+    queryphd += "AND occupation NOT ILIKE '%attorney%' "
+    queryphd += "AND jobtitle NOT ILIKE '%attorney%' "
+    queryphd += "AND jobtitle NOT ILIKE '%title ix%' "
+    queryphd += "AND jobtitle NOT ILIKE '%director of advancement%' "
+    queryphd += "AND jobtitle NOT ILIKE '%finance manager%' "
+    queryphd += "AND jobtitle NOT ILIKE '%financial manager%' "
+    queryphd += "AND occupation NOT ILIKE '%financial manager%' "
+    queryphd += "AND careerarea NOT ILIKE '%financial manager%' "
+    queryphd += "AND ipedsinstitutionname NOT ILIKE '%law%' "
+    queryphd += "AND ipedsinstitutionname NOT ILIKE '%medical%') As selected "
+    return queryphd
 
 def queryCareer(years, institution):
     queryCareer = "SELECT year, Count(skill_cluster_name), skill_cluster_name from "
