@@ -17,7 +17,7 @@
 </head>
 
 <div class="jumbotron">
-  <h1 class="display-4">Mental and Behavoral Health Specialities</h1>
+  <h1 class="display-4">Mental and Behavoiral Health Specialities</h1>
 </div>
 
 <form method = "post" action = "/mentalandhealth" >
@@ -31,7 +31,7 @@
   <div class="form-group">
     <h4>Years</h4>
     {% for item in year_range %}
-          <input type="radio" name="years" value="{{item}}">
+          <input type="checkbox" name="years" value="{{item}}">
           <label>{{item}}</label>
     {% endfor%}
   </div>

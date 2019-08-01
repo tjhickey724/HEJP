@@ -278,7 +278,7 @@ def career():
             year2table = year2table.merge(year1table, on = 'SkillName', how = 'inner')
             year2table['Adjusted_share1'] = [x / max1 for x in year2table['Count_y']]
             year2table['Adjusted_share2'] = [x / max2 for x in year2table['Count_x']]
-            year2table['growth'] = round((np.true_divide(year2table['Adjusted_share2']- year2table['Adjusted_share1'], year2table['Adjusted_share2'])) * 100, 2)
+            year2table['growth'] = round((np.true_divide(year2table['Adjusted_share2']- year2table['Adjusted_share1'], year2table['Adjusted_share1'])) * 100, 2)
             year2table = year2table.sort_values(by=['growth'], ascending=False)
             subset = year2table[['SkillName','Count_y', 'Count_x', 'growth']]
             year2table = subset.to_records(index = False).tolist()
@@ -351,11 +351,25 @@ def mentalandhealth():
     if request.method == "GET":
         return render_template("mentalandhealth.html", year_range = year_range, institutionType = institutionType)
     else:
-        requestedYear = request.form.get('years')
+        requestedYears = request.form.getlist('years')
         requestedInstitution = request.form.get('institutionType')
-        queryMental = queryAll(queryMentalHealth([requestedYear], requestedInstitution))
+        queryMental = queryAll(queryMentalHealth(requestedYears, requestedInstitution))
         queryMental_df = pd.DataFrame(queryMental, columns = ["skill_cluster_name", "year", "fouryear", "careerarea"])
-        return render_template("mentalandhealth_result.html")
+        careers_1 = pd.DataFrame(queryMental_df['careerarea'][queryMental_df['year']==int(requestedYears[0])].value_counts()).reset_index().rename(
+            columns={'careerarea':'count'})
+        careers_2 = pd.DataFrame(queryMental_df['careerarea'][queryMental_df['year']==int(requestedYears[1])].value_counts()).reset_index().rename(
+            columns={'careerarea':'count'})
+        final = careers_1.merge(careers_2, on='index', how='inner')
+        final.rename(columns={'count_x':'count_1', 'count_y':'count_2'}, inplace=True)
+        final['growth'] = round(np.true_divide(final['count_2']-final['count_1'], final['count_1']) * 100, 2)
+        final = final[final['count_2'] > 400]
+        final = final.sort_values(by='growth', ascending=False)[:5]
+        mental_health_final = [list(final['index']), list(final['count_1']), list(final['count_2']), list(final['growth'])]
+        return render_template("mentalandhealth_result.html", requestedYears = requestedYears, mental_health_final = mental_health_final, requestedInstitution = requestedInstitution, year_range = year_range, institutionType = institutionType)
+
+@app.route('/mentalandhealth_result', methods = ["GET", "POST"])
+def mentalandhealth_result():
+    return render_template("mentalandhealth_result.html")
 
 def queryAll(query):
     """ Connect to the PostgreSQL database server """
@@ -396,4 +410,4 @@ def queryAll(query):
 
 if __name__ == "__main__":
     app.run(debug=True)
-    # app.run(host='0.0.0.0',debug=True)
+    # app.run(host='0.0.0.0',debug=FALSE)

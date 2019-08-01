@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>Career Areas with Fastest Growth in Opening</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<script src="{{ url_for('static',filename='js/Chart.min.js') }}"></script>
+	<script src="{{ url_for('static',filename='js/utils.js') }}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.5.0"></script>
+
+  <style>
+	canvas {
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+  form{
+    margin-left: 20px;
+    margin-top: 20px;
+  }
+	</style>
+</head>
+
+<body>
+  <div class="jumbotron">
+    <h1 class="display-4">Mental and Behavioral Health Specialities</h1>
+  </div>
+
+	<div style="width: 75%">
+		<canvas id="canvas"></canvas>
+	</div>
+	<script>
+		var chartData = {
+			labels: {{mental_health_final[0] | safe}},
+			datasets: [{
+				type: 'line',
+				label: 'Percentage Growth',
+				borderColor: 'rgb(255, 99, 132)',
+				borderWidth: 2,
+				fill: false,
+        yAxisID: 'B',
+				data: {{mental_health_final[3]}}
+			}, {
+				type: 'bar',
+				label: {{requestedYears[0]}},
+				backgroundColor: 'rgb(54, 162, 235)',
+        yAxisID: 'A',
+				data: {{mental_health_final[1]}},
+				borderColor: 'white',
+				borderWidth: 2,
+			}, {
+				type: 'bar',
+				label: {{requestedYears[1]}},
+				backgroundColor: 'rgb(255, 205, 86)',
+				data: {{mental_health_final[2]}},
+        yAxisID: 'A'
+			}]
+		};
+		window.onload = function() {
+			var ctx = document.getElementById('canvas').getContext('2d');
+			window.myMixedChart = new Chart(ctx, {
+				type: 'bar',
+				data: chartData,
+				options: {
+					responsive: true,
+					title: {
+						display: true,
+						text: 'Career Areas with Fastest Growth in Opening: {{requestedYears[0] | safe}} - {{requestedYears[1] | safe}}'
+					},
+					tooltips: {
+						mode: 'index',
+						intersect: true
+					},
+          plugins: {
+            datalabels: {
+            color: 'black',
+            anchor: 'end',
+            align: 'bottom',
+            display: function(context) {
+              return context.dataset.data[context.dataIndex];
+            },
+            font: {
+               weight: 'bold'
+            },
+            formatter: Math.round
+            }
+          },
+          scales:{
+            yAxes:[
+            {
+              id: 'A',
+              position:'left',
+              scaleLabel:{
+                display:true,
+                labelString: 'Number of Postings'
+              }
+            },
+            {
+              id:'B',
+              position: 'right',
+              callback: function (value) {
+                return value.toFixed(0) + '%'; // convert it to percentage
+              },
+              scaleLabel: {
+                display: true,
+                labelString: "Percentage Growth (%)"
+              }
+            }
+          ]}
+			   }
+       })
+		};
+	</script>
+  <form method = "post" action = "/mentalandhealth" >
+  <div class="form-group">
+    <h4>Institution Type</h4>
+    {% for item in institutionType %}
+          <input type="radio" name="institutionType" value="{{item}}">
+          <label>{{item}}</label><br>
+    {% endfor%}
+  </div>
+    <div class="form-group">
+      <h4>Years</h4>
+      {% for item in year_range %}
+            <input type="checkbox" name="years" value="{{item}}">
+            <label>{{item}}</label>
+      {% endfor%}
+    </div>
+    <div class="form-group">
+    <button type="submit" class="btn btn-info">Generate Query</button>
+    </div>
+  </form>
+</body>
+
+</html>
