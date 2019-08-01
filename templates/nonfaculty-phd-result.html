@@ -128,6 +128,33 @@
     };
 	</script>
 
+{% set tcount = [-1] %}
+ {% for occupation in top_jobs[0]%}
+  {% if tcount.append(tcount.pop() + 1) %} {% endif %}
+   {{occupation}}
+    <div class="col-sm-4">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Rank</th>
+            <th scopex="col">Skill Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set cnt = [0] %}
+            {% for skill in phd_top_skills[tcount[0]] %}
+              {% if cnt.append(cnt.pop() + 1) %} {% endif %}
+              <tr>
+                <th scope="row">{{cnt[0]}}</th>
+                <td>{{skill}}</td>
+              </tr>
+            {% endfor%}
+        </tbody>
+      </table>
+    </div>
+    </div>
+{% endfor %}
+
 
 <form method = "post" action = "/nonfaculty-phd" >
 <div class="form-group">

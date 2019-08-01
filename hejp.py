@@ -18,6 +18,7 @@ from skillField import *
 import pandas as pd
 import numpy as np
 from collections import Counter
+from phd_distribution import *
 
 project_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -314,33 +315,14 @@ def nonfaculty_phd():
         requestedYear = request.form.get('years')
         requestedInstitution = request.form.get('institutionType')
         queryphdShare_result = queryAll(commonQueryPhd([requestedYear], requestedInstitution))
-        phd_df = pd.DataFrame(queryphdShare_result, columns =['faculty', 'year', 'fouryear', 'minimumedurequirements', 'careerarea', 'occupation', 'jobtitle', 'ipedsinstitutionname'])
-        phd_share = pd.DataFrame(phd_df['careerarea'].value_counts()).reset_index().rename(columns={
-            'careerarea':'count'})
-        phd_share = phd_share.sort_values(by=['count'], ascending=False)
-        phd_share_res = phd_share.to_records(index = False).tolist()
-        career_area = []
-        count = []
-        other_count = 0;
-        for i in range(0, len(phd_share_res)):
-            if i < 9:
-                career_area.append(phd_share_res[i][0])
-                count.append(phd_share_res[i][1])
-            else:
-                other_count += phd_share_res[i][1]
-        career_area.append('Others')
-        count.append(other_count)
-        phdshare = [career_area, count]
+        phd_df = pd.DataFrame(queryphdShare_result, columns =['jobid','faculty', 'year', 'fouryear', 'minimumedurequirements', 'careerarea', 'occupation', 'jobtitle', 'ipedsinstitutionname'])
         top_jobs = pd.DataFrame(phd_df['occupation'].value_counts()).reset_index().rename(columns={
-            'cccupation':'count'})[:8]
-        top_jobs_res = top_jobs.to_records(index = False).tolist()
-        job_count = []
-        job_name = []
-        for i in range(0, len(top_jobs_res)):
-            job_name.append(top_jobs_res[i][0])
-            job_count.append(top_jobs_res[i][1])
-        top_jobs_final = [job_name, job_count]
-        return render_template("nonfaculty-phd-result.html", year_range = year_range, institutionType = institutionType, phdshare = phdshare, top_jobs = top_jobs_final, requestedYear = requestedYear)
+                'cccupation':'count'})[:8]
+        phdshare = calculate_phdshare(phd_df)
+        phd_top_jobs = calculate_topjob(phd_df, top_jobs)
+        skill_table = pd.DataFrame(queryAll(query_top_skill(requestedYear)), columns = ['jobid', 'year', 'skill_cluster_name'])
+        phd_top_skills = calculate_topskills(phd_df, top_jobs, skill_table)
+        return render_template("nonfaculty-phd-result.html", year_range = year_range, institutionType = institutionType, phdshare = phdshare, top_jobs = phd_top_jobs, requestedYear = requestedYear, phd_top_skills = phd_top_skills)
 
 @app.route('/nonfaculty-phd-result', methods = ["GET", "Post"])
 def nonfaculty_phd_result():

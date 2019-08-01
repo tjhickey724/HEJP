@@ -19,6 +19,11 @@ from parse import *
 #     queryphdJob += "GROUP BY occupation "
 #     queryphdJob += "ORDER BY COUNT(occupation) DESC "
 #     return queryphdJob
+def query_top_skill(year):
+    query_top_skill = "SELECT jobid, year, skill_cluster_name From skilltable "
+    query_top_skill += "WHERE year = " + year
+    query_top_skill += "AND skill_cluster_name NOT LIKE 'nan' "
+    return query_top_skill
 
 def queryMentalHealth(year, institution):
     queryMentalHealth = "SELECT skill_cluster_name, maintable.year, fouryear, careerarea "
@@ -31,7 +36,7 @@ def queryMentalHealth(year, institution):
     return queryMentalHealth
 
 def commonQueryPhd(year, institution):
-    queryphd = "SELECT faculty, maintable.year, fouryear, minimumedurequirements, "
+    queryphd = "SELECT maintable.jobid, faculty, maintable.year, fouryear, minimumedurequirements, "
     queryphd += "careerarea, occupation, jobtitle, ipedsinstitutionname "
     queryphd += "From maintable "
     queryphd += "INNER JOIN dummytable on maintable.jobid = dummytable.jobid "
