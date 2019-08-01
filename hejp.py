@@ -313,26 +313,49 @@ def nonfaculty_phd():
     else:
         requestedYear = request.form.get('years')
         requestedInstitution = request.form.get('institutionType')
-        queryphdShare_result = queryAll(queryphdShare([requestedYear], requestedInstitution))
-        queryphdJob_result = queryAll(queryphdJob([requestedYear], requestedInstitution))
-        queryphdJob_result = queryphdJob_result[0:8]
+        queryphdShare_result = queryAll(commonQueryPhd([requestedYear], requestedInstitution))
+        phd_df = pd.DataFrame(queryphdShare_result, columns =['faculty', 'year', 'fouryear', 'minimumedurequirements', 'careerarea', 'occupation', 'jobtitle', 'ipedsinstitutionname'])
+        phd_share = pd.DataFrame(phd_df['careerarea'].value_counts()).reset_index().rename(columns={
+            'careerarea':'count'})
+        phd_share = phd_share.sort_values(by=['count'], ascending=False)
+        phd_share_res = phd_share.to_records(index = False).tolist()
         career_area = []
         count = []
         other_count = 0;
-        for i in range(0, len(queryphdShare_result)):
+        for i in range(0, len(phd_share_res)):
             if i < 9:
-                career_area.append(queryphdShare_result[i][0])
-                count.append(queryphdShare_result[i][1])
+                career_area.append(phd_share_res[i][0])
+                count.append(phd_share_res[i][1])
             else:
-                other_count += queryphdShare_result[i][1]
+                other_count += phd_share_res[i][1]
         career_area.append('Others')
         count.append(other_count)
         phdshare = [career_area, count]
-        return render_template("nonfaculty-phd-result.html", year_range = year_range, institutionType = institutionType, phdshare = phdshare)
+        top_jobs = pd.DataFrame(phd_df['occupation'].value_counts()).reset_index().rename(columns={
+            'cccupation':'count'})[:8]
+        top_jobs_res = top_jobs.to_records(index = False).tolist()
+        job_count = []
+        job_name = []
+        for i in range(0, len(top_jobs_res)):
+            job_name.append(top_jobs_res[i][0])
+            job_count.append(top_jobs_res[i][1])
+        top_jobs_final = [job_name, job_count]
+        return render_template("nonfaculty-phd-result.html", year_range = year_range, institutionType = institutionType, phdshare = phdshare, top_jobs = top_jobs_final, requestedYear = requestedYear)
 
 @app.route('/nonfaculty-phd-result', methods = ["GET", "Post"])
 def nonfaculty_phd_result():
     return render_template("nonfaculty-phd-result.html")
+
+@app.route('/mentalandhealth', methods = ["GET", "POST"])
+def mentalandhealth():
+    if request.method == "GET":
+        return render_template("mentalandhealth.html", year_range = year_range, institutionType = institutionType)
+    else:
+        requestedYear = request.form.get('years')
+        requestedInstitution = request.form.get('institutionType')
+        queryMental = queryAll(queryMentalHealth([requestedYear], requestedInstitution))
+        queryMental_df = pd.DataFrame(queryMental, columns = ["skill_cluster_name", "year", "fouryear", "careerarea"])
+        return render_template("mentalandhealth_result.html")
 
 def queryAll(query):
     """ Connect to the PostgreSQL database server """

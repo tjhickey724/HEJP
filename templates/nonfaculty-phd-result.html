@@ -10,6 +10,7 @@
     margin-left: 20px;
     margin-top: 20px;
   }
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
   <script src="https://cdn.jsdelivr.net/gh/emn178/chartjs-plugin-labels/src/chartjs-plugin-labels.js"></script>
@@ -17,20 +18,18 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </head>
-<div class="jumbotron">
-  <h1 class="display-4">Non-faculty job postings in higher education requesting PhDs</h1>
-</div>
 
 <body>
+  <div class="jumbotron">
+    <h1 class="display-4">Non-faculty job postings in higher education requesting PhDs</h1>
+  </div>
 
 	<div id="canvas-holder" style="width:80%">
-		<canvas id="chart-area"></canvas>
+		<canvas id="chart-area" height = "800" width="600"></canvas>
+    <canvas id="canvas" height = "300" width="600"></canvas>
 	</div>
 
 	<script>
-		var randomScalingFactor = function() {
-			return Math.round(Math.random() * 100);
-		};
 		var config = {
 			type: 'pie',
 			data: {
@@ -84,11 +83,51 @@
         }
 			}
 		};
+
+    var horizontalBarChartData = {
+      // labels: ["sociology", "anthropology","literature", "history"],
+      labels: {{top_jobs[0]|safe}},
+      datasets: [
+      {
+        label: {{requestedYear|safe}},
+        backgroundColor: 'rgb(255, 255, 132)',
+        borderColor: 'rgb(255, 255, 132)',
+        borderWidth: 1,
+        data: {{top_jobs[1]}}
+      }]
+    };
+
     window.onload = function() {
-			var ctx = document.getElementById('chart-area').getContext('2d');
-			window.myPie = new Chart(ctx, config);
-		};
+      var ctx = document.getElementById('chart-area').getContext('2d');
+      window.myPie = new Chart(ctx, config);
+    };
+
+    window.onload = function() {
+      var cty = document.getElementById('canvas').getContext('2d');
+      window.myHorizontalBar = new Chart(cty, {
+        type: 'horizontalBar',
+        data: horizontalBarChartData,
+        options: {
+          // Elements options apply to all of the options unless overridden in a dataset
+          // In this case, we are setting the border of each horizontal bar to be 2px wide
+          elements: {
+            rectangle: {
+              borderWidth: 2,
+            }
+          },
+          responsive: true,
+          legend: {
+            position: 'right',
+          },
+          title: {
+            display: true,
+            text: 'Largest Occupations Requiring PhDs',
+          }
+        }
+      });
+    };
 	</script>
+
 
 <form method = "post" action = "/nonfaculty-phd" >
 <div class="form-group">

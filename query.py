@@ -6,22 +6,32 @@ from occupations import occupations
 from nsfFields import *
 from parse import *
 
-def queryphdShare(year, institution):
-    queryphdShare = "SELECT careerarea, count(careerarea) FROM "
-    queryphdShare += commonQueryPhd(year, institution)
-    queryphdShare += "GROUP BY careerArea "
-    queryphdShare += "ORDER BY COUNT(careerArea) DESC "
-    return queryphdShare
+# def queryphdShare(year, institution):
+#     queryphdShare = "SELECT careerarea, count(careerarea) FROM "
+#     queryphdShare += commonQueryPhd(year, institution)
+#     queryphdShare += "GROUP BY careerArea "
+#     queryphdShare += "ORDER BY COUNT(careerArea) DESC "
+#     return queryphdShare
+#
+# def queryphdJob(year, institution):
+#     queryphdJob = "SELECT occupation, count(occupation) FROM "
+#     queryphdJob += commonQueryPhd(year, institution)
+#     queryphdJob += "GROUP BY occupation "
+#     queryphdJob += "ORDER BY COUNT(occupation) DESC "
+#     return queryphdJob
 
-def queryphdJob(year, institution):
-    queryphdJob = "SELECT occupation, count(occupation) FROM "
-    queryphdJob += commonQueryPhd(year, institution)
-    queryphdJob += "GROUP BY occupation "
-    queryphdJob += "ORDER BY COUNT(occupation) DESC "
-    return queryphdJob
+def queryMentalHealth(year, institution):
+    queryMentalHealth = "SELECT skill_cluster_name, maintable.year, fouryear, careerarea "
+    queryMentalHealth += "FROM maintable "
+    queryMentalHealth += "INNER JOIN skilltable on maintable.jobid = skilltable.jobid "
+    queryMentalHealth += "WHERE skill_cluster_name ILIKE '%Mental and Behavior%' "
+    queryMentalHealth += "AND " + makeYearsMain(year)
+    queryMentalHealth += "AND " + getInstitutionDummy(institution)
+    queryMentalHealth += "AND careerarea NOT LIKE 'na' "
+    return queryMentalHealth
 
 def commonQueryPhd(year, institution):
-    queryphd = "(SELECT faculty, maintable.year, fouryear, minimumedurequirements, "
+    queryphd = "SELECT faculty, maintable.year, fouryear, minimumedurequirements, "
     queryphd += "careerarea, occupation, jobtitle, ipedsinstitutionname "
     queryphd += "From maintable "
     queryphd += "INNER JOIN dummytable on maintable.jobid = dummytable.jobid "
@@ -40,7 +50,7 @@ def commonQueryPhd(year, institution):
     queryphd += "AND occupation NOT ILIKE '%financial manager%' "
     queryphd += "AND careerarea NOT ILIKE '%financial manager%' "
     queryphd += "AND ipedsinstitutionname NOT ILIKE '%law%' "
-    queryphd += "AND ipedsinstitutionname NOT ILIKE '%medical%') As selected "
+    queryphd += "AND ipedsinstitutionname NOT ILIKE '%medical%' "
     return queryphd
 
 def queryCareer(years, institution):
