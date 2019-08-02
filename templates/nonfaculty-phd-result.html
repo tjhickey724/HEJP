@@ -10,6 +10,19 @@
     margin-left: 20px;
     margin-top: 20px;
   }
+  canvas {
+    margin-top:30px;
+    margin-bottom:30px;
+    margin-left:30px;
+    margin-right:30px;
+  }
+
+  div{
+    margin-left: 20px;
+    margin-bottom: 20px;
+    margin-right: 20px;
+    margin-top:20px;
+  }
 
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
@@ -24,9 +37,11 @@
     <h1 class="display-4">Non-faculty job postings in higher education requesting PhDs</h1>
   </div>
 
-	<div id="canvas-holder" style="width:80%">
-		<canvas id="chart-area" height = "800" width="600"></canvas>
-    <canvas id="canvas" height = "300" width="600"></canvas>
+	<div id="pie-chart" style="width: 85%;">
+		<canvas id="chart-area"></canvas>
+  </div>
+  <div id= "bar-chart" style="width: 85%;">
+    <canvas id="canvas"></canvas>
 	</div>
 
 	<script>
@@ -90,8 +105,8 @@
       datasets: [
       {
         label: {{requestedYear|safe}},
-        backgroundColor: 'rgb(255, 255, 132)',
-        borderColor: 'rgb(255, 255, 132)',
+        backgroundColor: 'rgb(173,216,230)',
+        borderColor: 'rgb(173,216,230)',
         borderWidth: 1,
         data: {{top_jobs[1]}}
       }]
@@ -100,9 +115,6 @@
     window.onload = function() {
       var ctx = document.getElementById('chart-area').getContext('2d');
       window.myPie = new Chart(ctx, config);
-    };
-
-    window.onload = function() {
       var cty = document.getElementById('canvas').getContext('2d');
       window.myHorizontalBar = new Chart(cty, {
         type: 'horizontalBar',
@@ -128,32 +140,32 @@
     };
 	</script>
 
-{% set tcount = [-1] %}
- {% for occupation in top_jobs[0]%}
-  {% if tcount.append(tcount.pop() + 1) %} {% endif %}
-   {{occupation}}
-    <div class="col-sm-4">
-      <table class="table">
+<div class ="cols-md-8">
+      <table class="table table-bordered" style="font-size: 13px;">
+        <caption>Top Skills for Largest Requesting PhD Holders: {{requestedYear|safe}}</caption>
         <thead>
           <tr>
-            <th scope="col">Rank</th>
-            <th scopex="col">Skill Name</th>
+            <th scope="col" class="bg-info">Rank</th>
+            {% for occupation in top_jobs[0]%}
+              <th scope="col" class="table-info"> {{occupation}}</th>
+            {% endfor %}
           </tr>
         </thead>
         <tbody>
-          {% set cnt = [0] %}
-            {% for skill in phd_top_skills[tcount[0]] %}
+        {% set cnt = [0] %}
+          {% for item in phd_top_skills %}
               {% if cnt.append(cnt.pop() + 1) %} {% endif %}
               <tr>
                 <th scope="row">{{cnt[0]}}</th>
-                <td>{{skill}}</td>
+                {% for skill in item %}
+                  <td>{{skill}}</td>
+                {% endfor %}
               </tr>
-            {% endfor%}
+          {% endfor %}
         </tbody>
       </table>
     </div>
-    </div>
-{% endfor %}
+  </div>
 
 
 <form method = "post" action = "/nonfaculty-phd" >

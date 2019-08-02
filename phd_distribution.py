@@ -50,11 +50,30 @@ def calculate_topjob(phd_df, top_jobs):
     return top_jobs_final
 
 def calculate_topskills(phd_df, top_jobs, skill_table):
-    top_skills_final = []
+    job1 = []
+    job2 = []
+    job3 = []
+    job4 = []
+    job5 = []
+    job6 = []
+    job7 = []
+    job8 = []
+    job9 = []
+    job10 = []
     for index, row in top_jobs.iterrows():
         temp = phd_df[phd_df['occupation'] == row['index']]
         temp = temp.merge(skill_table.drop(columns = 'year'), on ='jobid', how ='inner')
         top_skills = pd.DataFrame(temp['skill_cluster_name'].value_counts()).reset_index(
         ).rename(columns={'skill_cluster_name':'count', 'index':'skill_cluster_name'})[:10]
-        top_skills_final.append(list(top_skills['skill_cluster_name']))
+        job1.append(list(top_skills['skill_cluster_name'])[0])
+        job2.append(list(top_skills['skill_cluster_name'])[1])
+        job3.append(list(top_skills['skill_cluster_name'])[2])
+        job4.append(list(top_skills['skill_cluster_name'])[3])
+        job5.append(list(top_skills['skill_cluster_name'])[4])
+        job6.append(list(top_skills['skill_cluster_name'])[5])
+        job7.append(list(top_skills['skill_cluster_name'])[6])
+        job8.append(list(top_skills['skill_cluster_name'])[7])
+        job9.append(list(top_skills['skill_cluster_name'])[8])
+        job10.append(list(top_skills['skill_cluster_name'])[9])
+    top_skills_final = [job1, job2, job3, job4, job5, job6, job7, job8, job9, job10]
     return top_skills_final
