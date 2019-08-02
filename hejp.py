@@ -392,4 +392,4 @@ def queryAll(query):
 
 if __name__ == "__main__":
     app.run(debug=True)
-    # app.run(host='0.0.0.0',debug=FALSE)
+    # app.run(host="turing.cs-i.brandeis.edu",debug=False)
