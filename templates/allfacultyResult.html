@@ -13,11 +13,176 @@
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.5.0"></script>
 </head>
+
 <body>
   <div class="jumbotron">
     <h1 class="display-4">All Faculty Openings</h1>
   </div>
+
+  <div id="container" style="width: 70%;">
+    <canvas id="bargraph1"></canvas>
+  </div>
+
+  <div id="container" style="width: 70%;">
+    <canvas id="bargraph2"></canvas>
+  </div>
+
+  <div id="container" style="width: 70%;">
+    <canvas id="bargraph3"></canvas>
+  </div>
+
+  <script>
+
+    var bargraph1Data = {
+      labels: {{institutionType|safe}},
+      datasets: [
+      {
+        label: {{requestedYears[0]}},
+        backgroundColor: 'rgb(255, 255, 132)',
+        borderColor: 'rgb(255, 255, 132)',
+        borderWidth: 1,
+        data: [{{full_time_contingent[0][1]}}, {{full_time_contingent[1][1]}}, {{full_time_contingent[2][1]}}, {{full_time_contingent[3][1]}}]
+      },
+      {
+        label: {{requestedYears[1]}},
+        backgroundColor: 'rgb(255, 100, 132)',
+        borderColor: 'rgb(255, 100, 132)',
+        data: [{{full_time_contingent[0][0]}}, {{full_time_contingent[1][0]}}, {{full_time_contingent[2][0]}}, {{full_time_contingent[3][0]}}]
+      }]
+    };
+    var bargraph2Data = {
+      labels: {{institutionType|safe}},
+      datasets: [
+      {
+        label: {{requestedYears[0]}},
+        backgroundColor: 'rgb(255, 255, 132)',
+        borderColor: 'rgb(255, 255, 132)',
+        borderWidth: 1,
+        data: [{{part_time_contingent[0][1]}}, {{part_time_contingent[1][1]}}, {{part_time_contingent[2][1]}}, {{part_time_contingent[3][1]}}]
+      },
+      {
+        label: {{requestedYears[1]}},
+        backgroundColor: 'rgb(255, 100, 132)',
+        borderColor: 'rgb(255, 100, 132)',
+        data: [{{part_time_contingent[0][0]}}, {{part_time_contingent[1][0]}}, {{part_time_contingent[2][0]}}, {{part_time_contingent[3][0]}}]
+      }]
+    };
+    var bargraph3Data = {
+      labels: {{institutionType|safe}},
+      datasets: [
+      {
+        label: {{requestedYears[0]}},
+        backgroundColor: 'rgb(255, 255, 132)',
+        borderColor: 'rgb(255, 255, 132)',
+        borderWidth: 1,
+        data: [{{tenure_line[0][1]}}, {{tenure_line[1][1]}}, {{tenure_line[2][1]}}, {{tenure_line[3][1]}}]
+      },
+      {
+        label: {{requestedYears[1]}},
+        backgroundColor: 'rgb(255, 100, 132)',
+        borderColor: 'rgb(255, 100, 132)',
+        data: [{{tenure_line[0][0]}}, {{tenure_line[1][0]}}, {{tenure_line[2][0]}}, {{tenure_line[3][0]}}]
+      }]
+    };
+    window.onload = function() {
+      var ctx = document.getElementById('bargraph1').getContext('2d');
+      window.myHorizontalBar = new Chart(ctx, {
+        type: 'horizontalBar',
+        data: bargraph1Data,
+        options: {
+          elements: {
+            rectangle: {
+              borderWidth: 2,
+            }
+          },
+          responsive: true,
+          legend: {
+            position: 'right',
+          },
+          title: {
+            display: true,
+            text: 'Full-time Contingent'
+          },
+          plugins: {
+            datalabels: {
+            color: 'black',
+            anchor: 'end',
+            align: 'bottom',
+            display: function(context) {
+              return context.dataset.data[context.dataIndex];
+            },
+            formatter: Math.round
+          }
+         }
+        }
+      });
+      var cty = document.getElementById('bargraph2').getContext('2d');
+      window.myHorizontalBar = new Chart(cty, {
+        type: 'horizontalBar',
+        data: bargraph2Data,
+        options: {
+          elements: {
+            rectangle: {
+              borderWidth: 2,
+            }
+          },
+          responsive: true,
+          legend: {
+            position: 'right',
+          },
+          title: {
+            display: true,
+            text: 'Part-time Contingent'
+          },
+          plugins: {
+            datalabels: {
+            color: 'black',
+            anchor: 'end',
+            align: 'bottom',
+            display: function(context) {
+              return context.dataset.data[context.dataIndex];
+            },
+            formatter: Math.round
+          }
+         }
+        }
+      });
+    var ctz = document.getElementById('bargraph3').getContext('2d');
+    window.myHorizontalBar = new Chart(ctz, {
+      type: 'horizontalBar',
+      data: bargraph3Data,
+      options: {
+        elements: {
+          rectangle: {
+            borderWidth: 2,
+          }
+        },
+        responsive: true,
+        legend: {
+          position: 'right',
+        },
+        title: {
+          display: true,
+          text: 'Tenureline'
+        },
+        plugins: {
+          datalabels: {
+          color: 'black',
+          anchor: 'end',
+          align: 'bottom',
+          display: function(context) {
+            return context.dataset.data[context.dataIndex];
+          },
+          formatter: Math.round
+        }
+       }
+      }
+    });
+  };
+  </script>
 
 <form method = "post" action = "/allfaculty" >
   <div class="form-group">

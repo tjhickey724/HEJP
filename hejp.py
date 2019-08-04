@@ -129,7 +129,7 @@ def allfaculty():
         full_time_contingent = calculate_allfaculty('fulltimecontingent', queryfaculty_df)
         part_time_contingent = calculate_allfaculty('parttimecontingent', queryfaculty_df)
         tenure_line = calculate_allfaculty('tenureline', queryfaculty_df)
-        return render_template("allfacultyResult.html", requestedYears = requestedYears, full_time_contingent = full_time_contingent, part_time_contingent = part_time_contingent, tenure_line = tenure_line)
+        return render_template("allfacultyResult.html", years = year_range, requestedYears = requestedYears, full_time_contingent = full_time_contingent, part_time_contingent = part_time_contingent, tenure_line = tenure_line, institutionType = institutionType)
 
 @app.route('/largestNSF', methods=["GET","Post"])
 def largestNSF():
