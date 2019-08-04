@@ -118,23 +118,18 @@ def allfaculty():
         return render_template("allfaculty.html", years = year_range, facultyStatus = faculty_status, institutionType = institutionType)
     else:
         requestedYears = request.form.getlist('years')
-        requestedFaculty = request.form.getlist('status')
-        queryFacultyResult = []
-        institutionList = ["R1 Universities","4-year Institutions","2-year Institutions","All Higher Education"]
-        for institution in institutionList:
-            queryFacultyResult += queryAll(queryAllFaculty(requestedFaculty, requestedYears, institution))
-        print(queryFacultyResult)
-        #[(2012, 852), (2014, 1504), (2012, 5565), (2014, 7541), (2012, 1427), (2014, 2365), (2012, 7045), (2014, 9978)]
-
-        groupedFaculty = OrderedDict()
-        for year, count in queryFacultyResult:
-            if year in groupedFaculty:
-                groupedFaculty[year].append(count)
-            else:
-                groupedFaculty[year] = [count]
-        finalFaculty = [(year, count) for year, count in groupedFaculty.items()]
-        print(finalFaculty)
-        return render_template("allfacultyResult.html", groupedFaculty = finalFaculty, requestedYears = requestedYears, requestedFaculty = requestedFaculty, institutionType = institutionList)
+        queryfaculty_df = pd.DataFrame(queryAll(queryAllFaculty(requestedYears)), columns = ['year', 'ipedssectorname', 'isresearch1institution', 'postdoctoral', 'faculty', 'healthsciences', 'numberofdetailedfieldsofstudy', 'contingent', 'fulltimecontingent', 'parttimecontingent', 'tenured', 'tenured_track','fouryear', 'twoyear', 'tenureline'])
+        # Mutually exclude Tenure-Line and Contingent
+        queryfaculty_df['contingent'].where(((queryfaculty_df['tenureline'] > 0) & (queryfaculty_df['contingent'] < 1) |
+                                        (queryfaculty_df['tenureline'] < 1) & (queryfaculty_df['contingent'] > 0)), 0, inplace=True)
+        queryfaculty_df['fulltimecontingent'].where(queryfaculty_df['tenureline'] < 1, 0, inplace=True)
+        queryfaculty_df['parttimecontingent'].where(queryfaculty_df['tenureline'] < 1, 0, inplace=True)
+        # parse into different types of faculty faculty_status
+        queryfaculty_df = queryfaculty_df[['year', 'faculty', 'isresearch1institution', 'fouryear', 'twoyear', 'tenureline', 'contingent', 'parttimecontingent', 'fulltimecontingent']]
+        full_time_contingent = calculate_allfaculty('fulltimecontingent', queryfaculty_df)
+        part_time_contingent = calculate_allfaculty('parttimecontingent', queryfaculty_df)
+        tenure_line = calculate_allfaculty('tenureline', queryfaculty_df)
+        return render_template("allfacultyResult.html", requestedYears = requestedYears, full_time_contingent = full_time_contingent, part_time_contingent = part_time_contingent, tenure_line = tenure_line)
 
 @app.route('/largestNSF', methods=["GET","Post"])
 def largestNSF():

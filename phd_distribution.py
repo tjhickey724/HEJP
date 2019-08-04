@@ -77,3 +77,20 @@ def calculate_topskills(phd_df, top_jobs, skill_table):
         job10.append(list(top_skills['skill_cluster_name'])[9])
     top_skills_final = [job1, job2, job3, job4, job5, job6, job7, job8, job9, job10]
     return top_skills_final
+
+def calculate_allfaculty(faculty_status, queryfaculty_df):
+    institution_type_df = queryfaculty_df[queryfaculty_df[faculty_status] == 1]
+    # calculate R1 growth
+    institution_type_R1 = list(institution_type_df[institution_type_df['isresearch1institution'] == 1].sort_values('year').groupby('year').apply(lambda x: x.year).value_counts())
+    institution_type_R1.append(round(np.true_divide(institution_type_R1[0]-institution_type_R1[1], institution_type_R1[1]) * 100, 2))
+    # calculate four year growth
+    institution_type_fouryear = list(institution_type_df[institution_type_df['fouryear'] == 1].groupby('year').apply(lambda x: x.year).value_counts())
+    institution_type_fouryear.append(round(np.true_divide(institution_type_fouryear[0]-institution_type_fouryear[1], institution_type_fouryear[1]) * 100, 2))
+    # calculate two year growth
+    institution_type_twoyear = list(institution_type_df[institution_type_df['twoyear'] == 1].groupby('year').apply(lambda x: x.year).value_counts())
+    institution_type_twoyear.append(round(np.true_divide(institution_type_twoyear[0]-institution_type_twoyear[1], institution_type_twoyear[1]) * 100, 2))
+    # calculate all higher growth
+    institution_type_all = list(institution_type_df.groupby('year').apply(lambda x: x.year).value_counts())
+    institution_type_all.append(round(np.true_divide(institution_type_all[0]-institution_type_all[1], institution_type_all[1]) * 100, 2))
+    institution_type_result = [tuple(list(institution_type_R1)), tuple(list(institution_type_fouryear)), tuple(list(institution_type_twoyear)), tuple(list(institution_type_all))]
+    return institution_type_result

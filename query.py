@@ -110,23 +110,18 @@ def queryScienceOpening(category, f, requestedYears):
     queryScienceOpening += "GROUP BY year"
     return queryScienceOpening
 
-def queryAllFaculty (requestedFaculty, requestedYears, institution):
-    queryAllFaculty = "SELECT year, COUNT(" + makeFacultyStatus(requestedFaculty) + ") FROM"
-    queryAllFaculty += "(SELECT maintable.year, ipedssectorname, "
+def queryAllFaculty (requestedYears):
+    queryAllFaculty = "SELECT maintable.year, ipedssectorname, "
     queryAllFaculty += "isresearch1institution, "
     queryAllFaculty += "postdoctoral, faculty, healthsciences, "
-    queryAllFaculty += "numberofdetailedfieldsofstudy, "
-    queryAllFaculty += makeFacultyStatus(requestedFaculty)
+    queryAllFaculty += "numberofdetailedfieldsofstudy, contingent, fulltimecontingent, parttimecontingent, "
+    queryAllFaculty += "tenured, tenured_track, fouryear, twoyear, tenureline "
     queryAllFaculty += "FROM maintable "
     queryAllFaculty += "INNER JOIN dummytable on maintable.jobid = dummytable.jobid "
     queryAllFaculty += "WHERE postdoctoral != 1 AND faculty = 1 "
     queryAllFaculty += "AND (numberofdetailedfieldsofstudy > 2 OR healthsciences != 1) "
     queryAllFaculty += "AND "+ makeYears(requestedYears)
-    queryAllFaculty += "AND (ipedssectorname NOT LIKE 'NULL' AND ipedssectorname NOT LIKE '%Sector unknown (not active%') "
-    queryAllFaculty += "AND " + getFacultyDummy(requestedFaculty)
-    queryAllFaculty += "AND " + getInstitutionDummy(institution)
-    queryAllFaculty += ") AS selected "
-    queryAllFaculty += "GROUP BY year;"
+    queryAllFaculty += "AND (ipedssectorname NOT ILIKE '%nan%' AND ipedssectorname NOT ILIKE '%Sector unknown (not active%' )"
     return queryAllFaculty
 
 def queryLargestNSF(fieldString, fieldArray) :
