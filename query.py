@@ -72,21 +72,19 @@ def queryCareer(years, institution):
     return queryCareer
 
 def queryNonFaculty(years, institution):
-    queryNonFaculty = "SELECT careerarea, year, COUNT(careerarea) FROM "
-    queryNonFaculty += "(SELECT dummytable.year, isresearch1institution, careerarea, faculty, postdoctoral "
+    queryNonFaculty = "SELECT dummytable.year," + getInstitutionType(institution) + ", careerarea, faculty, postdoctoral, public, private "
     queryNonFaculty += "FROM maintable "
     queryNonFaculty += "Inner join dummytable on maintable.jobid = dummytable.jobid "
     queryNonFaculty += "WHERE faculty = 0"
     queryNonFaculty += "AND postdoctoral != 1"
-    queryNonFaculty += "AND careerarea NOT LIKE 'Health Care including Nursing' "
-    queryNonFaculty += "AND careerarea NOT LIKE 'Agriculture, Horticulture, & the Outdoors' "
-    queryNonFaculty += "AND careerarea NOT LIKE 'Personal Services' "
-    queryNonFaculty += "AND careerarea NOT LIKE 'Transportation' "
-    queryNonFaculty += "AND careerarea NOT LIKE 'Performing Arts' "
-    queryNonFaculty += "AND careerarea NOT LIKE 'na' "
+    queryNonFaculty += "AND careerarea NOT ILIKE 'Health Care including Nursing' "
+    queryNonFaculty += "AND careerarea NOT ILIKE 'Agriculture, Horticulture, & the Outdoors' "
+    queryNonFaculty += "AND careerarea NOT ILIKE 'Personal Services' "
+    queryNonFaculty += "AND careerarea NOT ILIKE 'Transportation' "
+    queryNonFaculty += "AND careerarea NOT ILIKE 'Performing Arts' "
+    queryNonFaculty += "AND careerarea NOT ILIKE 'na' "
     queryNonFaculty += "AND " + makeYears(years) + " "
-    queryNonFaculty += "AND " + getInstitutionDummy(institution) + ") AS selected "
-    queryNonFaculty += "GROUP BY year, careerarea;"
+    queryNonFaculty += "AND " + getInstitutionDummy(institution)
     return queryNonFaculty
 
 def queryScienceOpening(category, f, requestedYears):
