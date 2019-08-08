@@ -18,7 +18,6 @@ from skillField import *
 import pandas as pd
 import numpy as np
 from collections import Counter
-from phd_distribution import *
 
 def calculate_phdshare(phd_df):
     phd_share = pd.DataFrame(phd_df['careerarea'].value_counts()).reset_index().rename(columns={

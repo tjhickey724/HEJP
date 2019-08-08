@@ -1,161 +1,149 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-
 <head>
-	<title>NSF Growth Chart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <style>
+  form{
+    margin-left: 20px;
+    margin-top: 20px;
+  }
+  </style>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-	<style>
-	canvas {
-		-moz-user-select: none;
-		-webkit-user-select: none;
-		-ms-user-select: none;
-	}
-	</style>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.5.0"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </head>
 
-<body>
-	<div id="container" style="width: 75%;">
-		<canvas id="canvas"></canvas>
-	</div>
+	<body>
+    <div class="jumbotron">
+      <h1 class="display-4">NSF Fields Growth</h1>
+    </div>
 
-	<script>
-		var horizontalBarChartData = {
-			// labels: ["sociology", "anthropology","literature", "history"],
-			labels: {{requestedDepartments|safe}},
-			datasets: [
-			{
-				label: {{requestedYears[0]}},
-				backgroundColor: 'rgb(255, 255, 132)',
-				borderColor: 'rgb(255, 255, 132)',
-				borderWidth: 1,
-				data: {{finalFieldDict[0][1]}}
-				// [(2007, [[2443], [3335]]), (2017, [[5089], [8843]])]
-			},
-			{
-				label: {{requestedYears[1]}},
-				backgroundColor: 'rgb(255, 100, 132)',
-				borderColor: 'rgb(255, 100, 132)',
-				data: {{finalFieldDict[1][1]}}
-			}]
+		<div id="container" style="width: 90%;">
+		  <canvas id="canvas"></canvas>
+		</div>
+
+		<script>
+		  var horizontalBarChartData = {
+		    labels: {{requestedFields|safe}},
+		    datasets: [
+		    {
+		      label: 'Percentage Growth',
+		      backgroundColor: 'rgb(91,192,222)',
+		      borderColor: 'rgb(91,192,222)',
+		      borderWidth: 1,
+		      data: {{final_nsf[2]}}
+		    }
+				]
+		  };
+		  window.onload = function() {
+		    var ctx = document.getElementById('canvas').getContext('2d');
+		    window.myHorizontalBar = new Chart(ctx, {
+		      type: 'horizontalBar',
+		      data: horizontalBarChartData,
+		      options: {
+		        elements: {
+		          rectangle: {
+		            borderWidth: 2,
+		          }
+		        },
+		        responsive: true,
+		        legend: {
+		          position: 'right',
+		        },
+		        title: {
+		          display: true,
+		          text: 'NSF Fields Growth Between {{requestedYears[0]|safe}} - {{requestedYears[1]|safe}}'
+		        },
+						scales: {
+							xAxes: [{
+								ticks: {
+		                beginAtZero: true,
+										min: 0,
+										max: this.max,// Your absolute max value
+										callback: function (value) {
+											return (value / 100 * 100).toFixed(0) + '%'; // convert it to percentage
+										},
+								},
+								scaleLabel: {
+									display: true,
+									labelString: 'Percentage',
+								}
+							}],
+						},
+		        plugins: {
+		          datalabels: {
+			          color: 'black',
+			          anchor: 'end',
+								display: function(context) {
+									return context.dataset.data[context.dataIndex];
+							},
+		          font: {
+		             weight: 'bold'
+		          },
+		          formatter: function(value, context) {
+    							return context.dataIndex + Math.round(value) + '%';
+							}
+		        }
+		      }
+		    }
+		  })
 		};
-		window.onload = function() {
-			var ctx = document.getElementById('canvas').getContext('2d');
-			window.myHorizontalBar = new Chart(ctx, {
-				type: 'horizontalBar',
-				data: horizontalBarChartData,
-				options: {
-					elements: {
-						rectangle: {
-							borderWidth: 2,
-						}
-					},
-					responsive: true,
-					legend: {
-						position: 'right',
-					},
-					title: {
-						display: true,
-						text: 'NSF Growth Chart'
-					}
-				}
-			});
-		};
+		</script>
 
-	</script>
-	<form method="post" action="/nsfGrowth">
-			<section>
-				<article>
-			<h2>Fields of Study</h2>
-			<fieldset id ="all_fields">
-			<ul id = 'fields'>
-				<li class = "lifeSciences"><input type="checkbox" name="fields_of_study" value="Life sciences"> Life sciences
-				<ul class = "sub-lifeSciences">
-				{% for item in lifeSciences %}
-							<li><a>{{item}}</a><br></li>
-				{% endfor %}
-				</ul>
-				</li>
-			</ul>
-			<ul id = 'fields'>
-				<li class = "physicalSciences"><input type="checkbox" name="fields_of_study" value="Physical sciences and earth sciences"> Physical sciences and earth sciences
-				<ul class = "sub-physicalSciences">
-				{% for item in physicalSciences %}
-							<li><a>{{item}}</a><br></li>
-				{% endfor %}
-				</ul>
-				</li>
-			</ul>
-			<ul id = 'fields'>
-				<li class = "math"><input type="checkbox" name="fields_of_study" value="Mathematics and computer sciences"> Mathematics and computer sciences
-				<ul class = "sub-math">
-				{% for item in math %}
-							<li><a>{{item}}</a><br></li>
-				{% endfor %}
-				</ul>
-				</li>
-			</ul>
-			<ul id = 'fields'>
-				<li class = "psychology"><input type="checkbox" name="fields_of_study" value="Psychology and social sciences"> Psychology and social sciences
-				<ul class = "sub-psychology">
-				{% for item in psychology %}
-							<li><a>{{item}}</a><br></li>
-				{% endfor %}
-				</ul>
-				</li>
-			</ul>
-			<ul id = 'fields'>
-				<li class = "engineering"><input type="checkbox" name="fields_of_study" value="Engineering"> Engineering
-				<ul class = "sub-engineering">
-				{% for item in engineering %}
-							<li><a>{{item}}</a><br></li>
-				{% endfor %}
-				</ul>
-				</li>
-			</ul>
-			<ul id = 'fields'>
-				<li class = "education"><input type="checkbox" name="fields_of_study" value="Education"> Education
-				<ul class = "sub-education">
-				{% for item in education %}
-							<li><a>{{item}}</a><br></li>
-				{% endfor %}
-				</ul>
-				</li>
-			</ul>
-			<ul id = 'fields'>
-				<li class = "humanities"><input type="checkbox" name="fields_of_study" value="Humanities and arts"> Humanities and arts
-				<ul class = "sub-humanities">
-				{% for item in humanities %}
-							<li><a>{{item}}</a><br></li>
-				{% endfor %}
-				</ul>
-				</li>
-			</ul>
-			<ul id = 'fields'>
-				<li class = "others"><input type="checkbox" name="fields_of_study" value="Others"> Others
-				<ul class = "sub-others">
-				{% for item in others %}
-							<li><a>{{item}}</a><br></li>
-				{% endfor %}
-				</ul>
-				</li>
-			</ul>
-		</fieldset>
-		<a rel = "all_fields" href = "#select_all"> Select All</a>
-		</article>
-	</section>
-
-
-		<section>
-			<article>
-			<h2>Years</h2>
-			{% for item in years %}
-						<input type="checkbox" name="years" value="{{item}}"> {{item}}<br>
+  <form method = "post" action = "/nsfGrowth" >
+    <div class="form-group">
+      <h4>NSF fields</h4>
+      {% for item in lifeSciences %}
+				{% if item != "Health sciences" %}
+          <input type="checkbox" name="nsf_subject" value="{{item}}">
+          <label>{{item}}</label><br>
+				{% endif %}
+      {% endfor%}
+			{% for item in physicalSciences %}
+          <input type="checkbox" name="nsf_subject" value="{{item}}">
+          <label>{{item}}</label><br>
+      {% endfor%}
+			{% for item in all_sciences %}
+					<input type="checkbox" name="nsf_subject" value="{{item}}">
+					<label>{{item}}</label><br>
 			{% endfor%}
-			</article>
-		</section>
+			{% for item in math %}
+					<input type="checkbox" name="nsf_subject" value="{{item}}">
+					<label>{{item}}</label><br>
+			{% endfor%}
+			{% for item in psychology %}
+					<input type="checkbox" name="nsf_subject" value="{{item}}">
+					<label>{{item}}</label><br>
+			{% endfor%}
+			<input type="checkbox" name="nsf_subject" value="Engineering">
+			<label>FS_Engineering</label><br>
+			<input type="checkbox" name="nsf_subject" value="Education">
+			<label>FS_Education</label><br>
+			{% for item in humanities %}
+					<input type="checkbox" name="nsf_subject" value="{{item}}">
+					<label>{{item}}</label><br>
+			{% endfor%}
+			{% for item in others %}
+					<input type="checkbox" name="nsf_subject" value="{{item}}">
+					<label>{{item}}</label><br>
+			{% endfor%}
+    </div>
+      <div class="form-group">
+        <h4>Years</h4>
+        {% for item in years %}
+              <input type="checkbox" name="years" value="{{item}}">
+              <label>{{item}}</label>
+        {% endfor%}
+      </div>
+      <div class="form-group">
+      <button type="submit" class="btn btn-info">Generate Query</button>
+      </div>
+    </form>
 
-		<button><h1>Generate Query</h1></button>
-	</form>
-</body>
 
+    </html>
+  </body>
 </html>

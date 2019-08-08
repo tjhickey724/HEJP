@@ -23,83 +23,98 @@ def makeFacultyStatus (requestedFaculty):
     if (requestedFaculty[0] == 'Tenure Line Positions'):
         return "tenureline "
 
-def makeFields(fieldString):
-    # if (fields== []):
-    #     return "true"
+# input: a list of fields
+# output: return all selected fields as a string
+def makeFields(fieldlist):
+    if (fieldlist == []):
+        return "true"
     result = ""
-    # for i in range (0, len(fields)):
-    #     fieldString = fields[i]
-    if fieldString == "Health sciences":
-       result += "healthsciences, "
-    if fieldString == "Teacher education":
-       result += "teachereducation, "
-    if fieldString == "Sociology":
-       result += "sociology, "
-    if fieldString == "Psychology":
-       result += "psychology, "
-    if fieldString == "Political science and government":
-       result += "politicalscienceandgovernment, "
-    if fieldString == "Physics and astronomy":
-       result += "physicsandastronomy, "
-    if fieldString == "Other social sciences":
-       result += "othersocialsciences, "
-    if fieldString == "Other engineering":
-       result += "otherengineering, "
-    if fieldString == "Mathematics and statistics":
-       result += "mathematicsandstatistics, "
-    if fieldString == "Letters":
-       result += "letters, "
-    if fieldString == "History":
-       result += "history, "
-    if fieldString == "Geosciences, atmospheric, and ocean sciences":
-       result += "geosciencesatmosphericandoceansc, "
-    if fieldString == "Foreign languages and literature":
-       result += "foreignlanguagesandliterature, "
-    if fieldString == "Electrical, electronics, and communication":
-       result += "electricalelectronicsandcommunic, "
-    if fieldString == "Economics":
-       result += "economics, "
-    if fieldString == "Chemistry":
-       result += "chemistry, "
-    if fieldString == "Business management and administration":
-       result += "businessmanagementandadministrat, "
-    if fieldString == "Communication":
-       result += "communication, "
-    if fieldString == "Biological and biomedical sciences":
-       result += "biologicalandbiomedicalsciences, "
-    if fieldString == "Bioengineering and biomedical engineering":
-       result += "bioengineeringandbiomedicalengin, "
-    if fieldString == "Agricultural sciences and natural sciences":
-       result += "agriculturalsciencesandnaturalre, "
-    if fieldString == "Aerospace, aeronautical, and astronautical engineering":
-       result += "aerospaceaeronauticalandastronau, "
-    if fieldString == "Anthropology":
-       result += "anthropology, "
-    if fieldString == "Materials science engineering":
-       result += "materialsscienceengineering, "
-    if fieldString == "Mechanical engineering":
-       result += "mechanicalengineering, "
-    if fieldString == "Other education":
-       result += "othereducation, "
-    if fieldString == "Education administration":
-       result += "educationadministration, "
-    if fieldString == "Education research":
-       result += "educationresearch, "
-    if fieldString == "Teaching fields":
-       result += "teachingfields, "
-    if fieldString == "Industrial and manufacturing engineering":
-       result += "industrialandmanufacturingengine, "
-    if fieldString == "Computer and information sciences":
-       result += "computerandinformationsciences, "
-    if fieldString == "Chemical engineering":
-       result += "chemicalengineering, "
-    if fieldString == "Civil engineering":
-       result += "civilengineering, "
-    if fieldString == "Other humanities and arts":
-       result += "otherhumanitiesandarts, "
-    if fieldString == "":
-       result += "true"
+    for fieldString in fieldlist:
+        if fieldString == "Health sciences":
+           result += "healthsciences, "
+        if fieldString == "Teacher education":
+           result += "teachereducation, "
+        if fieldString == "Sociology":
+           result += "sociology, "
+        if fieldString == "Psychology":
+           result += "psychology, "
+        if fieldString == "Political science and government":
+           result += "politicalscienceandgovernment, "
+        if fieldString == "Physics and astronomy":
+           result += "physicsandastronomy, "
+        if fieldString == "Other social sciences":
+           result += "othersocialsciences, "
+        if fieldString == "Other engineering":
+           result += "otherengineering, "
+        if fieldString == "Mathematics and statistics":
+           result += "mathematicsandstatistics, "
+        if fieldString == "Letters":
+           result += "letters, "
+        if fieldString == "History":
+           result += "history, "
+        if fieldString == "Geosciences, atmospheric, and ocean sciences":
+           result += "geosciencesatmosphericandoceansc, "
+        if fieldString == "Foreign languages and literature":
+           result += "foreignlanguagesandliterature, "
+        if fieldString == "Electrical, electronics, and communication":
+           result += "electricalelectronicsandcommunic, "
+        if fieldString == "Economics":
+           result += "economics, "
+        if fieldString == "Chemistry":
+           result += "chemistry, "
+        if fieldString == "Business management and administration":
+           result += "businessmanagementandadministrat, "
+        if fieldString == "Communication":
+           result += "communication, "
+        if fieldString == "Biological and biomedical sciences":
+           result += "biologicalandbiomedicalsciences, "
+        if fieldString == "Bioengineering and biomedical engineering":
+           result += "bioengineeringandbiomedicalengin, "
+        if fieldString == "Agricultural sciences and natural sciences":
+           result += "agriculturalsciencesandnaturalre, "
+        if fieldString == "Aerospace, aeronautical, and astronautical engineering":
+           result += "aerospaceaeronauticalandastronau, "
+        if fieldString == "Anthropology":
+           result += "anthropology, "
+        if fieldString == "Materials science engineering":
+           result += "materialsscienceengineering, "
+        if fieldString == "Mechanical engineering":
+           result += "mechanicalengineering, "
+        if fieldString == "Other education":
+           result += "othereducation, "
+        if fieldString == "Education administration":
+           result += "educationadministration, "
+        if fieldString == "Education research":
+           result += "educationresearch, "
+        if fieldString == "Teaching fields":
+           result += "teachingfields, "
+        if fieldString == "Industrial and manufacturing engineering":
+           result += "industrialandmanufacturingengine, "
+        if fieldString == "Computer and information sciences":
+           result += "computerandinformationsciences, "
+        if fieldString == "Chemical engineering":
+           result += "chemicalengineering, "
+        if fieldString == "Civil engineering":
+           result += "civilengineering, "
+        if fieldString == "Other humanities and arts":
+           result += "otherhumanitiesandarts, "
+        if fieldString == "Education":
+           result += "fs_education, "
+        if fieldString == "Engineering":
+           result += "fs_engineering, "
+        if fieldString == "":
+           result += "true"
     result = result[0: len(result)-2] +   " "
+    return result
+
+#input: nsf field of study
+#output: a string that contains all its subfields
+def parseFields (field):
+    result = ""
+    if field == "Engineering":
+        result += "aerospaceaeronauticalandastronau, bioengineeringandbiomedicalengin, chemicalengineering, civilengineering, electricalelectronicsandcommunic, industrialandmanufacturingengine, materialsscienceengineering, mechanicalengineering, otherengineering, "
+    if field == "Education":
+        result += "educationadministration, educationresearch, teachereducation, teachingfields, othereducation, "
     return result
 
 def getFacultyDummy(requestedFaculty):
@@ -196,6 +211,7 @@ def getFieldsDummy(fields):
         result += 'fs_others = 1 '
     return result
 
+# return one field variable
 def chooseFieldsOfStudy(fields):
     result = ""
     if (fields == 'Life sciences'):

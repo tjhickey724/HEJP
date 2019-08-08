@@ -23,6 +23,10 @@
   </div>
 
   <div id="container" style="width: 70%;">
+    <p> {{full_time_contingent[0][2]}} % </p>
+    <p> {{full_time_contingent[1][2]}} % </p>
+    <p> {{full_time_contingent[2][2]}} % </p>
+    <p> {{full_time_contingent[3][2]}} % </p>
     <canvas id="bargraph1"></canvas>
   </div>
 
@@ -108,9 +112,6 @@
           },
           plugins: {
             datalabels: {
-            color: 'black',
-            anchor: 'end',
-            align: 'bottom',
             display: function(context) {
               return context.dataset.data[context.dataIndex];
             },
@@ -119,6 +120,7 @@
          }
         }
       });
+
       var cty = document.getElementById('bargraph2').getContext('2d');
       window.myHorizontalBar = new Chart(cty, {
         type: 'horizontalBar',
@@ -139,9 +141,6 @@
           },
           plugins: {
             datalabels: {
-            color: 'black',
-            anchor: 'end',
-            align: 'bottom',
             display: function(context) {
               return context.dataset.data[context.dataIndex];
             },
@@ -170,9 +169,6 @@
         },
         plugins: {
           datalabels: {
-          color: 'black',
-          anchor: 'end',
-          align: 'bottom',
           display: function(context) {
             return context.dataset.data[context.dataIndex];
           },

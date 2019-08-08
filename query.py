@@ -138,16 +138,12 @@ def queryLargestNSF(fieldString, fieldArray) :
 
 # queries: NSF Growth
 def queryNSFGrowth(f, requestedYears):
-    queryNSFGrowth = "SELECT year," + "SUM(" + chooseFieldsOfStudy(f) +") FROM "
-    queryNSFGrowth += "(SELECT dummytable.year, " + getFieldsName() + ", " + chooseFieldsOfStudy(f) + " "
+    queryNSFGrowth = "SELECT dummytable.year, " + makeFields(f) + " "
     # queryNSFGrowth += makeFields(f)
     queryNSFGrowth += "FROM dummytable "
-    queryNSFGrowth += "WHERE (dummytable.healthsciences != 1 OR dummytable.numberofdetailedfieldsofstudy > 1) "
+    queryNSFGrowth += "WHERE (dummytable.healthsciences = 0 OR dummytable.numberofdetailedfieldsofstudy > 1) "
     queryNSFGrowth += "AND dummytable.faculty = 1 "
-    queryNSFGrowth += "AND dummytable.postdoctoral = 0 "
-    queryNSFGrowth += "AND " + getFieldsDummy(f)
-    queryNSFGrowth += "AND " + makeYears(requestedYears) + ") AS selected "
-    queryNSFGrowth += "GROUP BY year"
+    queryNSFGrowth += "AND " + makeYears(requestedYears)
     return queryNSFGrowth
 
 # query: share of faculty vs non faculty
