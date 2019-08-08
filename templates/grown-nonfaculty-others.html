@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <div id="container" style="width: 90%;">
+      <canvas id="canvas_3"></canvas>
+    </div>
+
+
+<script type = "text/javascript">
+      var horizontalBarChartData_3 = {
+        labels: {{nonfaculty_final_list[0]|safe}},
+        datasets: [
+        {
+          label: {{requestedYears[0]}},
+          backgroundColor: 'rgb(255, 255, 132)',
+          borderColor: 'rgb(255, 255, 132)',
+          borderWidth: 1,
+          data: {{nonfaculty_final_list[1]}}
+        },
+        {
+          label: {{requestedYears[1]}},
+          backgroundColor: 'rgb(255, 100, 132)',
+          borderColor: 'rgb(255, 100, 132)',
+          data: {{nonfaculty_final_list[2]}}
+        }]
+      };
+      window.onload = function() {
+        var ctx = document.getElementById('canvas_3').getContext('2d');
+        window.myHorizontalBar = new Chart(ctx, {
+          type: 'horizontalBar',
+          data: horizontalBarChartData_3,
+          options: {
+            elements: {
+              rectangle: {
+                borderWidth: 2,
+              }
+            },
+            responsive: true,
+            legend: {
+              position: 'right',
+            },
+            title: {
+              display: true,
+              text: 'Nonfaculty Growth By Career Area: {{requestedInstitution | safe}}'
+            }
+          }
+      })
+    };
+</script>
+
+<form method = "post" action = "/grown-nonfaculty" >
+<div class="form-group">
+  <h4>Institution Type</h4>
+  {% for item in institutionType %}
+        <input type="radio" name="institutionType" value="{{item}}">
+        <label>{{item}}</label><br>
+  {% endfor%}
+</div>
+  <div class="form-group">
+    <h4>Years</h4>
+    {% for item in year_range %}
+          <input type="checkbox" name="years" value="{{item}}">
+          <label>{{item}}</label>
+    {% endfor%}
+  </div>
+  <div class="form-group">
+  <button type="submit" class="btn btn-info">Generate Query</button>
+  </div>
+</form>
+</body>
+</html>

@@ -195,33 +195,46 @@ def grown_nonfaculty():
         requestedInstitution = request.form.get('institutionType')
         requestedYears = request.form.getlist('years')
         nonfaculty_df = pd.DataFrame(queryAll(queryNonFaculty(requestedYears, requestedInstitution)), columns = ['year', requestedInstitution, 'careerarea', 'faculty', 'postdoctoral', 'public', 'private'])
-        if requestedInstitution == '4-year Institutions':
+        if requestedInstitution == "4-year Institutions":
             nonfaculty_df = nonfaculty_df.drop(columns = [requestedInstitution, 'faculty', 'postdoctoral'])
             public_df = pd.DataFrame(nonfaculty_df[nonfaculty_df['public'] == 1])
-            public_year1 = pd.DataFrame(public_df[public_df['year'] == int(requestedYears[0])]).drop(columns=['year','private']).groupby(['careerarea']).sum()
-            public_year2 = pd.DataFrame(public_df[public_df['year'] == int(requestedYears[1])]).drop(columns=['year','private']).groupby(['careerarea']).sum()
+            public_year1 = pd.DataFrame(public_df[public_df['year'] == int(requestedYears[0])]).drop(columns=['year','private']).groupby(['careerarea']).sum().reset_index()
+            public_year2 = pd.DataFrame(public_df[public_df['year'] == int(requestedYears[1])]).drop(columns=['year','private']).groupby(['careerarea']).sum().reset_index()
+            print(public_year1)
             public_final = public_year1.merge(public_year2, on='careerarea', how='inner')
             public_final['growth'] = round(np.true_divide(public_final['public_y']-public_final['public_x'], public_final['public_x']) * 100, 2)
+            public_final = public_final.sort_values(by='growth', ascending=False)
+            public_careerarea = list(public_final['careerarea'])
+            print(public_final)
+
             private_df = pd.DataFrame(nonfaculty_df[nonfaculty_df['private'] == 1])
-            private_year1 = pd.DataFrame(private_df[private_df['year'] == int(requestedYears[0])]).drop(columns=['year','public']).groupby(['careerarea']).sum()
-            private_year2 = pd.DataFrame(private_df[private_df['year'] == int(requestedYears[1])]).drop(columns=['year','public']).groupby(['careerarea']).sum()
+            private_year1 = pd.DataFrame(private_df[private_df['year'] == int(requestedYears[0])]).drop(columns=['year','public']).groupby(['careerarea']).sum().reset_index()
+            private_year2 = pd.DataFrame(private_df[private_df['year'] == int(requestedYears[1])]).drop(columns=['year','public']).groupby(['careerarea']).sum().reset_index()
             private_final = private_year1.merge(private_year2, on='careerarea', how='inner')
             private_final['growth'] = round(np.true_divide(private_final['private_y']-private_final['private_x'], private_final['private_x']) * 100, 2)
+            private_final = private_final.sort_values(by='growth', ascending=False)
+
+            private_careerarea = list(private_final['careerarea'])
+            for i in range(0, len(list(public_final['growth']))):
+                public_careerarea[i] += "\n" + str(list(public_final['growth'])[i]) + '%'
+                private_careerarea[i] += "\n" + str(list(private_final['growth'])[i]) + '%'
+            public_final_list = [public_careerarea, list(public_final['public_x']), list(public_final['public_y'])]
+            private_final_list = [private_careerarea, list(private_final['private_x']), list(private_final['private_y'])]
+            return render_template("grown-nonfaculty-fouryear.html", public_final_list = public_final_list, private_final_list = private_final_list, year_range = year_range, institutionType = institutionType, requestedYears = requestedYears, requestedInstitution = requestedInstitution)
         else:
             nonfaculty_df = nonfaculty_df.drop(columns = [requestedInstitution, 'faculty', 'postdoctoral', 'public', 'private'])
-        print(private_final)
-        # print(query_nonfaculty)
-        # group_nonfaculty = OrderedDict()
-        # selected_area = []
-        # for area, y, data in query_nonfaculty:
-        #     if area not in selected_area:
-        #         selected_area.append(area)
-        #     if y in group_nonfaculty:
-        #         group_nonfaculty[y].append(data)
-        #     else:
-        #         group_nonfaculty[y] = [data]
-        # final_group_nonfaculty = [(y, data) for y, data in group_nonfaculty.items()]
-        return render_template("grown-nonfaculty-result.html", year_range = year_range, institutionType = institutionType, years = requestedYears, institution = requestedInstitution, query_nonfaculty = query_nonfaculty, final_group_nonfaculty = final_group_nonfaculty, selected_area = selected_area)
+            nonfaculty_year1 = pd.DataFrame(nonfaculty_df[nonfaculty_df['year'] == int(requestedYears[0])])
+            nonfaculty_year1 = nonfaculty_year1.drop(columns='year').groupby(['careerarea']).apply(lambda x: x.careerarea).value_counts().to_frame().reset_index()
+            nonfaculty_year2 = pd.DataFrame(nonfaculty_df[nonfaculty_df['year'] == int(requestedYears[1])])
+            nonfaculty_year2 = nonfaculty_year2.drop(columns='year').groupby(['careerarea']).apply(lambda x: x.careerarea).value_counts().to_frame().reset_index()
+            nonfaculty_final = nonfaculty_year1.merge(nonfaculty_year2, on='index', how='inner')
+            nonfaculty_final['growth'] = round(np.true_divide(nonfaculty_final['careerarea_y']-nonfaculty_final['careerarea_x'], nonfaculty_final['careerarea_x']) * 100, 2)
+            nonfaculty_final = nonfaculty_final.sort_values(by='growth', ascending=False).reset_index(drop=True)
+            area = list(nonfaculty_final['index'])
+            for i in range(0, len(list(nonfaculty_final['growth']))):
+                area[i] += " " + str(list(nonfaculty_final['growth'])[i]) + '%'
+            nonfaculty_final_list = [area, list(nonfaculty_final['careerarea_x']), list(nonfaculty_final['careerarea_y'])]
+            return render_template("grown-nonfaculty-others.html", nonfaculty_final_list = nonfaculty_final_list, year_range = year_range, institutionType = institutionType, requestedYears = requestedYears, requestedInstitution = requestedInstitution)
 
 @app.route('/career', methods = ["GET", "Post"])
 def career():
