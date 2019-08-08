@@ -77,11 +77,6 @@ def queryNonFaculty(years, institution):
     queryNonFaculty += "Inner join dummytable on maintable.jobid = dummytable.jobid "
     queryNonFaculty += "WHERE faculty = 0"
     queryNonFaculty += "AND postdoctoral != 1"
-    queryNonFaculty += "AND careerarea NOT ILIKE 'Health Care including Nursing' "
-    queryNonFaculty += "AND careerarea NOT ILIKE 'Agriculture, Horticulture, & the Outdoors' "
-    queryNonFaculty += "AND careerarea NOT ILIKE 'Personal Services' "
-    queryNonFaculty += "AND careerarea NOT ILIKE 'Transportation' "
-    queryNonFaculty += "AND careerarea NOT ILIKE 'Performing Arts' "
     queryNonFaculty += "AND careerarea NOT ILIKE 'na' "
     queryNonFaculty += "AND " + makeYears(years) + " "
     queryNonFaculty += "AND " + getInstitutionDummy(institution)

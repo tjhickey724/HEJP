@@ -200,12 +200,10 @@ def grown_nonfaculty():
             public_df = pd.DataFrame(nonfaculty_df[nonfaculty_df['public'] == 1])
             public_year1 = pd.DataFrame(public_df[public_df['year'] == int(requestedYears[0])]).drop(columns=['year','private']).groupby(['careerarea']).sum().reset_index()
             public_year2 = pd.DataFrame(public_df[public_df['year'] == int(requestedYears[1])]).drop(columns=['year','private']).groupby(['careerarea']).sum().reset_index()
-            print(public_year1)
             public_final = public_year1.merge(public_year2, on='careerarea', how='inner')
             public_final['growth'] = round(np.true_divide(public_final['public_y']-public_final['public_x'], public_final['public_x']) * 100, 2)
             public_final = public_final.sort_values(by='growth', ascending=False)
             public_careerarea = list(public_final['careerarea'])
-            print(public_final)
 
             private_df = pd.DataFrame(nonfaculty_df[nonfaculty_df['private'] == 1])
             private_year1 = pd.DataFrame(private_df[private_df['year'] == int(requestedYears[0])]).drop(columns=['year','public']).groupby(['careerarea']).sum().reset_index()
@@ -228,6 +226,7 @@ def grown_nonfaculty():
             nonfaculty_year2 = pd.DataFrame(nonfaculty_df[nonfaculty_df['year'] == int(requestedYears[1])])
             nonfaculty_year2 = nonfaculty_year2.drop(columns='year').groupby(['careerarea']).apply(lambda x: x.careerarea).value_counts().to_frame().reset_index()
             nonfaculty_final = nonfaculty_year1.merge(nonfaculty_year2, on='index', how='inner')
+            nonfaculty_final = nonfaculty_final[nonfaculty_final['careerarea_y'] >= 1000]
             nonfaculty_final['growth'] = round(np.true_divide(nonfaculty_final['careerarea_y']-nonfaculty_final['careerarea_x'], nonfaculty_final['careerarea_x']) * 100, 2)
             nonfaculty_final = nonfaculty_final.sort_values(by='growth', ascending=False).reset_index(drop=True)
             area = list(nonfaculty_final['index'])
