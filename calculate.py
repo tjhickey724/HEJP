@@ -93,3 +93,13 @@ def calculate_allfaculty(faculty_status, queryfaculty_df):
     institution_type_all.append(round(np.true_divide(institution_type_all[0]-institution_type_all[1], institution_type_all[1]) * 100, 2))
     institution_type_result = [tuple(list(institution_type_R1)), tuple(list(institution_type_fouryear)), tuple(list(institution_type_twoyear)), tuple(list(institution_type_all))]
     return institution_type_result
+
+def calculate_faculty_share(faculty_df, institution, requestedYears):
+    if institution != "All Higher Education":
+       institution_df = pd.DataFrame(faculty_df[faculty_df[chooseInstitution(institution)]])
+       institution_year1 = institution_df[institution_df['year'] == requestedYears[0]].groupby('faculty').apply(lambda x: x.faculty).value_counts()
+       institution_year2 = institution_df[institution_df['year'] == requestedYears[1]].groupby('faculty').apply(lambda x: x.faculty).value_counts()
+    else:
+       institution_df = pd.DataFrame(faculty_df.drop(columns = ['isresearch1institution', 'fouryear', 'twoyear']))
+       institution_year1 = institution_df[institution_df['year'] == requestedYears[0]].groupby('faculty').apply(lambda x: x.faculty).value_counts()
+       institution_year2 = institution_df[institution_df['year'] == requestedYears[1]].groupby('faculty').apply(lambda x: x.faculty).value_counts()

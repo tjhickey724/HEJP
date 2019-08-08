@@ -39,39 +39,28 @@ def about():
 @app.route('/faculty', methods=["GET", "POST"])
 def demo4a():
     if request.method=="GET":
-        queryfaculty = queryFaculty()
-        queryfaculty += ") AS selected \n"
-        queryfaculty += "GROUP BY year, faculty;"
-        queryresult = queryAll(queryfaculty)
-        faculty = [int(f) for f in (0,1)]
-        groupedResult = [(f, list(count[0] for count in [eachF for eachF in queryresult if eachF[2] == f])) for f in faculty]
-        years=[int(year) for year in year_range]
-        return render_template("facultyDemo.html", query = queryfaculty, result = groupedResult, years = years, year_range=year_range, ipedssectornames = ipedssectornames, institutionType = institutionType)
+        return render_template("faculty.html", year_range=year_range, institutionType = institutionType)
     else:
-        requestedYear = request.form.getlist('year')
-        # ipeds = request.form.getlist('ipedssectornames')
-        requestedInstitution = request.form.getlist('institution')
-        queryfaculty = queryFaculty()
-        # select year
-
-        queryfaculty += "AND " + makeYears(requestedYear) + " "
-        # select institution type
-        queryfaculty += "AND " + chooseInstitution(requestedInstitution)+ ") "
-        queryfaculty += "AS selected \n"
-        queryfaculty += "GROUP BY year, faculty;"
-        print(queryfaculty)
-        facultyResult = queryAll(queryfaculty)
-        if (facultyResult==[]):
-            print("no results")
+        requestedYears = request.form.getlist('years')
+        requestedInstitution = request.form.getlist('institutionType')
+        print(requestedInstitution)
+        print(requestedYears)
+        facultyResult = queryAll(queryFaculty(requestedYears))
+        if (facultyResult==[]) :
             return render_template("noResults.html",query=query)
-        faculty = [int(f) for f in (0,1)]
-        groupedResult = [(f, list(count[0] for count in [eachF for eachF in facultyResult if eachF[2] == f])) for f in faculty]
-        years=[int(year) for year in requestedYear]
-        # result=[(year, list(count[0] for count in [eachYear for eachYear in twoYearResult if eachYear[1] == year])) for year in years]
-        return render_template("faculty.html", query = queryfaculty, result = groupedResult, years = years, year_range=year_range, ipedssectornames = ipedssectornames, institutionType = institutionType)
-# @app.route('/demo4a', methods=["GET", "POST"])
-# def demo4a():
-#     return render_template("demo4a.html", queryTwoYear)
+        faculty_df = pd.DataFrame(facultyResult, columns = ['careerarea', 'year', 'isresearch1institution', 'postdoctoral', 'healthsciences', 'numberofdetailedfieldsofstudy', 'faculty', 'fouryear', 'twoyear'])
+        faculty_df = faculty_df.drop(columns = ['careerarea', 'postdoctoral', 'healthsciences', 'numberofdetailedfieldsofstudy'])
+        if len(requestedInstitution) > 1:
+            institution_1 = requestedInstitution[0]
+            institution_2 = requestedInstitution[1]
+            institution_1_df = calculate_faculty_share(faculty_df, institution_1, requestedYears)
+            institution_1_df = calculate_faculty_share(faculty_df, institution_2, requestedYears)
+            return render_template("faculty_result_two.html", year_range=year_range, institutionType = institutionType)
+        elif len(requestedInstitution) == 1:
+            institution_1 = requestedInstitution[0]
+            institution_1_df = calculate_faculty_share(faculty_df, institution_1, requestedYears)
+            return render_template("faculty_result_one.html", year_range=year_range, institutionType = institutionType)
+
 @app.route('/nsfGrowth', methods=["GET", "POST"])
 def nsfGrowth():
     if request.method=="GET":
@@ -94,7 +83,6 @@ def nsfGrowth():
 
 @app.route('/nsfGrowthResult', methods=["GET","Post"])
 def nsfGrowthResult():
-    # if request.method=="GET":
     return render_template("nsfGrowthResult.html")
 
 @app.route('/allfaculty', methods=["GET","Post"])

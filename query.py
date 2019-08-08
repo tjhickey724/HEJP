@@ -140,14 +140,14 @@ def queryNSFGrowth(f, requestedYears):
     return queryNSFGrowth
 
 # query: share of faculty vs non faculty
-def queryFaculty ():
-    queryfaculty = "SELECT Count(*),year,faculty From "
-    queryfaculty += "(SELECT maintable.jobid, maintable.careerarea, maintable.year,"
-    queryfaculty += "maintable.ipedssectorname, maintable.isresearch1institution, dummytable.postdoctoral, dummytable.healthsciences, "
-    queryfaculty += "dummytable.numberofdetailedfieldsofstudy, dummytable.faculty,maintable.twoyear "
+def queryFaculty (requestedYears):
+    queryfaculty = "SELECT maintable.careerarea, dummytable.year,"
+    queryfaculty += "maintable.isresearch1institution, dummytable.postdoctoral, dummytable.healthsciences, "
+    queryfaculty += "dummytable.numberofdetailedfieldsofstudy, dummytable.faculty, maintable.twoyear, maintable.fouryear "
     queryfaculty += "FROM maintable  "
     queryfaculty += "INNER JOIN dummytable ON dummytable.jobid = maintable.jobid "
     queryfaculty += "WHERE dummytable.postdoctoral != 1 "
-    queryfaculty += "AND maintable.careerarea NOT LIKE 'Health Care including Nursing' "
+    queryfaculty += "AND maintable.careerarea NOT ILIKE '%Health Care including Nursing%' "
     queryfaculty += "AND (dummytable.numberofdetailedfieldsofstudy > 2 OR dummytable.healthsciences !=1) "
+    queryfaculty += "And " + makeYears(requestedYears)
     return queryfaculty
