@@ -121,53 +121,30 @@ def largestNSF():
 @app.route('/science', methods=["GET","Post"])
 def science_opening():
     if request.method=="GET":
-        return render_template("science.html", all_sciences = all_sciences, year_range = year_range)
+        return render_template("science.html", all_sciences = all_sciences, year_range = year_range, institutionType = institutionType)
     else:
-        requestedScience = request.form.getlist('sciences');
-        requestedYears = request.form.getlist('years');
-        yearString =""
-        for y in requestedYears:
-            yearString += str(y) +", "
-        yearString = yearString[0: len(yearString)-2]
-        category = ["AND contingent = 1 ", "AND tenureline = 1 ", '']
-        query_science_opening = []
-        contingent = []
-        total_year_result = []
-        tenureline = []
-        for f in requestedScience:
-            for c in category:
-                if c == "AND contingent = 1 ":
-                    contingent += queryAll(queryScienceOpening(c,f,requestedYears))
-                if c == "AND tenureline = 1 ":
-                    tenureline += queryAll(queryScienceOpening(c,f,requestedYears))
-                if c == '':
-                    total_year_result += queryAll(queryScienceOpening(c,f,requestedYears))
-        query_science_opening.append(contingent)
-        query_science_opening.append(tenureline)
-        query_science_opening.append(total_year_result)
+        requestedScience = request.form.getlist('sciences')
+        requestedInstitution = request.form.get('institutionType')
+        requestedYears = request.form.getlist('years')
+        science_df = pd.DataFrame(queryAll(queryScienceOpening(requestedYears)), columns = ['year', 'isresearch1institution', 'ipedssectorname', 'fouryear', 'twoyear', 'biologicalandbiomedicalsciences', 'chemistry', 'computerandinformationsciences', 'geosciencesatmosphericandoceansc', 'mathematicsandstatistics', 'physicsandastronomy', 'healthsciences', 'numberofdetailedfieldsofstudy', 'faculty', 'postdoctoral', 'tenured', 'tenured_track', 'contingent'])
+        science_df = science_df.drop(columns = ['ipedssectorname', 'numberofdetailedfieldsofstudy', 'postdoctoral', 'faculty'])
+        # (3) Tenure_Line / Contingent Manipualtion
+        # Clarify the Tenure Line variable
+        science_df['tenure_line'] = science_df['tenured'] + science_df['tenured_track']
+        science_df['tenure_line'].where(science_df['tenure_line'] < 2, 1, inplace=True)
 
-        groupedFirst = []
-        for n in query_science_opening:
-            grouped = OrderedDict()
-            for count, y in n:
-                if y in grouped:
-                    grouped[y].append(count)
-                else:
-                    grouped[y] = [count]
-            final_data = [(count, y) for count, y in grouped.items()]
-            groupedFirst.append(final_data)
-
-        science = OrderedDict()
-        for g in groupedFirst:
-            for year, count in g:
-                if year in science:
-                    science[year].append(count)
-                else:
-                    science[year] = [count]
-        final_science = [(year,count) for year,count in science.items()]
-        print(final_science)
-        #[(2012, [[380, 1455, 2214], [9, 86, 101]]), (2015, [[425, 1704, 2643], [26, 137, 181]])]
-        return render_template("scienceResult.html", all_sciences = all_sciences, year_range = year_range, final_science = final_science, requestedScience = requestedScience, requestedYears =requestedYears, yearString = yearString)
+        # Mutually exclude Tenure-Line and Contingent
+        science_df['contingent'].where(((science_df['tenure_line'] > 0) & (science_df['contingent'] < 1) |
+                                        (science_df['tenure_line'] < 1) & (science_df['contingent'] > 0)), 0, inplace=True)
+        science_df = science_df.drop(columns = ['tenured_track', 'tenured'])
+        if requestedInstitution != "All Higher Education":
+            science_df = science_df[science_df[getInstitutionType(requestedInstitution)] == 1].drop(columns = ['isresearch1institution', 'fouryear', 'twoyear'])
+        else:
+            science_df = science_df.drop(columns = ['isresearch1institution', 'fouryear', 'twoyear'])
+        science_opening_result = []
+        for science in requestedScience:
+            science_opening_result.append(calculate_science_opening(science_df, science, requestedYears))
+        return render_template("scienceResult.html")
 
 @app.route('/scienceResult', methods=["GET","Post"])
 def science_opening_result():

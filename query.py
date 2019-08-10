@@ -82,25 +82,19 @@ def queryNonFaculty(years, institution):
     queryNonFaculty += "AND " + getInstitutionDummy(institution)
     return queryNonFaculty
 
-def queryScienceOpening(category, f, requestedYears):
-    queryScienceOpening = "SELECT "
-    queryScienceOpening += "SUM( " + makeFields(f) + " ), year FROM "
-    queryScienceOpening += "(SELECT dummytable.year, isresearch1institution, ipedssectorname, fouryear, twoyear, "
+def queryScienceOpening(requestedYears):
+    queryScienceOpening = "SELECT dummytable.year, isresearch1institution, ipedssectorname, fouryear, twoyear, "
     queryScienceOpening += "biologicalandbiomedicalsciences, chemistry, computerandinformationsciences, "
     queryScienceOpening += "geosciencesatmosphericandoceansc, mathematicsandstatistics, physicsandastronomy, "
-    queryScienceOpening += "healthsciences,numberofdetailedfieldsofstudy,faculty,postdoctoral,tenureline, "
+    queryScienceOpening += "healthsciences,numberofdetailedfieldsofstudy,faculty,postdoctoral, tenured, "
     queryScienceOpening += "tenured_track, contingent "
     queryScienceOpening += "FROM maintable "
     queryScienceOpening += "INNER JOIN dummytable on maintable.jobid = dummytable.jobid "
     queryScienceOpening += "WHERE postdoctoral != 1 "
     queryScienceOpening += "AND faculty = 1 "
-    queryScienceOpening += "AND isresearch1institution = 1 "
     queryScienceOpening += "AND (numberofdetailedfieldsofstudy > 2 OR healthsciences != 1) "
     queryScienceOpening += "AND " + makeYears(requestedYears) + " "
-    queryScienceOpening += "AND (ipedssectorname NOT LIKE 'NULL' OR ipedssectorname NOT LIKE '%Sector unknown (not active%') "
-    queryScienceOpening += category
-    queryScienceOpening += "AND (" + makeFields(f) + "= 1" + ")) AS selected "
-    queryScienceOpening += "GROUP BY year"
+    queryScienceOpening += "AND (ipedssectorname NOT ILIKE 'nan' OR ipedssectorname NOT ILIKE '%Sector unknown (not active%') "
     return queryScienceOpening
 
 def queryAllFaculty (requestedYears):
