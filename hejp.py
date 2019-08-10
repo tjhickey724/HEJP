@@ -57,7 +57,7 @@ def demo4a():
         elif len(requestedInstitution) == 1:
             institution_1 = requestedInstitution[0]
             institution_1_df = calculate_faculty_share(faculty_df, institution_1, requestedYears)
-            return render_template("faculty_result_one.html", year_range=year_range, institutionType = institutionType)
+            return render_template("faculty_result_one.html", institution_1_df = institution_1_df, year_range=year_range, institutionType = institutionType, requestedYears = requestedYears, requestedInstitution = requestedInstitution)
 
 @app.route('/nsfGrowth', methods=["GET", "POST"])
 def nsfGrowth():

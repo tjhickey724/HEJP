@@ -102,8 +102,6 @@ def calculate_faculty_share(faculty_df, institution, requestedYears):
        institution_year2 = institution_df[institution_df['year'] == int(requestedYears[1])].groupby('faculty').apply(lambda x: x.faculty).value_counts().reset_index().rename(columns={'faculty':'count_2'})
        institution_final = institution_year1.merge(institution_year2, on = 'index', how = 'inner')
        institution_final_list = [list(institution_final['count_1']),list(institution_final['count_2'])]
-       
-       print(institution_final_list)
        return institution_final_list
     else:
        institution_df = pd.DataFrame(faculty_df.drop(columns = ['isresearch1institution', 'fouryear', 'twoyear']))
