@@ -43,19 +43,17 @@ def demo4a():
     else:
         requestedYears = request.form.getlist('years')
         requestedInstitution = request.form.getlist('institutionType')
-        print(requestedInstitution)
-        print(requestedYears)
         facultyResult = queryAll(queryFaculty(requestedYears))
         if (facultyResult==[]) :
             return render_template("noResults.html",query=query)
-        faculty_df = pd.DataFrame(facultyResult, columns = ['careerarea', 'year', 'isresearch1institution', 'postdoctoral', 'healthsciences', 'numberofdetailedfieldsofstudy', 'faculty', 'fouryear', 'twoyear'])
-        faculty_df = faculty_df.drop(columns = ['careerarea', 'postdoctoral', 'healthsciences', 'numberofdetailedfieldsofstudy'])
+        faculty_df = pd.DataFrame(facultyResult, columns = ['year', 'isresearch1institution', 'postdoctoral', 'faculty', 'fouryear', 'twoyear'])
+        faculty_df = faculty_df.drop(columns = ['postdoctoral'])
         if len(requestedInstitution) > 1:
             institution_1 = requestedInstitution[0]
             institution_2 = requestedInstitution[1]
             institution_1_df = calculate_faculty_share(faculty_df, institution_1, requestedYears)
-            institution_1_df = calculate_faculty_share(faculty_df, institution_2, requestedYears)
-            return render_template("faculty_result_two.html", year_range=year_range, institutionType = institutionType)
+            institution_2_df = calculate_faculty_share(faculty_df, institution_2, requestedYears)
+            return render_template("faculty_result_two.html", institution_1_df = institution_1_df, institution_2_df = institution_2_df, year_range=year_range, institutionType = institutionType, requestedYears = requestedYears, requestedInstitution = requestedInstitution)
         elif len(requestedInstitution) == 1:
             institution_1 = requestedInstitution[0]
             institution_1_df = calculate_faculty_share(faculty_df, institution_1, requestedYears)

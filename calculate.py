@@ -96,10 +96,19 @@ def calculate_allfaculty(faculty_status, queryfaculty_df):
 
 def calculate_faculty_share(faculty_df, institution, requestedYears):
     if institution != "All Higher Education":
-       institution_df = pd.DataFrame(faculty_df[faculty_df[chooseInstitution(institution)]])
-       institution_year1 = institution_df[institution_df['year'] == requestedYears[0]].groupby('faculty').apply(lambda x: x.faculty).value_counts()
-       institution_year2 = institution_df[institution_df['year'] == requestedYears[1]].groupby('faculty').apply(lambda x: x.faculty).value_counts()
+       institution_type = getInstitutionType(institution)
+       institution_df = pd.DataFrame(faculty_df[faculty_df[institution_type] == 1])
+       institution_year1 = institution_df[institution_df['year'] == int(requestedYears[0])].groupby('faculty').apply(lambda x: x.faculty).value_counts().reset_index().rename(columns={'faculty':'count_1'})
+       institution_year2 = institution_df[institution_df['year'] == int(requestedYears[1])].groupby('faculty').apply(lambda x: x.faculty).value_counts().reset_index().rename(columns={'faculty':'count_2'})
+       institution_final = institution_year1.merge(institution_year2, on = 'index', how = 'inner')
+       institution_final_list = [list(institution_final['count_1']),list(institution_final['count_2'])]
+       
+       print(institution_final_list)
+       return institution_final_list
     else:
        institution_df = pd.DataFrame(faculty_df.drop(columns = ['isresearch1institution', 'fouryear', 'twoyear']))
-       institution_year1 = institution_df[institution_df['year'] == requestedYears[0]].groupby('faculty').apply(lambda x: x.faculty).value_counts()
-       institution_year2 = institution_df[institution_df['year'] == requestedYears[1]].groupby('faculty').apply(lambda x: x.faculty).value_counts()
+       institution_year1 = institution_df[institution_df['year'] == int(requestedYears[0])].groupby('faculty').apply(lambda x: x.faculty).value_counts().reset_index().rename(columns={'faculty':'count_1'})
+       institution_year2 = institution_df[institution_df['year'] == int(requestedYears[1])].groupby('faculty').apply(lambda x: x.faculty).value_counts().reset_index().rename(columns={'faculty':'count_2'})
+       institution_final = institution_year1.merge(institution_year2, on = 'index', how = 'inner')
+       institution_final_list = [list(institution_final['count_1']),list(institution_final['count_2'])]
+       return institution_final_list
