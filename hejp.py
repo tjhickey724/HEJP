@@ -136,7 +136,9 @@ def science_opening():
         science_opening_result = []
         for science in requestedScience:
             science_opening_result.append(calculate_science_opening(science_df, science, requestedYears))
-        return render_template("scienceResult.html")
+        # [[[7580.0, 14392.0], [42.9, 34.1], [33.85, 39.73]]]
+        print(science_opening_result)
+        return render_template("scienceResult.html", requestedYears = requestedYears, requestedScience = requestedScience, science_opening_result = science_opening_result)
 
 @app.route('/scienceResult', methods=["GET","Post"])
 def science_opening_result():

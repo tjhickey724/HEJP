@@ -132,6 +132,11 @@ def calculate_science_opening(science_df, science, requestedYears):
     breakdown_year2_total.loc[3] = ['tenure_share', round(np.true_divide(breakdown_year2_total.iloc[0, 1], breakdown_year2_total.iloc[2, 1]) * 100, 2)]
     breakdown_year2_total.loc[4] = ['contingent_share', round(np.true_divide(breakdown_year2_total.iloc[1, 1], breakdown_year2_total.iloc[2, 1]) * 100, 2)]
     breakdown_final = breakdown_year1_total.merge(breakdown_year2_total, on = 'index', how = 'inner')
-    
-
+    breakdown_total = []
+    breakdown_total.append(breakdown_final['count_1'][2])
+    breakdown_total.append(breakdown_final['count_2'][2])
+    tenure_share = breakdown_final.iloc[3, 1:3]
+    contingent_share = breakdown_final.iloc[4, 1:3]
+    science_opening_list = [breakdown_total, list(tenure_share), list(contingent_share)]
+    # print(science_opening_list)
     return science_opening_list

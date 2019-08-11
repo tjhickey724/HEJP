@@ -12,152 +12,87 @@
     </div>
 
     <script>
+        var data = {
 
+          labels: [{{requestedScience|safe}}, " "],
+          datasets: [{
+            label: ['{{requestedYears[0]}}(left) ,', '{{requestedYears[1]}}(right)'],
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderWidth: 1,
+            data: [{{science_opening_result[0][0][0]}}, {{science_opening_result[0][0][1]}}],
+            xAxisID: "bar-x-axis1",
+            yAxisId: "A"
+          },
+          {
+            label: "Tenure_line Share",
+            backgroundColor: 'rgb(255, 255, 86)',
+            borderWidth: 1,
+            data: [{{science_opening_result[0][1][0]}}, {{science_opening_result[0][1][1]}}],
+            xAxisID: "bar-x-axis2",
+            yAxisID: "B"
+          }, {
+            label: "Contingent Share",
+            backgroundColor: 'rgb(255, 255, 200)',
+            borderWidth: 1,
+            data: [{{science_opening_result[0][2][0]}}, {{science_opening_result[0][2][1]}}],
+            xAxisID: "bar-x-axis2",
+            yAxisID: "B"
+          }]
+        };
 
-      var barChartData = {
-        // labels: ["sociology", "anthropology","literature", "history"],
-        labels: {{requestedScience|safe}},
-        datasets: [
-        {
-          label: {{requestedYears[0]}},
-          backgroundColor: 'rgb(255, 255, 132)',
-          borderColor: 'rgb(255, 255, 132)',
-          borderWidth: 1,
-          strokeColor: "#79D1CF",
-          fillColor: "#79D1CF",
-          stack: 'Stack 0',
-          yAxisID: 'A',
-          data:{{final_science[0][1][2]}}
-          // data: {{final_science[0][1]}}
-          // [(2007, [[102, 287, 902], [62, 24, 321]]), (2014, [[442, 1242, 2091], [189, 347, 699]])]
-        },
-        {
-          label: 'Tenure_Line Share(%)',
-          backgroundColor: 'rgb(245, 66, 66)',
-          borderColor: 'rgb(245, 66, 66)',
-          stack: 'Stack 1',
-          strokeColor: "#79D1CF",
-          fillColor: "#79D1CF",
-          yAxisID: 'B',
-          data: {{final_science[0][1][1]}}
-
-          // data: {{final_science[1][1]}}
-        },
-        {
-          label: 'Contingent Share(%)',
-          backgroundColor: 'rgb(245, 141, 66)',
-          borderColor: 'rgb(245, 141, 66)',
-          stack: 'Stack 2',
-          strokeColor: "#79D1CF",
-          fillColor: "#79D1CF",
-          yAxisID: 'B',
-          data: {{final_science[0][1][0]}}
-
-          // data: {{final_science[1][1]}}
-        },
-        {
-          label: {{requestedYears[1]}},
-          backgroundColor: 'rgb(66, 245, 173)',
-          borderColor: 'rgb(66, 245, 173)',
-          borderWidth: 1,
-          stack: 'Stack 3',
-          strokeColor: "#79D1CF",
-          fillColor: "#79D1CF",
-          yAxisID: 'A',
-          data: {{final_science[1][1][2]}}
-          // data: {{final_science[0][1]}}
-          // [(2007, [[102, 287, 902], [62, 24, 321]]), (2014, [[442, 1242, 2091], [189, 347, 699]])]
-        },
-        {
-          label: 'Tenure_Line Share(%)',
-          backgroundColor: 'rgb(66, 138, 245)',
-          borderColor: 'rgb(66, 138, 245)',
-          stack: 'Stack 4',
-          strokeColor: "#79D1CF",
-          fillColor: "#79D1CF",
-          yAxisID: 'B',
-          data: {{final_science[1][1][1]}}
-
-          // data: {{final_science[1][1]}}
-        },
-        {
-          label: 'Contingent Share(%)',
-          backgroundColor: 'rgb(72, 66, 245)',
-          borderColor: 'rgb(72, 66, 245)',
-          stack:'Stack 5',
-          strokeColor: "#79D1CF",
-          fillColor: "#79D1CF",
-          yAxisID: 'B',
-          data: {{final_science[1][1][0]}}
-
-          // data: {{final_science[1][1]}}
-        }]
-      };
-      window.onload = function() {
-        var ctx = document.getElementById('canvas').getContext('2d');
-        var myChart = new Chart(ctx, {
-          type: 'bar',
-          data: barChartData,
-
-          options: {
-            // Elements options apply to all of the options unless overridden in a dataset
-            // In this case, we are setting the border of each horizontal bar to be 2px wide
-            elements: {
-              rectangle: {
-                borderWidth: 2,
-              }
-            },
-            responsive: true,
-            legend: {
-              position: 'right',
-            },
-            title: {
-              display: true,
-              text: {{requestedScience|safe}},
-            },
-            plugins: {
-					    datalabels: {
-						  color: 'black',
-              anchor: 'end',
-              align: 'bottom',
-						  display: function(context) {
-							  return context.dataset.data[context.dataIndex];
-						  },
-						  font: {
-							   weight: 'bold'
-						  },
-						  formatter: Math.round
-					  }
-				 },
-            scales: {
-  						yAxes: [{
-  							type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
-  							display: true,
-  							position: 'left',
-  							id: 'A',
-  						},
-              {
-  							type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
-  							display: true,
-  							position: 'right',
-  							id: 'B',
-                ticks: {
-                    min: 0,
-                    max: this.max,// Your absolute max value
-                    callback: function (value) {
-                      return (value / this.max * 100).toFixed(0) + '%'; // convert it to percentage
-                    },
-                },
-                scaleLabel: {
-                  display: true,
-              }
-  					}],
-          }
+        var options = {
+        scales: {
+          xAxes: [{
+            stacked: true,
+            id: "bar-x-axis1",
+            barThickness: 90,
+          }, {
+            display: false,
+            stacked: false,
+            id: "bar-x-axis2",
+            barThickness: 30,
+            // these are needed because the bar controller defaults set only the first x axis properties
+            type: 'category',
+            categoryPercentage: 0.5,
+            barPercentage: 0.5,
+            // gridLines: {
+            //   offsetGridLines: true
+            // },
+            offset: true
+          }],
+          yAxes: [{
+            id: 'A',
+            type:'linear',
+            position: 'left'
+          }, {
+            id: 'B',
+            type: 'linear',
+            position: 'right',
+            stacked: false,
+            ticks: {
+               beginAtZero: true,
+               min: 0,
+               max: 100,// Your absolute max value
+               callback: function (value) {
+                 return value  + '%'; // convert it to percentage
+               },
+             },
+             scaleLabel: {
+               display: true,
+               labelString: 'Percentage',
+             }
+            }]
         }
-      });
-    }
+      };
 
-    </script>
+      var ctx = document.getElementById("canvas").getContext("2d");
+        var myBarChart = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: options
+        });
+
+  </script>
     <form method = "post" action = "/science">
       <section>
         <article>
