@@ -83,18 +83,17 @@ def queryNonFaculty(years, institution):
     return queryNonFaculty
 
 def queryScienceOpening(requestedYears):
-    queryScienceOpening = "SELECT dummytable.year, isresearch1institution, ipedssectorname, fouryear, twoyear, "
+    queryScienceOpening = "SELECT dummytable.year, isresearch1institution, fouryear, twoyear, "
     queryScienceOpening += "biologicalandbiomedicalsciences, chemistry, computerandinformationsciences, "
     queryScienceOpening += "geosciencesatmosphericandoceansc, mathematicsandstatistics, physicsandastronomy, "
-    queryScienceOpening += "healthsciences,numberofdetailedfieldsofstudy,faculty,postdoctoral, tenured, "
-    queryScienceOpening += "tenured_track, contingent "
+    queryScienceOpening += "healthsciences,numberofdetailedfieldsofstudy,faculty, postdoctoral, "
+    queryScienceOpening += "tenureline, contingent "
     queryScienceOpening += "FROM maintable "
     queryScienceOpening += "INNER JOIN dummytable on maintable.jobid = dummytable.jobid "
     queryScienceOpening += "WHERE postdoctoral != 1 "
     queryScienceOpening += "AND faculty = 1 "
-    queryScienceOpening += "AND (numberofdetailedfieldsofstudy > 2 OR healthsciences != 1) "
+    queryScienceOpening += "AND (numberofdetailedfieldsofstudy > 1 OR healthsciences != 1) "
     queryScienceOpening += "AND " + makeYears(requestedYears) + " "
-    queryScienceOpening += "AND (ipedssectorname NOT ILIKE 'nan' OR ipedssectorname NOT ILIKE '%Sector unknown (not active%') "
     return queryScienceOpening
 
 def queryAllFaculty (requestedYears):
@@ -106,7 +105,7 @@ def queryAllFaculty (requestedYears):
     queryAllFaculty += "FROM maintable "
     queryAllFaculty += "INNER JOIN dummytable on maintable.jobid = dummytable.jobid "
     queryAllFaculty += "WHERE postdoctoral != 1 AND faculty = 1 "
-    queryAllFaculty += "AND (numberofdetailedfieldsofstudy > 2 OR healthsciences != 1) "
+    queryAllFaculty += "AND (numberofdetailedfieldsofstudy >= 2 OR healthsciences != 1) "
     queryAllFaculty += "AND "+ makeYears(requestedYears)
     queryAllFaculty += "AND (ipedssectorname NOT ILIKE '%nan%' AND ipedssectorname NOT ILIKE '%Sector unknown (not active%' )"
     return queryAllFaculty

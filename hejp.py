@@ -126,21 +126,13 @@ def science_opening():
         requestedScience = request.form.getlist('sciences')
         requestedInstitution = request.form.get('institutionType')
         requestedYears = request.form.getlist('years')
-        science_df = pd.DataFrame(queryAll(queryScienceOpening(requestedYears)), columns = ['year', 'isresearch1institution', 'ipedssectorname', 'fouryear', 'twoyear', 'biologicalandbiomedicalsciences', 'chemistry', 'computerandinformationsciences', 'geosciencesatmosphericandoceansc', 'mathematicsandstatistics', 'physicsandastronomy', 'healthsciences', 'numberofdetailedfieldsofstudy', 'faculty', 'postdoctoral', 'tenured', 'tenured_track', 'contingent'])
-        science_df = science_df.drop(columns = ['ipedssectorname', 'numberofdetailedfieldsofstudy', 'postdoctoral', 'faculty'])
-        # (3) Tenure_Line / Contingent Manipualtion
-        # Clarify the Tenure Line variable
-        science_df['tenure_line'] = science_df['tenured'] + science_df['tenured_track']
-        science_df['tenure_line'].where(science_df['tenure_line'] < 2, 1, inplace=True)
-
-        # Mutually exclude Tenure-Line and Contingent
-        science_df['contingent'].where(((science_df['tenure_line'] > 0) & (science_df['contingent'] < 1) |
-                                        (science_df['tenure_line'] < 1) & (science_df['contingent'] > 0)), 0, inplace=True)
-        science_df = science_df.drop(columns = ['tenured_track', 'tenured'])
+        science_df = pd.DataFrame(queryAll(queryScienceOpening(requestedYears)), columns = ['year', 'isresearch1institution', 'fouryear', 'twoyear', 'biologicalandbiomedicalsciences', 'chemistry', 'computerandinformationsciences', 'geosciencesatmosphericandoceansc', 'mathematicsandstatistics', 'physicsandastronomy', 'healthsciences', 'numberofdetailedfieldsofstudy', 'faculty', 'postdoctoral', 'tenure_line', 'contingent'])
+        science_df = science_df.drop(columns = ['numberofdetailedfieldsofstudy', 'postdoctoral', 'faculty'])
         if requestedInstitution != "All Higher Education":
             science_df = science_df[science_df[getInstitutionType(requestedInstitution)] == 1].drop(columns = ['isresearch1institution', 'fouryear', 'twoyear'])
         else:
             science_df = science_df.drop(columns = ['isresearch1institution', 'fouryear', 'twoyear'])
+
         science_opening_result = []
         for science in requestedScience:
             science_opening_result.append(calculate_science_opening(science_df, science, requestedYears))

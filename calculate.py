@@ -118,16 +118,20 @@ def calculate_science_opening(science_df, science, requestedYears):
     sub_science_df = sub_science_df[sub_science_df[science_field] == 1].drop(columns = science_field)
     # breakdown by year
     breakdown_year1 = sub_science_df[sub_science_df['year'] == int(requestedYears[0])].drop(columns = 'year')
+    count_row_1 = breakdown_year1.shape[0]
     breakdown_year2 = sub_science_df[sub_science_df['year'] == int(requestedYears[1])].drop(columns = 'year')
-    # tenureline for different years
+    count_row_2 = breakdown_year2.shape[0]
+
     breakdown_year1_total = breakdown_year1.sum().reset_index().rename(columns = {0: 'count_1'})
-    breakdown_year1_total.loc[2] = ['total', sum(breakdown_year1_total['count_1'])]
+    breakdown_year1_total.loc[2] = ['total', count_row_1]
+    breakdown_year1_total.loc[3] = ['tenure_share', round(np.true_divide(breakdown_year1_total.iloc[0, 1], breakdown_year1_total.iloc[2, 1]) * 100, 2)]
+    breakdown_year1_total.loc[4] = ['contingent_share', round(np.true_divide(breakdown_year1_total.iloc[1, 1], breakdown_year1_total.iloc[2, 1]) * 100, 2)]
+
     breakdown_year2_total = breakdown_year2.sum().reset_index().rename(columns = {0: 'count_2'})
-    breakdown_year2_total.loc[2] = ['total', sum(breakdown_year2_total['count_2'])]
+    breakdown_year2_total.loc[2] = ['total', count_row_2]
+    breakdown_year2_total.loc[3] = ['tenure_share', round(np.true_divide(breakdown_year2_total.iloc[0, 1], breakdown_year2_total.iloc[2, 1]) * 100, 2)]
+    breakdown_year2_total.loc[4] = ['contingent_share', round(np.true_divide(breakdown_year2_total.iloc[1, 1], breakdown_year2_total.iloc[2, 1]) * 100, 2)]
     breakdown_final = breakdown_year1_total.merge(breakdown_year2_total, on = 'index', how = 'inner')
-    print(breakdown_final)
-    # contingent for different years
-    # breakdown_year2_tenureline = pd.DataFrame(breakdown_year2[breakdown_year2['tenure_line'] == 1].sum())
-    # breakdown_year2_contingent = pd.DataFrame(breakdown_year2[breakdown_year2['contingent'] == 1].sum())
+    
 
     return science_opening_list
