@@ -3,61 +3,113 @@
 
 
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
     	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
       <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.5.0"></script>
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+      <style>
+        #buttons {
+          display: flex;
+          justify-content: center;
+        }
+
+        #two {
+          display: none;
+        }
+
+        form{
+          margin-left: 20px;
+          margin-top: 20px;
+        }
+      </style>
   </head>
+
   <body>
-    <div id="container" style="width: 75%;">
-      <canvas id="canvas"></canvas>
+    <div class="jumbotron">
+      <h1 class="display-4">Sciences faculty composition</h1>
+    </div>
+
+    <div id="one" style="width: 95%;">
+      <canvas id="myChart"></canvas>
+    </div>
+
+    <div id="two" style="width: 95%;">
+      <canvas id="myChart2"></canvas>
+    </div>
+
+    <div id="buttons">
+      <button id="chart1">Chart 1</button>
+      <button id="chart2">Chart 2</button>
     </div>
 
     <script>
+        $("#chart1").click(function(){
+        	$("#two").hide();
+        	$("#one").show();
+        });
+
+        $("#chart2").click(function(){
+        	$("#two").show();
+        	$("#one").hide();
+        });
+
         var data = {
 
-          labels: [{{requestedScience|safe}}, " "],
-          datasets: [{
-            label: ['{{requestedYears[0]}}(left) ,', '{{requestedYears[1]}}(right)'],
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderWidth: 1,
-            data: [{{science_opening_result[0][0][0]}}, {{science_opening_result[0][0][1]}}],
-            xAxisID: "bar-x-axis1",
-            yAxisId: "A"
-          },
+          labels: {{science_name|safe}},
+          datasets: [
           {
-            label: "Tenure_line Share",
-            backgroundColor: 'rgb(255, 255, 86)',
+            label: "Tenure_line Share ",
+            backgroundColor: 'rgb(176,224,230,0.8)',
             borderWidth: 1,
-            data: [{{science_opening_result[0][1][0]}}, {{science_opening_result[0][1][1]}}],
+            data: {{science_opening_result[1]}},
             xAxisID: "bar-x-axis2",
             yAxisID: "B"
           }, {
             label: "Contingent Share",
-            backgroundColor: 'rgb(255, 255, 200)',
+            backgroundColor: 'rgba(70,130,180,0.8)',
             borderWidth: 1,
-            data: [{{science_opening_result[0][2][0]}}, {{science_opening_result[0][2][1]}}],
+            data: {{science_opening_result[2]}},
             xAxisID: "bar-x-axis2",
             yAxisID: "B"
+          }, {
+            label: ['{{requestedYears[0]}}(Left)', ' {{requestedYears[1]}}(Right)'],
+            backgroundColor: 'rgba(176,196,222,0.4)',
+            borderWidth: 1,
+            data: {{science_opening_result[0]}},
+            xAxisID: "bar-x-axis1",
+            yAxisId: "A",
+            datalabels: {
+              formatter: false,
+              display: false,
+            }
           }]
         };
 
         var options = {
+        title: {
+            display: true,
+            text: 'Science Faculty Composition in {{requestedInstitution}} in {{requestedYears[0]|safe}} - {{requestedYears[1]|safe}}'
+        },
         scales: {
           xAxes: [{
             stacked: true,
             id: "bar-x-axis1",
-            barThickness: 90,
+            barThickness: 70,
+            categoryPercentage:1.0,
+            barPercentage: 0.9
           }, {
             display: false,
             stacked: false,
             id: "bar-x-axis2",
-            barThickness: 30,
+            barThickness: 15,
             // these are needed because the bar controller defaults set only the first x axis properties
             type: 'category',
-            categoryPercentage: 0.5,
+            categoryPercentage: 0.8,
             barPercentage: 0.5,
-            // gridLines: {
-            //   offsetGridLines: true
-            // },
             offset: true
           }],
           yAxes: [{
@@ -78,41 +130,140 @@
                },
              },
              scaleLabel: {
-               display: true,
-               labelString: 'Percentage',
+               display: true
              }
-            }]
-        }
-      };
+           }]
+         },
+           plugins: {
+               datalabels: {
+                  align: function(context) {
+                     var index = context.dataIndex;
+                     var value = context.dataset.data[index];
+                     var invert = Math.abs(value) <= 1;
+                     return value < 1 ? 'end' : 'start'
+                   },
+                   anchor: 'end',
+                   color: 'black',
+                   backgroundColor: null,
+                   borderColor: null,
+                   borderRadius: 4,
+                   borderWidth: 1,
+                   display: function(context) {
+                       return context.dataset.data[context.dataIndex];
+                   },
+                   font: {
+                       size: 10,
+                       weight: 600
+                   },
+                   offset: 4,
+                   padding: 0,
+                   formatter: function(value, context) {
+                     return value + '%';
+                   }
+                 }
+               }
 
-      var ctx = document.getElementById("canvas").getContext("2d");
-        var myBarChart = new Chart(ctx, {
+          };
+
+      var ctx = $("#myChart");
+        var myChart = new Chart(ctx, {
             type: 'bar',
             data: data,
             options: options
         });
 
-  </script>
-    <form method = "post" action = "/science">
-      <section>
-        <article>
-      <h2>Science Departments</h2>
-      {% for item in all_sciences %}
-            <input type="checkbox" name="sciences" value="{{item}}"> {{item}}<br>
-      {% endfor%}
-    </article>
-    </section>
 
-    <section>
-      <article>
-      <h2>Years</h2>
-      {% for item in year_range %}
-            <input type="checkbox" name="years" value="{{item}}"> {{item}}<br>
-      {% endfor%}
-      </article>
-    </section>
-    <button><h1>Generate Query</h1></button>
-    </form>
+      var data2 = {
+          labels: {{science_name|safe}},
+          datasets: [
+          {
+            label: "Tenure_line Share",
+            backgroundColor: 'rgb(176,224,230,0.8)',
+            borderWidth: 1,
+            data: {{science_opening_result[1]}},
+            xAxisID: "bar-x-axis1",
+
+          }, {
+            label: "Contingent Share",
+            backgroundColor: 'rgba(70,130,180,0.8)',
+            borderWidth: 1,
+            data: {{science_opening_result[2]}},
+            xAxisID: "bar-x-axis1",
+          }]
+        };
+
+        var options2 = {
+          title: {
+              display: true,
+              text: 'Science Faculty Composition in {{requestedInstitution}} in {{requestedYears[0]|safe}} - {{requestedYears[1]|safe}}'
+          },
+        scales: {
+          xAxes: [{
+            id: "bar-x-axis1",
+            stacked: false,
+            barThickness: 20,
+            // these are needed because the bar controller defaults set only the first x axis properties
+            type: 'category',
+            categoryPercentage: 0.8,
+            barPercentage: 0.5,
+            gridLines: {
+              offsetGridLines: true
+            }
+          }],
+          yAxes: [{
+            type: 'linear',
+            stacked: false,
+            ticks: {
+               beginAtZero: true,
+               min: 0,
+               max: 100,// Your absolute max value
+               callback: function (value) {
+                 return value  + '%'; // convert it to percentage
+               },
+             },
+             scaleLabel: {
+               display: true
+            }
+          }]
+         },
+           plugins: {
+               datalabels: {
+                  align: function(context) {
+                     var index = context.dataIndex;
+                     var value = context.dataset.data[index];
+                     var invert = Math.abs(value) <= 1;
+                     return value < 1 ? 'end' : 'start'
+                   },
+                   anchor: 'end',
+                   color: 'black',
+                   backgroundColor: null,
+                   borderColor: null,
+                   borderRadius: 4,
+                   borderWidth: 1,
+                   display: function(context) {
+                       return context.dataset.data[context.dataIndex];
+                   },
+                   font: {
+                       size: 10,
+                       weight: 600
+                   },
+                   offset: 4,
+                   padding: 0,
+                   formatter: function(value, context) {
+                     return value + '%';
+                   }
+                 }
+              }
+          };
+
+          var cty = $("#myChart2");
+            var myChart2 = new Chart(cty, {
+                type: 'bar',
+                data: data2,
+                options: options2
+          });
+
+  </script>
 
     </html>
   </body>
