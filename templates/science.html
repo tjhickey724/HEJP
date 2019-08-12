@@ -22,9 +22,14 @@
   <form method = "post" action = "/science" >
     <div class="form-group">
       <h4>Science Departments</h4>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" class="check" id="checkAll"> Select All Science Departments
+        </label>
+      </div>
       {% for item in all_sciences %}
         {% if item != "Health sciences" %}
-          <input type="checkbox" name="sciences" value="{{item}}">
+          <input type="checkbox" class="checkItem" name="sciences" value="{{item}}">
           <label>{{item}}</label><br>
         {% endif %}
       {% endfor%}
@@ -48,7 +53,10 @@
       </div>
     </form>
 
-
-    </html>
   </body>
 </html>
+<script>
+  $("#checkAll").click(function () {
+      $(".checkItem").prop('checked', $(this).prop('checked'));
+  });
+</script>

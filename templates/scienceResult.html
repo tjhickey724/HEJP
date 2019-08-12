@@ -14,10 +14,10 @@
       <style>
         #buttons {
           display: flex;
-          justify-content: center;
+          /* justify-content: center; */
         }
 
-        #two {
+        #one {
           display: none;
         }
 
@@ -33,18 +33,22 @@
       <h1 class="display-4">Sciences faculty composition</h1>
     </div>
 
+    <div id="buttons">
+      <button id="chart1" class="btn btn-outline-info btn-sm">display share and count</button>
+      <button id="chart2" class="btn btn-outline-info btn-sm">display share only</button>
+    </div>
+
     <div id="one" style="width: 95%;">
       <canvas id="myChart"></canvas>
+      <p> * Note: Data excludes both Heath Care including Nursing Non-Faculty postings and Health Sciences Faculty postings </p>
     </div>
 
     <div id="two" style="width: 95%;">
       <canvas id="myChart2"></canvas>
+      <p> * Note: Data excludes both Heath Care including Nursing Non-Faculty postings and Health Sciences Faculty postings </p>
+
     </div>
 
-    <div id="buttons">
-      <button id="chart1">Chart 1</button>
-      <button id="chart2">Chart 2</button>
-    </div>
 
     <script>
         $("#chart1").click(function(){
@@ -184,7 +188,7 @@
             xAxisID: "bar-x-axis1",
 
           }, {
-            label: "Contingent Share",
+            label: "Contingent Share {{requestedYears[0]}}(left), {{requestedYears[1]}}(right)",
             backgroundColor: 'rgba(70,130,180,0.8)',
             borderWidth: 1,
             data: {{science_opening_result[2]}},
