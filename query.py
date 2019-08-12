@@ -124,9 +124,10 @@ def queryLargestNSF(fieldString, fieldArray) :
 
 # queries: NSF Growth
 def queryNSFGrowth(f, requestedYears):
-    queryNSFGrowth = "SELECT dummytable.year, " + makeFields(f) + " "
+    queryNSFGrowth = "SELECT dummytable.year, twoyear, fouryear, isresearch1institution, public, private, " + makeFields(f) + " "
     # queryNSFGrowth += makeFields(f)
     queryNSFGrowth += "FROM dummytable "
+    queryNSFGrowth += "INNER JOIN maintable on dummytable.jobid = maintable.jobid "
     queryNSFGrowth += "WHERE (dummytable.healthsciences = 0 OR dummytable.numberofdetailedfieldsofstudy > 1) "
     queryNSFGrowth += "AND dummytable.faculty = 1 "
     queryNSFGrowth += "AND " + makeYears(requestedYears)

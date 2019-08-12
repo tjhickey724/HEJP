@@ -62,22 +62,31 @@ def demo4a():
 @app.route('/nsfGrowth', methods=["GET", "POST"])
 def nsfGrowth():
     if request.method=="GET":
-        return render_template('nsfGrowth.html', fields_of_study = fields_of_study, years = year_range, math = math, psychology = psychology, others = others, engineering = engineering, humanities = humanities, education = education, physicalSciences = physicalSciences, lifeSciences = lifeSciences)
+        return render_template('nsfGrowth.html', institutionType = institutionType, fields_of_study = fields_of_study, years = year_range, math = math, psychology = psychology, others = others, engineering = engineering, humanities = humanities, education = education, physicalSciences = physicalSciences, lifeSciences = lifeSciences)
     else:
         requestedYears = request.form.getlist('years')
         requestedFields = request.form.getlist('nsf_subject')
-        column_name = ['year']
-        column_name += makeFields(requestedFields).split(',')
+        requestedInstitution = request.form.get('institutionType')
+        column_name = ['year', 'twoyear', 'fouryear', 'isresearch1institution', 'public', 'private']
+        field_string = makeFields(requestedFields)
+        column_name += field_string[0:len(field_string) - 1].split(', ')
         nsf_df = pd.DataFrame(queryAll(queryNSFGrowth(requestedFields, requestedYears)), columns = column_name)
-        breakdown_year1 = pd.DataFrame(nsf_df[nsf_df['year'] == int(requestedYears[0])].drop(columns='year').sum()).reset_index()
-        breakdown_year2 = pd.DataFrame(nsf_df[nsf_df['year'] == int(requestedYears[1])].drop(columns='year').sum()).reset_index()
-        breakdown_year1.rename(columns={0:'count_1'}, inplace=True)
-        breakdown_year2.rename(columns={0:'count_2'}, inplace=True)
-        final = breakdown_year1.merge(breakdown_year2, on='index', how='inner')
-        final['growth'] = round(np.true_divide(final['count_2']-final['count_1'], final['count_1']) * 100, 2)
-        final = final.sort_values(by='growth', ascending=False).reset_index(drop=True)
-        final_nsf = [list(final['count_1']), list(final['count_2']), list(final['growth'])]
-        return render_template('nsfGrowthResult.html', final_nsf = final_nsf, requestedFields = requestedFields, requestedYears = requestedYears, fields_of_study = fields_of_study, years = year_range, math = math, psychology = psychology, others = others, engineering = engineering, humanities = humanities, education = education, physicalSciences = physicalSciences, lifeSciences = lifeSciences)
+        if requestedInstitution == 'R1 Universities' or requestedInstitution == '4-Year Institutions':
+            nsf_df = nsf_df[nsf_df[getInstitutionType(requestedInstitution)] == 1].drop(columns=['isresearch1institution','twoyear', 'fouryear'])
+            breakdown_year1 = pd.DataFrame(nsf_df[nsf_df['year'] == int(requestedYears[0])].drop(columns='year'))
+            breakdown_year2 = pd.DataFrame(nsf_df[nsf_df['year'] == int(requestedYears[1])].drop(columns='year'))
+            final_nsf = calculate_merge_nsfGrowth(breakdown_year1, breakdown_year2, requestedFields)
+            # final_nsf = [list(final['count_1']), list(final['count_2']), list(final['growth'])]
+            return render_template('nsfGrowthResult.html', final_nsf = final_nsf, requestedInstitution = requestedInstitution, requestedFields = requestedFields, requestedYears = requestedYears, fields_of_study = fields_of_study, years = year_range, math = math, psychology = psychology, others = others, engineering = engineering, humanities = humanities, education = education, physicalSciences = physicalSciences, lifeSciences = lifeSciences)
+        else:
+            nsf_df = nsf_df.drop(columns=['public', 'private'])
+            if requestedInstitution == '2-Year Institutions':
+                nsf_df = nsf_df[nsf_df[getInstitutionType(requestedInstitution)] == 1].drop(columns=['isresearch1institution','twoyear', 'fouryear'])
+            else:
+                nsf_df = nsf_df.drop(columns=['isresearch1institution','twoyear', 'fouryear'])
+            breakdown_year1 = pd.DataFrame(nsf_df[nsf_df['year'] == int(requestedYears[0])].drop(columns='year'))
+            breakdown_year2 = pd.DataFrame(nsf_df[nsf_df['year'] == int(requestedYears[1])].drop(columns='year'))
+            return render_template('nsfGrowthResult.html')
 
 @app.route('/nsfGrowthResult', methods=["GET","Post"])
 def nsfGrowthResult():
@@ -210,7 +219,6 @@ def grown_nonfaculty():
             public_final_list = [public_careerarea, list(public_final['public_x']), list(public_final['public_y'])]
             private_final_list = [private_careerarea, list(private_final['private_x']), list(private_final['private_y'])]
             top_ten_list = top_ten.values.tolist()
-            print(top_ten_list)
             return render_template("grown-nonfaculty-fouryear.html", top_ten_list = top_ten_list, total_final_list = total_final_list, public_final_list = public_final_list, private_final_list = private_final_list, year_range = year_range, institutionType = institutionType, requestedYears = requestedYears, requestedInstitution = requestedInstitution)
         else:
             nonfaculty_df = nonfaculty_df.drop(columns = [requestedInstitution, 'faculty', 'postdoctoral', 'public', 'private'])

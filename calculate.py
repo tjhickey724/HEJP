@@ -111,6 +111,79 @@ def calculate_faculty_share(faculty_df, institution, requestedYears):
        institution_final_list = [list(institution_final['count_1']),list(institution_final['count_2'])]
        return institution_final_list
 
+def calculate_merge_nsfGrowth(breakdown_year1, breakdown_year2, requestedFields):
+    private_df = pd.DataFrame(columns = ['field', 'type', 'count_1', 'count_2', 'growth'])
+    public_df = pd.DataFrame(columns = ['field', 'type', 'count_1', 'count_2', 'growth'])
+    total_df = pd.DataFrame(columns = ['field', 'type', 'count_1', 'count_2', 'growth'])
+    for field in requestedFields:
+        field_df = calculate_nsfGrowth(breakdown_year1, breakdown_year2, field)
+        private_df.loc[len(private_df)] = field_df.iloc[0]
+        public_df.loc[len(public_df)] = field_df.iloc[1]
+        total_df.loc[len(total_df)] = field_df.iloc[2]
+    # sort values
+    private_df = private_df.sort_values(by=['growth'], ascending=False)
+    public_df = public_df.sort_values(by=['growth'], ascending=False)
+    total_df = total_df.sort_values(by=['growth'], ascending=False)
+
+    if len(requestedFields) >= 10:
+        top_list = total_df[['field', 'growth']][:10]
+        top_growth = get_top_growth (top_list, private_df, public_df)
+    else:
+        top_list = total_df[['field', 'growth']]
+        top_growth = get_top_growth (top_list, private_df, public_df)
+
+    private_name = add_percent_to_name(private_df, 'field', 'growth')
+    public_name = add_percent_to_name(public_df, 'field', 'growth')
+    total_name = add_percent_to_name(total_df, 'field', 'growth')
+    # print(private_df)
+    # print(public_df)
+    # print(total_df)
+    private_final_list = [private_name, list(private_df['count_1']), list(private_df['count_2'])]
+    public_final_list = [public_name, list(public_df['count_1']), list(public_df['count_2'])]
+    total_final_list = [total_name, list(total_df['count_1']), list(total_df['count_2'])]
+    final_list = [private_final_list, public_final_list, total_final_list, top_growth]
+    return final_list
+
+#get the element with top growth rate
+def get_top_growth(top_list, private_df, public_df):
+    private_growth = private_df[['field', 'growth']]
+    public_growth = public_df[['field', 'growth']]
+    top_list = top_list.merge(private_growth, on = 'field', how = 'inner')
+    top_list = top_list.merge(public_growth, on = 'field', how = 'inner')
+    top_list_final = top_list.values.tolist()
+    return top_list_final
+
+# append the percent growth to the name: nsf field
+def add_percent_to_name(df, index_1, index_2):
+    field_name = list(df[index_1])
+    for i in range(0, len(df[index_2])):
+        field_name[i] += ' ' + str(list(df[index_2])[i]) + '%'
+    return field_name
+
+def calculate_nsfGrowth(breakdown_year1, breakdown_year2, field):
+    # breakdown by public
+    selected_field = makeFields([field])
+    selected_field = selected_field[0:len(selected_field)-1]
+    selected_field_year1 = breakdown_year1[[selected_field, 'private', 'public']]
+    selected_field_year1 = selected_field_year1[selected_field_year1[selected_field] == 1].drop(columns = selected_field)
+    count_year1 = selected_field_year1.shape[0]
+
+    selected_field_year1 = selected_field_year1.sum().reset_index().rename(columns= {0: 'count_1'})
+    selected_field_year1.loc[2] = ['total', count_year1]
+
+    selected_field_year2 = breakdown_year2[[selected_field, 'private', 'public']]
+    selected_field_year2 = selected_field_year2[selected_field_year2[selected_field] == 1].drop(columns = selected_field)
+    count_year2 = selected_field_year2.shape[0]
+
+    selected_field_year2 = selected_field_year2.sum().reset_index().rename(columns= {0: 'count_2'})
+    selected_field_year2.loc[2] = ['total', count_year2]
+    selected_field_final = selected_field_year1.merge(selected_field_year2, on = 'index', how = 'inner')
+    selected_field_final = selected_field_final.rename(columns = {'index': 'type'})
+    selected_field_final['growth'] = round(np.true_divide(selected_field_final['count_2']-selected_field_final['count_1'],  selected_field_final['count_1']) * 100, 2)
+    selected_field_final.insert(0, "field", [field, field, field])
+
+    return selected_field_final
+
 def calculate_science_opening(science_df, science, requestedYears):
     science_field = makeFields([science])
     science_field = science_field[0: len(science_field)-1]

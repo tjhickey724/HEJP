@@ -14,6 +14,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </head>
+
   <body>
     <div class="jumbotron">
       <h1 class="display-4">NSF Fields Growth</h1>
@@ -22,40 +23,48 @@
   <form method = "post" action = "/nsfGrowth" >
     <div class="form-group">
       <h4>NSF fields</h4>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" class="check" id="checkAll"> Check All
+        </label>
+      </div>
+      <div class = "checkbox">
       {% for item in lifeSciences %}
-				{% if item != "Health sciences" %}
-          <input type="checkbox" name="nsf_subject" value="{{item}}">
+				{% if item != "Health sciences" and item != "Agricultural sciences and natural sciences"%}
+          <input type="checkbox" class="checkItem" name="nsf_subject" value="{{item}}">
           <label>{{item}}</label><br>
 				{% endif %}
       {% endfor%}
 			{% for item in physicalSciences %}
-          <input type="checkbox" name="nsf_subject" value="{{item}}">
+          <input type="checkbox" class="checkItem" name="nsf_subject" value="{{item}}">
           <label>{{item}}</label><br>
       {% endfor%}
 			{% for item in all_sciences %}
-					<input type="checkbox" name="nsf_subject" value="{{item}}">
+					<input type="checkbox" class="checkItem" name="nsf_subject" value="{{item}}">
 					<label>{{item}}</label><br>
 			{% endfor%}
 			{% for item in math %}
-					<input type="checkbox" name="nsf_subject" value="{{item}}">
+					<input type="checkbox" class="checkItem" name="nsf_subject" value="{{item}}">
 					<label>{{item}}</label><br>
 			{% endfor%}
 			{% for item in psychology %}
-					<input type="checkbox" name="nsf_subject" value="{{item}}">
+					<input type="checkbox" class="checkItem" name="nsf_subject" value="{{item}}">
 					<label>{{item}}</label><br>
 			{% endfor%}
-			<input type="checkbox" name="nsf_subject" value="Engineering">
+			<input type="checkbox" class="checkItem" name="nsf_subject" value="Engineering">
 			<label>FS_Engineering</label><br>
-			<input type="checkbox" name="nsf_subject" value="Education">
+			<input type="checkbox" class="checkItem" name="nsf_subject" value="Education">
 			<label>FS_Education</label><br>
 			{% for item in humanities %}
-					<input type="checkbox" name="nsf_subject" value="{{item}}">
+					<input type="checkbox" class="checkItem" name="nsf_subject" value="{{item}}">
 					<label>{{item}}</label><br>
 			{% endfor%}
 			{% for item in others %}
-					<input type="checkbox" name="nsf_subject" value="{{item}}">
+					<input type="checkbox" class="checkItem" name="nsf_subject" value="{{item}}">
 					<label>{{item}}</label><br>
 			{% endfor%}
+    </div>
+
     </div>
       <div class="form-group">
         <h4>Years</h4>
@@ -64,12 +73,20 @@
               <label>{{item}}</label>
         {% endfor%}
       </div>
+      <h4>Institution Type</h4>
+      {% for item in institutionType %}
+            <input type="radio" name="institutionType" value="{{item}}">
+            <label>{{item}}</label><br>
+      {% endfor%}
       <div class="form-group">
       <button type="submit" class="btn btn-info">Generate Query</button>
       </div>
     </form>
-
-
-    </html>
   </body>
 </html>
+
+<script>
+  $("#checkAll").click(function () {
+      $(".checkItem").prop('checked', $(this).prop('checked'));
+  });
+</script>
