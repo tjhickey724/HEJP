@@ -160,30 +160,58 @@ def grown_nonfaculty():
         requestedInstitution = request.form.get('institutionType')
         requestedYears = request.form.getlist('years')
         nonfaculty_df = pd.DataFrame(queryAll(queryNonFaculty(requestedYears, requestedInstitution)), columns = ['year', requestedInstitution, 'careerarea', 'faculty', 'postdoctoral', 'public', 'private'])
-        if requestedInstitution == "4-year Institutions":
+        if requestedInstitution == "4-year Institutions" or requestedInstitution == "R1 Universities":
             nonfaculty_df = nonfaculty_df.drop(columns = [requestedInstitution, 'faculty', 'postdoctoral'])
+            # total count
+            total_year1 = pd.DataFrame(nonfaculty_df[nonfaculty_df['year'] == int(requestedYears[0])]).drop(columns=['year', 'public', 'private']).groupby('careerarea').apply(lambda x: x.careerarea).value_counts().reset_index()
+            total_year2 = pd.DataFrame(nonfaculty_df[nonfaculty_df['year'] == int(requestedYears[1])]).drop(columns=['year', 'public', 'private']).groupby('careerarea').apply(lambda x: x.careerarea).value_counts().reset_index()
+            total_final = total_year1.merge(total_year2, on='index', how='inner')
+            total_final  = total_final [total_final['careerarea_y'] >= 1500]
+            total_final['growth'] = round(np.true_divide(total_final['careerarea_y']-total_final['careerarea_x'], total_final['careerarea_x']) * 100, 2)
+            total_final = total_final.sort_values(by='growth', ascending=False)
+            total_careerarea = list(total_final['index'])
+            for j in range(0, len(list(total_final['growth']))):
+                total_careerarea[j] += "\n" + str(list(total_final['growth'])[j]) + '%'
+            total_final_list = [total_careerarea, list(total_final['careerarea_x']), list(total_final['careerarea_y'])]
+            # create growth rate table
+            top_ten = total_final[['index', 'growth']][:10]
+            top_ten = top_ten.rename(columns = {'index': 'careerarea'})
+            # public breakout
             public_df = pd.DataFrame(nonfaculty_df[nonfaculty_df['public'] == 1])
             public_year1 = pd.DataFrame(public_df[public_df['year'] == int(requestedYears[0])]).drop(columns=['year','private']).groupby(['careerarea']).sum().reset_index()
             public_year2 = pd.DataFrame(public_df[public_df['year'] == int(requestedYears[1])]).drop(columns=['year','private']).groupby(['careerarea']).sum().reset_index()
             public_final = public_year1.merge(public_year2, on='careerarea', how='inner')
             public_final['growth'] = round(np.true_divide(public_final['public_y']-public_final['public_x'], public_final['public_x']) * 100, 2)
+
+            public_growth = public_final[['careerarea', 'growth']]
+            top_ten = top_ten.merge(public_growth, on = 'careerarea', how = 'inner')
+
+            public_final = public_final[public_final['public_y'] >= 1500]
             public_final = public_final.sort_values(by='growth', ascending=False)
             public_careerarea = list(public_final['careerarea'])
-
+            # private breakdown
             private_df = pd.DataFrame(nonfaculty_df[nonfaculty_df['private'] == 1])
             private_year1 = pd.DataFrame(private_df[private_df['year'] == int(requestedYears[0])]).drop(columns=['year','public']).groupby(['careerarea']).sum().reset_index()
             private_year2 = pd.DataFrame(private_df[private_df['year'] == int(requestedYears[1])]).drop(columns=['year','public']).groupby(['careerarea']).sum().reset_index()
             private_final = private_year1.merge(private_year2, on='careerarea', how='inner')
             private_final['growth'] = round(np.true_divide(private_final['private_y']-private_final['private_x'], private_final['private_x']) * 100, 2)
-            private_final = private_final.sort_values(by='growth', ascending=False)
 
+            private_growth = private_final[['careerarea', 'growth']]
+            top_ten = top_ten.merge(private_growth, on = 'careerarea', how = 'inner')
+
+            private_final = private_final[private_final['private_y'] >= 1500]
+            private_final = private_final.sort_values(by='growth', ascending=False)
+            # calculate growth
             private_careerarea = list(private_final['careerarea'])
             for i in range(0, len(list(public_final['growth']))):
                 public_careerarea[i] += "\n" + str(list(public_final['growth'])[i]) + '%'
+            for i in range(0, len(list(private_final['growth']))):
                 private_careerarea[i] += "\n" + str(list(private_final['growth'])[i]) + '%'
             public_final_list = [public_careerarea, list(public_final['public_x']), list(public_final['public_y'])]
             private_final_list = [private_careerarea, list(private_final['private_x']), list(private_final['private_y'])]
-            return render_template("grown-nonfaculty-fouryear.html", public_final_list = public_final_list, private_final_list = private_final_list, year_range = year_range, institutionType = institutionType, requestedYears = requestedYears, requestedInstitution = requestedInstitution)
+            top_ten_list = top_ten.values.tolist()
+            print(top_ten_list)
+            return render_template("grown-nonfaculty-fouryear.html", top_ten_list = top_ten_list, total_final_list = total_final_list, public_final_list = public_final_list, private_final_list = private_final_list, year_range = year_range, institutionType = institutionType, requestedYears = requestedYears, requestedInstitution = requestedInstitution)
         else:
             nonfaculty_df = nonfaculty_df.drop(columns = [requestedInstitution, 'faculty', 'postdoctoral', 'public', 'private'])
             nonfaculty_year1 = pd.DataFrame(nonfaculty_df[nonfaculty_df['year'] == int(requestedYears[0])])
@@ -191,7 +219,7 @@ def grown_nonfaculty():
             nonfaculty_year2 = pd.DataFrame(nonfaculty_df[nonfaculty_df['year'] == int(requestedYears[1])])
             nonfaculty_year2 = nonfaculty_year2.drop(columns='year').groupby(['careerarea']).apply(lambda x: x.careerarea).value_counts().to_frame().reset_index()
             nonfaculty_final = nonfaculty_year1.merge(nonfaculty_year2, on='index', how='inner')
-            nonfaculty_final = nonfaculty_final[nonfaculty_final['careerarea_y'] >= 1000]
+            nonfaculty_final = nonfaculty_final[nonfaculty_final['careerarea_y'] >= 1500]
             nonfaculty_final['growth'] = round(np.true_divide(nonfaculty_final['careerarea_y']-nonfaculty_final['careerarea_x'], nonfaculty_final['careerarea_x']) * 100, 2)
             nonfaculty_final = nonfaculty_final.sort_values(by='growth', ascending=False).reset_index(drop=True)
             area = list(nonfaculty_final['index'])

@@ -8,6 +8,18 @@
     margin-left: 20px;
     margin-top: 20px;
   }
+  div{
+    margin-left: 20px;
+    margin-bottom: 20px;
+    margin-right: 20px;
+    margin-top:20px;
+  }
+  #row {
+    margin-left: 20px;
+  }
+  #h6 {
+    font-size: 15;
+  }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
@@ -21,6 +33,7 @@
     <h1 class="display-4">Grown nonfaculty career areas</h1>
   </div>
     <div id="container" style="width: 90%;">
+      <canvas id="canvas_3"></canvas>
       <canvas id="canvas_1"></canvas>
       <canvas id="canvas_2"></canvas>
     </div>
@@ -62,7 +75,44 @@
           data: {{private_final_list[2]}}
         }]
       };
+      var horizontalBarChartData_3 = {
+        labels: {{total_final_list[0]|safe}},
+        datasets: [
+        {
+          label: {{requestedYears[0]}},
+          backgroundColor: 'rgb(255, 255, 132)',
+          borderColor: 'rgb(255, 255, 132)',
+          borderWidth: 1,
+          data: {{total_final_list[1]}}
+        },
+        {
+          label: {{requestedYears[1]}},
+          backgroundColor: 'rgb(255, 100, 132)',
+          borderColor: 'rgb(255, 100, 132)',
+          data: {{total_final_list[2]}}
+        }]
+      };
       window.onload = function() {
+        var ctz = document.getElementById('canvas_3').getContext('2d');
+        window.myHorizontalBar = new Chart(ctz, {
+          type: 'horizontalBar',
+          data: horizontalBarChartData_3,
+          options: {
+            elements: {
+              rectangle: {
+                borderWidth: 2,
+              }
+            },
+            responsive: true,
+            legend: {
+              position: 'right',
+            },
+            title: {
+              display: true,
+              text: 'Nonfaculty Growth By Career Area: {{requestedInstitution}} Institutions'
+            }
+          }
+      });
         var ctx = document.getElementById('canvas_1').getContext('2d');
         window.myHorizontalBar = new Chart(ctx, {
           type: 'horizontalBar',
@@ -79,7 +129,7 @@
             },
             title: {
               display: true,
-              text: 'Nonfaculty Growth By Career Area: Public 4-Year Institutions'
+              text: 'Nonfaculty Growth By Career Area: Public {{requestedInstitution}} Institutions'
             }
           }
       });
@@ -99,32 +149,42 @@
             },
             title: {
               display: true,
-              text: 'Nonfaculty Growth By Career Area: Private 4-Year Institutions'
+              text: 'Nonfaculty Growth By Career Area: Private {{requestedInstitution}} Institutions'
             }
           }
       })
     };
 </script>
 
-<form method = "post" action = "/grown-nonfaculty" >
-<div class="form-group">
-  <h4>Institution Type</h4>
-  {% for item in institutionType %}
-        <input type="radio" name="institutionType" value="{{item}}">
-        <label>{{item}}</label><br>
-  {% endfor%}
+<div class = "row">
+  <div class = "col-sm-10">
+  <h6> Top Ten Grown Nonfaculty By Career Area ({{requestedInstitution}}) in {{requestedYears[0]}} - {{requestedYears[1]}}</h6>
+  <table class="table table-bordered" style="font-size: 13px;">
+    <thead>
+      <tr>
+        <th scope="col">Rank</th>
+        <th scope="col">Career Area</th>
+        <th scope="col">Total Growth</th>
+        <th scope="col">Public Growth</th>
+        <th scope="col">Private Growth</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% set cnt = [0] %}
+        {% for item in top_ten_list %}
+          {% if cnt.append(cnt.pop() + 1) %} {% endif %}
+          <tr>
+            <th scope="row">{{cnt[0]}}</th>
+            <td>{{item[0]}}</td>
+            <td>{{item[1]}}%</td>
+            <td>{{item[2]}}%</td>
+            <td>{{item[3]}}%</td>
+          </tr>
+      {% endfor%}
+    </tbody>
+  </table>
 </div>
-  <div class="form-group">
-    <h4>Years</h4>
-    {% for item in years %}
-          <input type="checkbox" name="years" value="{{item}}">
-          <label>{{item}}</label>
-    {% endfor%}
-  </div>
-  <div class="form-group">
-  <button type="submit" class="btn btn-info">Generate Query</button>
-  </div>
-</form>
+
 
 </body>
 </html>
