@@ -63,18 +63,18 @@
 
         var data = {
 
-          labels: {{science_name|safe}},
+          labels: {{requestedScience|safe}},
           datasets: [
           {
             label: "Tenure_line Share ",
-            backgroundColor: 'rgb(176,224,230,0.8)',
+            backgroundColor: 'rgba(70,130,180,0.8)',
             borderWidth: 1,
             data: {{science_opening_result[1]}},
             xAxisID: "bar-x-axis2",
             yAxisID: "B"
           }, {
             label: "Contingent Share",
-            backgroundColor: 'rgba(70,130,180,0.8)',
+            backgroundColor: 'rgb(176,224,230,0.8)',
             borderWidth: 1,
             data: {{science_opening_result[2]}},
             xAxisID: "bar-x-axis2",
@@ -83,13 +83,24 @@
             label: ['{{requestedYears[0]}}(Left)', ' {{requestedYears[1]}}(Right)'],
             backgroundColor: 'rgba(176,196,222,0.4)',
             borderWidth: 1,
-            data: {{science_opening_result[0]}},
+            data: {{science_opening_result[0]}}
             xAxisID: "bar-x-axis1",
             yAxisId: "A",
             datalabels: {
               formatter: false,
               display: false,
             }
+            // {
+            //   label: ['{{requestedYears[1]}}(Right)'],
+            //   backgroundColor: 'rgba(176,196,222,0.4)',
+            //   borderWidth: 1,
+            //   data: {{science_opening_result[0]}},
+            //   xAxisID: "bar-x-axis1",
+            //   yAxisId: "A",
+            //   datalabels: {
+            //     formatter: false,
+            //     display: false,
+            //   }
           }]
         };
 

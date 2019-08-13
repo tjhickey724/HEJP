@@ -56,12 +56,16 @@
 			<input type="checkbox" class="checkItem" name="nsf_subject" value="Education">
 			<label>FS_Education</label><br>
 			{% for item in humanities %}
+        {% if item != "Other humanities and arts"%}
 					<input type="checkbox" class="checkItem" name="nsf_subject" value="{{item}}">
 					<label>{{item}}</label><br>
+        {% endif %}
 			{% endfor%}
 			{% for item in others %}
+        {% if item != "Communication"%}
 					<input type="checkbox" class="checkItem" name="nsf_subject" value="{{item}}">
 					<label>{{item}}</label><br>
+        {% endif %}
 			{% endfor%}
     </div>
 

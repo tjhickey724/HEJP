@@ -121,9 +121,9 @@ def calculate_merge_nsfGrowth(breakdown_year1, breakdown_year2, requestedFields)
         public_df.loc[len(public_df)] = field_df.iloc[1]
         total_df.loc[len(total_df)] = field_df.iloc[2]
     # sort values
-    private_df = private_df.sort_values(by=['growth'], ascending=False)
-    public_df = public_df.sort_values(by=['growth'], ascending=False)
-    total_df = total_df.sort_values(by=['growth'], ascending=False)
+    private_df = private_df.sort_values(by=['growth'], ascending=False).reset_index().shift()[1:].drop(columns = 'index')
+    public_df = public_df.sort_values(by=['growth'], ascending=False).reset_index().shift()[1:].drop(columns = 'index')
+    total_df = total_df.sort_values(by=['growth'], ascending=False).reset_index().shift()[1:].drop(columns = 'index')
 
     if len(requestedFields) >= 10:
         top_list = total_df[['field', 'growth']][:10]
@@ -147,17 +147,20 @@ def calculate_merge_nsfGrowth(breakdown_year1, breakdown_year2, requestedFields)
 #get the element with top growth rate
 def get_top_growth(top_list, private_df, public_df):
     private_growth = private_df[['field', 'growth']]
+    private_growth['rank_private'] = private_df.index
     public_growth = public_df[['field', 'growth']]
+    public_growth['rank_public'] = public_df.index
     top_list = top_list.merge(private_growth, on = 'field', how = 'inner')
     top_list = top_list.merge(public_growth, on = 'field', how = 'inner')
     top_list_final = top_list.values.tolist()
+
     return top_list_final
 
 # append the percent growth to the name: nsf field
 def add_percent_to_name(df, index_1, index_2):
     field_name = list(df[index_1])
     for i in range(0, len(df[index_2])):
-        field_name[i] += ' ' + str(list(df[index_2])[i]) + '%'
+        field_name[i] += '  (' + str(list(df[index_2])[i]) + '%)'
     return field_name
 
 def calculate_nsfGrowth(breakdown_year1, breakdown_year2, field):
@@ -179,7 +182,7 @@ def calculate_nsfGrowth(breakdown_year1, breakdown_year2, field):
     selected_field_year2.loc[2] = ['total', count_year2]
     selected_field_final = selected_field_year1.merge(selected_field_year2, on = 'index', how = 'inner')
     selected_field_final = selected_field_final.rename(columns = {'index': 'type'})
-    selected_field_final['growth'] = round(np.true_divide(selected_field_final['count_2']-selected_field_final['count_1'],  selected_field_final['count_1']) * 100, 2)
+    selected_field_final['growth'] = round(np.true_divide(selected_field_final['count_2']-selected_field_final['count_1'],  selected_field_final['count_1']) * 100, 1)
     selected_field_final.insert(0, "field", [field, field, field])
 
     return selected_field_final

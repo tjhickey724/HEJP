@@ -12,10 +12,10 @@
     margin-left: 20px;
     margin-bottom: 20px;
     margin-right: 20px;
-    margin-top:20px;
+    margin-top:40px;
   }
-  #row {
-    margin-left: 20px;
+  .row {
+    margin-left: 60px;
   }
   #h6 {
     font-size: 15;
@@ -32,9 +32,13 @@
   <div class="jumbotron">
     <h1 class="display-4">NSF Fields Growth</h1>
   </div>
-    <div id="container" style="width: 90%;">
+    <div id="container" style="width: 97%;">
       <canvas id="canvas_3"></canvas>
+    </div>
+    <div id="container" style="width: 97%;">
       <canvas id="canvas_1"></canvas>
+    </div>
+    <div id="container" style="width: 97%;">
       <canvas id="canvas_2"></canvas>
     </div>
 
@@ -46,52 +50,52 @@
         datasets: [
         {
           label: {{requestedYears[0]}},
-          backgroundColor: 'rgb(255, 255, 132)',
-          borderColor: 'rgb(255, 255, 132)',
+          backgroundColor: 'rgb(176,224,230)',
+          borderColor: 'rgb(176,224,230)',
           borderWidth: 1,
           data: {{final_nsf[2][1]}}
         },
         {
           label: {{requestedYears[1]}},
-          backgroundColor: 'rgb(255, 100, 132)',
-          borderColor: 'rgb(255, 100, 132)',
+          backgroundColor: 'rgba(70,130,180)',
+          borderColor: 'rgba(70,130,180)',
           data: {{final_nsf[2][2]}}
         }]
       };
       //public
       var horizontalBarChartData_2 = {
-        labels: {{final_nsf[0][0]|safe}},
-        datasets: [
-        {
-          label: {{requestedYears[0]}},
-          backgroundColor: 'rgb(255, 255, 132)',
-          borderColor: 'rgb(255, 255, 132)',
-          borderWidth: 1,
-          data: {{final_nsf[0][1]}}
-        },
-        {
-          label: {{requestedYears[1]}},
-          backgroundColor: 'rgb(255, 100, 132)',
-          borderColor: 'rgb(255, 100, 132)',
-          data: {{final_nsf[0][2]}}
-        }]
-      };
-      //private
-      var horizontalBarChartData_3 = {
         labels: {{final_nsf[1][0]|safe}},
         datasets: [
         {
           label: {{requestedYears[0]}},
-          backgroundColor: 'rgb(255, 255, 132)',
-          borderColor: 'rgb(255, 255, 132)',
+          backgroundColor: 'rgb(176,224,230)',
+          borderColor: 'rgb(176,224,230)',
           borderWidth: 1,
           data: {{final_nsf[1][1]}}
         },
         {
           label: {{requestedYears[1]}},
-          backgroundColor: 'rgb(255, 100, 132)',
-          borderColor: 'rgb(255, 100, 132)',
+          backgroundColor: 'rgba(70,130,180)',
+          borderColor: 'rgba(70,130,180)',
           data: {{final_nsf[1][2]}}
+        }]
+      };
+      //private
+      var horizontalBarChartData_3 = {
+        labels: {{final_nsf[0][0]|safe}},
+        datasets: [
+        {
+          label: {{requestedYears[0]}},
+          backgroundColor: 'rgb(176,224,230)',
+          borderColor: 'rgb(176,224,230)',
+          borderWidth: 1,
+          data: {{final_nsf[0][1]}}
+        },
+        {
+          label: {{requestedYears[1]}},
+          backgroundColor: 'rgba(70,130,180)',
+          borderColor: 'rgba(70,130,180)',
+          data: {{final_nsf[0][2]}}
         }]
       };
       window.onload = function() {
@@ -111,7 +115,7 @@
             },
             title: {
               display: true,
-              text: 'NSF Fields Growth: {{requestedInstitution}} Institutions'
+              text: 'NSF Fields Growth: {{requestedInstitution}} Institutions: {{requestedYears[0]}} - {{requestedYears[1]}}'
             }
           }
       });
@@ -131,7 +135,7 @@
             },
             title: {
               display: true,
-              text: 'NSF Fields Growth: Public {{requestedInstitution}}'
+              text: 'NSF Fields Growth: Public {{requestedInstitution}}: {{requestedYears[0]}} - {{requestedYears[1]}}'
             }
           }
       });
@@ -151,7 +155,7 @@
             },
             title: {
               display: true,
-              text: 'NSF Fields Growth: Private {{requestedInstitution}}'
+              text: 'NSF Fields Growth: Private {{requestedInstitution}}: {{requestedYears[0]}} - {{requestedYears[1]}}'
             }
           }
       })
@@ -160,15 +164,15 @@
 
 <div class = "row">
   <div class = "col-sm-10">
-  <h6> Top Growth NSF Fields:({{requestedInstitution}}) in {{requestedYears[0]}} - {{requestedYears[1]}}</h6>
+  <h6> Top Growth NSF Fields in {{requestedInstitution}} in {{requestedYears[0]}} - {{requestedYears[1]}} (Ranked by total growth)</h6>
   <table class="table table-bordered" style="font-size: 13px;">
     <thead>
       <tr>
         <th scope="col">Rank</th>
         <th scope="col">NSF field</th>
         <th scope="col">Total Growth</th>
-        <th scope="col">Public Growth</th>
-        <th scope="col">Private Growth</th>
+        <th scope="col">Public Growth (with Relative Rank)</th>
+        <th scope="col">Private Growth (with Relative Rank)</th>
       </tr>
     </thead>
     <tbody>
@@ -178,14 +182,14 @@
           <tr>
             <th scope="row">{{cnt[0]}}</th>
             <td>{{item[0]}}</td>
-            <td>{{item[3]}}%</td>
             <td>{{item[1]}}%</td>
-            <td>{{item[2]}}%</td>
+            <td>{{item[4]}}% ({{item[5]}})</td>
+            <td>{{item[2]}}% ({{item[3]}})</td>
           </tr>
       {% endfor%}
     </tbody>
   </table>
-  * Data excludes Heath Care including Nursing Non-Faculty postings and Health Sciences Faculty postings
+  * Data excludes the following NSF fields: Health sciences, Agricultural sciences and natural sciences, Communication, and Other humanities and arts
 </div>
 
 
