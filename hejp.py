@@ -148,8 +148,12 @@ def science_opening():
         contingent_share_count = []
         science_name = []
         for science in requestedScience:
-            science_name.append(science)
-            science_name.append("")
+            science_name_year = []
+            # parse the name into multiline label
+            science_name_year += science.split(' ')
+            science_name_year.append(requestedYears[0])
+            science_name.append(science_name_year)
+            science_name.append(requestedYears[1])
             science_result = calculate_science_opening(science_df, science, requestedYears)
             total_count += science_result[0]
             tenure_share_count += science_result[1]
@@ -176,7 +180,7 @@ def grown_nonfaculty():
             total_year2 = pd.DataFrame(nonfaculty_df[nonfaculty_df['year'] == int(requestedYears[1])]).drop(columns=['year', 'public', 'private']).groupby('careerarea').apply(lambda x: x.careerarea).value_counts().reset_index()
             total_final = total_year1.merge(total_year2, on='index', how='inner')
             total_final  = total_final [total_final['careerarea_y'] >= 1500]
-            total_final['growth'] = round(np.true_divide(total_final['careerarea_y']-total_final['careerarea_x'], total_final['careerarea_x']) * 100, 2)
+            total_final['growth'] = round(np.true_divide(total_final['careerarea_y']-total_final['careerarea_x'], total_final['careerarea_x']) * 100, 1)
             total_final = total_final.sort_values(by='growth', ascending=False)
             total_careerarea = list(total_final['index'])
             for j in range(0, len(list(total_final['growth']))):
@@ -190,32 +194,33 @@ def grown_nonfaculty():
             public_year1 = pd.DataFrame(public_df[public_df['year'] == int(requestedYears[0])]).drop(columns=['year','private']).groupby(['careerarea']).sum().reset_index()
             public_year2 = pd.DataFrame(public_df[public_df['year'] == int(requestedYears[1])]).drop(columns=['year','private']).groupby(['careerarea']).sum().reset_index()
             public_final = public_year1.merge(public_year2, on='careerarea', how='inner')
-            public_final['growth'] = round(np.true_divide(public_final['public_y']-public_final['public_x'], public_final['public_x']) * 100, 2)
-
+            public_final['growth'] = round(np.true_divide(public_final['public_y']-public_final['public_x'], public_final['public_x']) * 100, 1)
+            # merge the public growth with top ten table
+            public_final = public_final.sort_values(by='growth', ascending=False).reset_index().shift()[1:].drop(columns = 'index')
             public_growth = public_final[['careerarea', 'growth']]
+            public_growth['rank_public'] = public_final.index
             top_ten = top_ten.merge(public_growth, on = 'careerarea', how = 'inner')
 
             public_final = public_final[public_final['public_y'] >= 1500]
-            public_final = public_final.sort_values(by='growth', ascending=False)
             public_careerarea = list(public_final['careerarea'])
             # private breakdown
             private_df = pd.DataFrame(nonfaculty_df[nonfaculty_df['private'] == 1])
             private_year1 = pd.DataFrame(private_df[private_df['year'] == int(requestedYears[0])]).drop(columns=['year','public']).groupby(['careerarea']).sum().reset_index()
             private_year2 = pd.DataFrame(private_df[private_df['year'] == int(requestedYears[1])]).drop(columns=['year','public']).groupby(['careerarea']).sum().reset_index()
             private_final = private_year1.merge(private_year2, on='careerarea', how='inner')
-            private_final['growth'] = round(np.true_divide(private_final['private_y']-private_final['private_x'], private_final['private_x']) * 100, 2)
-
+            private_final['growth'] = round(np.true_divide(private_final['private_y']-private_final['private_x'], private_final['private_x']) * 100, 1)
+            private_final = private_final.sort_values(by='growth', ascending=False).reset_index().shift()[1:].drop(columns = 'index')
             private_growth = private_final[['careerarea', 'growth']]
+            private_growth['rank_private'] = private_final.index
             top_ten = top_ten.merge(private_growth, on = 'careerarea', how = 'inner')
 
             private_final = private_final[private_final['private_y'] >= 1500]
-            private_final = private_final.sort_values(by='growth', ascending=False)
             # calculate growth
             private_careerarea = list(private_final['careerarea'])
             for i in range(0, len(list(public_final['growth']))):
-                public_careerarea[i] += "\n" + str(list(public_final['growth'])[i]) + '%'
+                public_careerarea[i] += "  (" + str(list(public_final['growth'])[i]) + '%)'
             for i in range(0, len(list(private_final['growth']))):
-                private_careerarea[i] += "\n" + str(list(private_final['growth'])[i]) + '%'
+                private_careerarea[i] += "  (" + str(list(private_final['growth'])[i]) + '%)'
             public_final_list = [public_careerarea, list(public_final['public_x']), list(public_final['public_y'])]
             private_final_list = [private_careerarea, list(private_final['private_x']), list(private_final['private_y'])]
             top_ten_list = top_ten.values.tolist()

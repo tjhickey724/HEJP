@@ -12,9 +12,23 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
       <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
       <style>
-        #buttons {
+        div{
+          margin-left: 20px;
+          margin-bottom: 20px;
+          margin-right: 20px;
+          margin-top:40px;
+        }
+        .row {
+          margin-left: 60px;
+        }
+        #switch_count_share {
           display: flex;
           /* justify-content: center; */
+        }
+        #button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         #one {
@@ -33,20 +47,23 @@
       <h1 class="display-4">Sciences faculty composition</h1>
     </div>
 
-    <div id="buttons">
+    <div id="switch_count_share">
       <button id="chart1" class="btn btn-outline-info btn-sm">display share and count</button>
       <button id="chart2" class="btn btn-outline-info btn-sm">display share only</button>
     </div>
 
     <div id="one" style="width: 95%;">
       <canvas id="myChart"></canvas>
-      <p> * Note: Data excludes both Heath Care including Nursing Non-Faculty postings and Health Sciences Faculty postings </p>
+      <p><small>* Note: Data excludes both Heath Care including Nursing Non-Faculty postings and Health Sciences Faculty postings </small></p>
     </div>
 
     <div id="two" style="width: 95%;">
       <canvas id="myChart2"></canvas>
-      <p> * Note: Data excludes both Heath Care including Nursing Non-Faculty postings and Health Sciences Faculty postings </p>
+      <p><small>* Note: Data excludes both Heath Care including Nursing Non-Faculty postings and Health Sciences Faculty postings </small></p>
 
+    </div>
+    <div class = "button_back" id = "button">
+      <a href="/science" class="btn btn-info">Back</a>
     </div>
 
 
@@ -63,7 +80,7 @@
 
         var data = {
 
-          labels: {{requestedScience|safe}},
+          labels: {{science_name|safe}},
           datasets: [
           {
             label: "Tenure_line Share ",
@@ -80,27 +97,16 @@
             xAxisID: "bar-x-axis2",
             yAxisID: "B"
           }, {
-            label: ['{{requestedYears[0]}}(Left)', ' {{requestedYears[1]}}(Right)'],
+            label: '{{requestedYears[0]}}(Left), {{requestedYears[1]}}(Right)',
             backgroundColor: 'rgba(176,196,222,0.4)',
             borderWidth: 1,
-            data: {{science_opening_result[0]}}
+            data: {{science_opening_result[0]}},
             xAxisID: "bar-x-axis1",
             yAxisId: "A",
             datalabels: {
               formatter: false,
               display: false,
             }
-            // {
-            //   label: ['{{requestedYears[1]}}(Right)'],
-            //   backgroundColor: 'rgba(176,196,222,0.4)',
-            //   borderWidth: 1,
-            //   data: {{science_opening_result[0]}},
-            //   xAxisID: "bar-x-axis1",
-            //   yAxisId: "A",
-            //   datalabels: {
-            //     formatter: false,
-            //     display: false,
-            //   }
           }]
         };
 
@@ -193,14 +199,14 @@
           datasets: [
           {
             label: "Tenure_line Share {{requestedYears[0]}}(left), {{requestedYears[1]}}(right)",
-            backgroundColor: 'rgb(176,224,230,0.8)',
+            backgroundColor: 'rgba(70,130,180,0.8)',
             borderWidth: 1,
             data: {{science_opening_result[1]}},
             xAxisID: "bar-x-axis1",
 
           }, {
             label: "Contingent Share {{requestedYears[0]}}(left), {{requestedYears[1]}}(right)",
-            backgroundColor: 'rgba(70,130,180,0.8)',
+            backgroundColor: 'rgb(176,224,230,0.8)',
             borderWidth: 1,
             data: {{science_opening_result[2]}},
             xAxisID: "bar-x-axis1",
@@ -212,64 +218,64 @@
               display: true,
               text: 'Science Faculty Composition in {{requestedInstitution}} in {{requestedYears[0]|safe}} - {{requestedYears[1]|safe}}'
           },
-        scales: {
-          xAxes: [{
-            id: "bar-x-axis1",
-            stacked: false,
-            barThickness: 20,
-            // these are needed because the bar controller defaults set only the first x axis properties
-            type: 'category',
-            categoryPercentage: 0.8,
-            barPercentage: 0.5,
-            gridLines: {
-              offsetGridLines: true
-            }
-          }],
-          yAxes: [{
-            type: 'linear',
-            stacked: false,
-            ticks: {
-               beginAtZero: true,
-               min: 0,
-               max: 100,// Your absolute max value
-               callback: function (value) {
-                 return value  + '%'; // convert it to percentage
-               },
-             },
-             scaleLabel: {
-               display: true
-            }
-          }]
-         },
-           plugins: {
-               datalabels: {
-                  align: function(context) {
-                     var index = context.dataIndex;
-                     var value = context.dataset.data[index];
-                     var invert = Math.abs(value) <= 1;
-                     return value < 1 ? 'end' : 'start'
-                   },
-                   anchor: 'end',
-                   color: 'black',
-                   backgroundColor: null,
-                   borderColor: null,
-                   borderRadius: 4,
-                   borderWidth: 1,
-                   display: function(context) {
-                       return context.dataset.data[context.dataIndex];
-                   },
-                   font: {
-                       size: 10,
-                       weight: 600
-                   },
-                   offset: 4,
-                   padding: 0,
-                   formatter: function(value, context) {
-                     return value + '%';
-                   }
-                 }
+          scales: {
+            xAxes: [{
+              id: "bar-x-axis1",
+              stacked: false,
+              barThickness: 20,
+              // these are needed because the bar controller defaults set only the first x axis properties
+              type: 'category',
+              categoryPercentage: 0.8,
+              barPercentage: 0.5,
+              gridLines: {
+                offsetGridLines: true
               }
-          };
+            }],
+            yAxes: [{
+              type: 'linear',
+              stacked: false,
+              ticks: {
+                 beginAtZero: true,
+                 min: 0,
+                 max: 100,// Your absolute max value
+                 callback: function (value) {
+                   return value  + '%'; // convert it to percentage
+                 },
+               },
+               scaleLabel: {
+                 display: true
+              }
+            }]
+           },
+           plugins: {
+             datalabels: {
+                align: function(context) {
+                   var index = context.dataIndex;
+                   var value = context.dataset.data[index];
+                   var invert = Math.abs(value) <= 1;
+                   return value < 1 ? 'end' : 'start'
+                 },
+                 anchor: 'end',
+                 color: 'black',
+                 backgroundColor: null,
+                 borderColor: null,
+                 borderRadius: 4,
+                 borderWidth: 1,
+                 display: function(context) {
+                     return context.dataset.data[context.dataIndex];
+                 },
+                 font: {
+                     size: 10,
+                     weight: 600
+                 },
+                 offset: 4,
+                 padding: 0,
+                 formatter: function(value, context) {
+                   return value + '%';
+                 }
+               }
+            }
+        }
 
           var cty = $("#myChart2");
             var myChart2 = new Chart(cty, {
