@@ -98,18 +98,20 @@ def calculate_faculty_share(faculty_df, institution, requestedYears):
     if institution != "All Higher Education":
        institution_type = getInstitutionType(institution)
        institution_df = pd.DataFrame(faculty_df[faculty_df[institution_type] == 1])
-       institution_year1 = institution_df[institution_df['year'] == int(requestedYears[0])].groupby('faculty').apply(lambda x: x.faculty).value_counts().reset_index().rename(columns={'faculty':'count_1'})
-       institution_year2 = institution_df[institution_df['year'] == int(requestedYears[1])].groupby('faculty').apply(lambda x: x.faculty).value_counts().reset_index().rename(columns={'faculty':'count_2'})
-       institution_final = institution_year1.merge(institution_year2, on = 'index', how = 'inner')
-       institution_final_list = [list(institution_final['count_1']),list(institution_final['count_2'])]
-       return institution_final_list
     else:
        institution_df = pd.DataFrame(faculty_df.drop(columns = ['isresearch1institution', 'fouryear', 'twoyear']))
-       institution_year1 = institution_df[institution_df['year'] == int(requestedYears[0])].groupby('faculty').apply(lambda x: x.faculty).value_counts().reset_index().rename(columns={'faculty':'count_1'})
-       institution_year2 = institution_df[institution_df['year'] == int(requestedYears[1])].groupby('faculty').apply(lambda x: x.faculty).value_counts().reset_index().rename(columns={'faculty':'count_2'})
-       institution_final = institution_year1.merge(institution_year2, on = 'index', how = 'inner')
-       institution_final_list = [list(institution_final['count_1']),list(institution_final['count_2'])]
-       return institution_final_list
+
+    postdoc_df = institution_df[institution_df['postdoctoral'] == 1].drop(columns = 'faculty')
+    postdoc_df = postdoc_df.groupby('year').apply(lambda x: x.year).value_counts().reset_index().rename(columns = {'year':'postdoc_count', 'index': 'year'})
+    institution_df = institution_df[institution_df['postdoctoral'] != 1].drop(columns = 'postdoctoral')
+    institution_year1 = institution_df[institution_df['year'] == int(requestedYears[0])].groupby('faculty').apply(lambda x: x.faculty).value_counts().reset_index().rename(columns={'faculty':'count_1'})
+    institution_year2 = institution_df[institution_df['year'] == int(requestedYears[1])].groupby('faculty').apply(lambda x: x.faculty).value_counts().reset_index().rename(columns={'faculty':'count_2'})
+    institution_final = institution_year1.merge(institution_year2, on = 'index', how = 'inner')
+    institution_final.loc[3] = ['2', postdoc_df.iloc[1, 1], postdoc_df.iloc[0, 1]]
+    institution_final['share_1'] = round(np.true_divide(institution_final['count_1'], sum(institution_final['count_1'])) * 100, 1)
+    institution_final['share_2'] = round(np.true_divide(institution_final['count_2'], sum(institution_final['count_2'])) * 100, 1)
+    institution_final_list = [list(institution_final['count_1']),list(institution_final['count_2']), list(institution_final['share_1']), list(institution_final['share_2'])]
+    return institution_final_list
 
 def calculate_merge_nsfGrowth(breakdown_year1, breakdown_year2, requestedFields):
     private_df = pd.DataFrame(columns = ['field', 'type', 'count_1', 'count_2', 'growth'])

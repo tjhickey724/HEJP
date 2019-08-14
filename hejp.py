@@ -47,7 +47,6 @@ def demo4a():
         if (facultyResult==[]) :
             return render_template("noResults.html",query=query)
         faculty_df = pd.DataFrame(facultyResult, columns = ['year', 'isresearch1institution', 'postdoctoral', 'faculty', 'fouryear', 'twoyear'])
-        faculty_df = faculty_df.drop(columns = ['postdoctoral'])
         if len(requestedInstitution) > 1:
             institution_1 = requestedInstitution[0]
             institution_2 = requestedInstitution[1]

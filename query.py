@@ -141,7 +141,7 @@ def queryFaculty (requestedYears):
     queryfaculty += "dummytable.faculty, maintable.twoyear, maintable.fouryear "
     queryfaculty += "FROM maintable  "
     queryfaculty += "INNER JOIN dummytable ON dummytable.jobid = maintable.jobid "
-    queryfaculty += "WHERE dummytable.postdoctoral != 1 "
+    # queryfaculty += "WHERE dummytable.postdoctoral != 1 "
     # queryfaculty += "AND maintable.careerarea NOT ILIKE '%Health Care including Nursing%' "
     # queryfaculty += "AND (dummytable.numberofdetailedfieldsofstudy > 2 OR dummytable.healthsciences !=1) "
     queryfaculty += "And " + makeYears(requestedYears)

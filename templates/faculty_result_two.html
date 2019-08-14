@@ -3,9 +3,27 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<style>
+  div{
+    margin-left: 20px;
+    margin-bottom: 20px;
+    margin-right: 20px;
+    margin-top:40px;
+  }
+  #button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #chart#note{
+    margin-left: 50px;
+  }
+</style>
 </head>
 
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+
 <script type="text/javascript">
     google.charts.load("current", {packages:["corechart"]});
     google.charts.setOnLoadCallback(drawbar1Chart);
@@ -13,69 +31,109 @@
 
     function drawbar1Chart() {
       var data = google.visualization.arrayToDataTable([
-        ['Year', 'Faculty', 'Nonfaculty', { role: 'annotation' } ],
-        ['{{requestedYears[1]}}', {{institution_1_df[1][1]}}, {{institution_1_df[1][0]}}, ''],
-        ['{{requestedYears[0]}}', {{institution_1_df[0][1]}}, {{institution_1_df[0][0]}},'']
+        ['Year', 'Faculty', 'Nonfaculty', 'Postdoc', { role: 'annotation' } ],
+        ['{{requestedYears[0]}}', {{institution_1_df[0][1]}}, {{institution_1_df[0][0]}}, {{institution_1_df[0][2]}}, ''],
+        ['{{requestedYears[1]}}', {{institution_1_df[1][1]}}, {{institution_1_df[1][0]}}, {{institution_1_df[1][2]}},'']
       ]);
+
+      var values_swap =  {
+        {{institution_1_df[0][1]}}: '{{institution_1_df[2][1]}}%',
+        {{institution_1_df[0][0]}}: '{{institution_1_df[2][0]}}%',
+        {{institution_1_df[0][2]}}: '{{institution_1_df[2][2]}}%',
+        {{institution_1_df[1][1]}}: '{{institution_1_df[3][1]}}%',
+        {{institution_1_df[1][0]}}: '{{institution_1_df[3][0]}}%',
+        {{institution_1_df[1][2]}}: '{{institution_1_df[3][2]}}%'
+      }
 
       var view = new google.visualization.DataView(data);
       view.setColumns([0, 1,
-                       { calc: "stringify",
-                         sourceColumn: 1,
+                      { calc: function(data, row) {
+                        var value = data.getValue(row, 1);
+                        var formatted = values_swap[value];
+                        return formatted;
+                      },
+                      type: "string",
+                      role: "annotation" },
+                      2, { calc: function(data, row) {
+                           var value = data.getValue(row, 2);
+                           var formatted = values_swap[value];
+                           return formatted;
+                         },
                          type: "string",
                          role: "annotation" },
-                       2, { calc: "stringify",
-                         sourceColumn: 2,
-                         type: "string",
-                         role: "annotation" }
-                       ]);
+                      3, { calc: function(data, row) {
+                            var value = data.getValue(row, 3);
+                            var formatted = values_swap[value];
+                            return formatted;
+                          },
+                          type: "string",
+                          role: "annotation" }
+                      ])
 
-     var options_fullStacked = {
+     var options_stacked = {
          title: 'Share of Faculty vs. Nonfaculty for {{requestedInstitution[0]}} in {{requestedYears[0]}} - {{requestedYears[1]}}',
-         isStacked: 'percent',
+         isStacked: true,
          height: 300,
          legend: {position: 'top', maxLines: 3},
-         hAxis: {
-           minValue: 0,
-           ticks: [0, .2, .4, .6, .8, 1]
-         }
+         vAxis: {minValue: 0}
        };
 
       var chart = new google.visualization.BarChart(document.getElementById("barchart_values"));
-      chart.draw(view,options_fullStacked);
+      chart.draw(view,options_stacked);
     }
+
 
       function drawbar2Chart() {
         var data = google.visualization.arrayToDataTable([
-          ['Year', 'Faculty', 'Nonfaculty', { role: 'annotation' } ],
-          ['{{requestedYears[1]}}', {{institution_2_df[1][1]}}, {{institution_2_df[1][0]}}, ''],
-          ['{{requestedYears[0]}}', {{institution_2_df[0][1]}}, {{institution_2_df[0][0]}},'']
+          ['Year', 'Faculty', 'Nonfaculty', 'Postdoc', { role: 'annotation' } ],
+          ['{{requestedYears[0]}}', {{institution_2_df[0][1]}}, {{institution_2_df[0][0]}}, {{institution_2_df[0][2]}},''],
+          ['{{requestedYears[1]}}', {{institution_2_df[1][1]}}, {{institution_2_df[1][0]}}, {{institution_2_df[1][2]}}, '']
         ]);
+
+        var values_swap_2 =  {
+          {{institution_2_df[0][1]}}: '{{institution_2_df[2][1]}}%',
+          {{institution_2_df[0][0]}}: '{{institution_2_df[2][0]}}%',
+          {{institution_2_df[0][2]}}: '{{institution_2_df[2][2]}}%',
+          {{institution_2_df[1][1]}}: '{{institution_2_df[3][1]}}%',
+          {{institution_2_df[1][0]}}: '{{institution_2_df[3][0]}}%',
+          {{institution_2_df[1][2]}}: '{{institution_2_df[3][2]}}%'
+        }
 
         var view = new google.visualization.DataView(data);
         view.setColumns([0, 1,
-                         { calc: "stringify",
-                           sourceColumn: 1,
+                        { calc: function(data, row) {
+                          var value = data.getValue(row, 1);
+                          var formatted = values_swap_2[value];
+                          return formatted;
+                        },
+                        type: "string",
+                        role: "annotation" },
+                        2, { calc: function(data, row) {
+                             var value = data.getValue(row, 2);
+                             var formatted = values_swap_2[value];
+                             return formatted;
+                           },
                            type: "string",
                            role: "annotation" },
-                         2, { calc: "stringify",
-                           sourceColumn: 2,
-                           type: "string",
-                           role: "annotation" }
-                         ]);
+                        3, { calc: function(data, row) {
+                              var value = data.getValue(row, 3);
+                              var formatted = values_swap_2[value];
+                              return formatted;
+                            },
+                            type: "string",
+                            role: "annotation" }
+                        ])
 
-       var options_fullStacked = {
+
+       var options_stacked = {
            title: 'Share of Faculty vs. Nonfaculty for {{requestedInstitution[1]}} in {{requestedYears[0]}} - {{requestedYears[1]}}',
-           isStacked: 'percent',
+           isStacked: true,
            height: 300,
            legend: {position: 'top', maxLines: 3},
-           hAxis: {
-             minValue: 0,
-             ticks: [0, .2, .4, .6, .8, 1]
-           }
+           vAxis: {minValue: 0}
          };
         var chart = new google.visualization.BarChart(document.getElementById("barchart2_values"));
-        chart.draw(view,options_fullStacked);
+        chart.draw(view,options_stacked);
       }
 </script>
 
@@ -84,9 +142,15 @@
   <div class="jumbotron">
     <h1 class="display-4">Share of faculty vs. nonfaculty</h1>
   </div>
-  <div id="barchart_values" style="width: 900px; height: 300px;"></div>
-  <div id="barchart2_values" style="width: 900px; height: 300px;"></div>
-  <p> * Note: Data includes both Heath Care including Nursing Non-Faculty postings and Health Sciences Faculty postings </p>
-
+  <div id = "chart">
+    <div id="barchart_values" style="width: 900px; height: 300px;"></div>
+    <div id="barchart2_values" style="width: 900px; height: 300px;"></div>
+    <div id="note">
+      <p> <small>* Note: Data includes both Heath Care including Nursing Non-Faculty postings and Health Sciences Faculty postings </small></p>
+    </div>
+  </div>
+  <div class = "button_back" id = "button">
+    <a href="/faculty" class="btn btn-info">Back</a>
+  </div>
 </body>
 </html>
