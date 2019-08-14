@@ -183,7 +183,7 @@ def grown_nonfaculty():
             total_final = total_final.sort_values(by='growth', ascending=False)
             total_careerarea = list(total_final['index'])
             for j in range(0, len(list(total_final['growth']))):
-                total_careerarea[j] += "\n" + str(list(total_final['growth'])[j]) + '%'
+                total_careerarea[j] += "  (" + str(list(total_final['growth'])[j]) + '%)'
             total_final_list = [total_careerarea, list(total_final['careerarea_x']), list(total_final['careerarea_y'])]
             # create growth rate table
             top_ten = total_final[['index', 'growth']][:10]
@@ -195,10 +195,16 @@ def grown_nonfaculty():
             public_final = public_year1.merge(public_year2, on='careerarea', how='inner')
             public_final['growth'] = round(np.true_divide(public_final['public_y']-public_final['public_x'], public_final['public_x']) * 100, 1)
             # merge the public growth with top ten table
-            public_final = public_final.sort_values(by='growth', ascending=False).reset_index().shift()[1:].drop(columns = 'index')
+            public_final = public_final.sort_values(by='growth', ascending=False).reset_index().drop(columns = 'index')
             public_growth = public_final[['careerarea', 'growth']]
-            public_growth['rank_public'] = public_final.index
+
             top_ten = top_ten.merge(public_growth, on = 'careerarea', how = 'inner')
+            # get the public relative rank
+            public_rank = top_ten[['careerarea', 'growth_y']].sort_values(by='growth_y', ascending=False).reset_index().drop(columns=['index', 'growth_y'])
+            public_rank.index = np.arange(1, len(public_rank)+1)
+            public_rank['public_rank'] = public_rank.index
+            top_ten = top_ten.merge(public_rank, on = 'careerarea', how = 'inner')
+
 
             public_final = public_final[public_final['public_y'] >= 1500]
             public_careerarea = list(public_final['careerarea'])
@@ -208,10 +214,15 @@ def grown_nonfaculty():
             private_year2 = pd.DataFrame(private_df[private_df['year'] == int(requestedYears[1])]).drop(columns=['year','public']).groupby(['careerarea']).sum().reset_index()
             private_final = private_year1.merge(private_year2, on='careerarea', how='inner')
             private_final['growth'] = round(np.true_divide(private_final['private_y']-private_final['private_x'], private_final['private_x']) * 100, 1)
-            private_final = private_final.sort_values(by='growth', ascending=False).reset_index().shift()[1:].drop(columns = 'index')
+            private_final = private_final.sort_values(by='growth', ascending=False).reset_index().drop(columns = 'index')
             private_growth = private_final[['careerarea', 'growth']]
-            private_growth['rank_private'] = private_final.index
+
             top_ten = top_ten.merge(private_growth, on = 'careerarea', how = 'inner')
+            # get the relative rank for private
+            private_rank = top_ten[['careerarea', 'growth']].sort_values(by='growth', ascending=False).reset_index().drop(columns=['index', 'growth'])
+            private_rank.index = np.arange(1, len(private_rank)+1)
+            private_rank['private_rank'] = private_rank.index
+            top_ten = top_ten.merge(private_rank, on = 'careerarea', how = 'inner')
 
             private_final = private_final[private_final['private_y'] >= 1500]
             # calculate growth
@@ -236,7 +247,7 @@ def grown_nonfaculty():
             nonfaculty_final = nonfaculty_final.sort_values(by='growth', ascending=False).reset_index(drop=True)
             area = list(nonfaculty_final['index'])
             for i in range(0, len(list(nonfaculty_final['growth']))):
-                area[i] += " " + str(list(nonfaculty_final['growth'])[i]) + '%'
+                area[i] += "  (" + str(list(nonfaculty_final['growth'])[i]) + '%)'
             nonfaculty_final_list = [area, list(nonfaculty_final['careerarea_x']), list(nonfaculty_final['careerarea_y'])]
             return render_template("grown-nonfaculty-others.html", nonfaculty_final_list = nonfaculty_final_list, year_range = year_range, institutionType = institutionType, requestedYears = requestedYears, requestedInstitution = requestedInstitution)
 

@@ -167,7 +167,6 @@ def get_top_growth(top_list, private_df, public_df):
     public_relative_rank['public_rank'] = public_relative_rank.index
     top_list = top_list.merge(public_relative_rank, on='field', how='inner')
 
-    print(top_list)
     # public_growth = public_growth.sort_values(by=['growth'], ascending=False).reset_index().shift()[1:].drop(columns='index')
     # public_growth['rank_public'] = public_growth.index
 
