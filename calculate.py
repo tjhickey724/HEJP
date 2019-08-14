@@ -123,9 +123,12 @@ def calculate_merge_nsfGrowth(breakdown_year1, breakdown_year2, requestedFields)
         public_df.loc[len(public_df)] = field_df.iloc[1]
         total_df.loc[len(total_df)] = field_df.iloc[2]
     # sort values
-    private_df = private_df.sort_values(by=['growth'], ascending=False).reset_index().shift()[1:].drop(columns = 'index')
-    public_df = public_df.sort_values(by=['growth'], ascending=False).reset_index().shift()[1:].drop(columns = 'index')
-    total_df = total_df.sort_values(by=['growth'], ascending=False).reset_index().shift()[1:].drop(columns = 'index')
+    private_df = private_df.sort_values(by=['growth'], ascending=False)
+    public_df = public_df.sort_values(by=['growth'], ascending=False)
+    total_df = total_df.sort_values(by=['growth'], ascending=False)
+    print(private_df)
+    print(public_df)
+    print(total_df)
 
     if len(requestedFields) >= 10:
         top_list = total_df[['field', 'growth']][:10]
@@ -137,9 +140,6 @@ def calculate_merge_nsfGrowth(breakdown_year1, breakdown_year2, requestedFields)
     private_name = add_percent_to_name(private_df, 'field', 'growth')
     public_name = add_percent_to_name(public_df, 'field', 'growth')
     total_name = add_percent_to_name(total_df, 'field', 'growth')
-    # print(private_df)
-    # print(public_df)
-    # print(total_df)
     private_final_list = [private_name, list(private_df['count_1']), list(private_df['count_2'])]
     public_final_list = [public_name, list(public_df['count_1']), list(public_df['count_2'])]
     total_final_list = [total_name, list(total_df['count_1']), list(total_df['count_2'])]
@@ -149,10 +149,28 @@ def calculate_merge_nsfGrowth(breakdown_year1, breakdown_year2, requestedFields)
 #get the element with top growth rate
 def get_top_growth(top_list, private_df, public_df):
     private_growth = private_df[['field', 'growth']]
-    private_growth['rank_private'] = private_df.index
-    public_growth = public_df[['field', 'growth']]
-    public_growth['rank_public'] = public_df.index
     top_list = top_list.merge(private_growth, on = 'field', how = 'inner')
+
+    private_relative_rank = top_list[['field', 'growth_y']].sort_values(by=['growth_y'], ascending=False).reset_index()
+    private_relative_rank.index = np.arange(1, len(private_relative_rank)+1)
+    private_relative_rank = private_relative_rank.drop(columns=['index', 'growth_y'])
+
+    private_relative_rank['private_rank'] = private_relative_rank.index
+    top_list = top_list.merge(private_relative_rank, on='field', how='inner')
+    # private_growth = private_growth.sort_values(by=['growth'], ascending=False).reset_index().shift()[1:].drop(columns='index')
+    # private_growth['rank_private'] = private_growth.index
+    public_growth = public_df[['field', 'growth']]
+    top_list = top_list.merge(public_growth, on = 'field', how = 'inner')
+    public_relative_rank = top_list[['field', 'growth']].sort_values(by=['growth'], ascending=False).reset_index()
+    public_relative_rank.index = np.arange(1, len(public_relative_rank)+1)
+    public_relative_rank = public_relative_rank.drop(columns=['index', 'growth'])
+    public_relative_rank['public_rank'] = public_relative_rank.index
+    top_list = top_list.merge(public_relative_rank, on='field', how='inner')
+
+    print(top_list)
+    # public_growth = public_growth.sort_values(by=['growth'], ascending=False).reset_index().shift()[1:].drop(columns='index')
+    # public_growth['rank_public'] = public_growth.index
+
     top_list = top_list.merge(public_growth, on = 'field', how = 'inner')
     top_list_final = top_list.values.tolist()
 
