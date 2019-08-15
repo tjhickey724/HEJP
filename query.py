@@ -146,3 +146,15 @@ def queryFaculty (requestedYears):
     # queryfaculty += "AND (dummytable.numberofdetailedfieldsofstudy > 2 OR dummytable.healthsciences !=1) "
     queryfaculty += "And " + makeYears(requestedYears)
     return queryfaculty
+
+# occupational breakout by career area
+def queryCareerBreakout(requestedInstitution, requestedYears):
+    queryCareerBreakout = "SELECT jobid, year, occupation, careerarea, isresearch1institution, fouryear, twoyear "
+    queryCareerBreakout += "From maintable "
+    queryCareerBreakout += "Where " + makeYearsMain(requestedYears)
+    return queryCareerBreakout
+
+def querySkill(requestedYears):
+    querySkill = "SELECT jobid, skilltable.year, skill_cluster_name FROM skilltable "
+    querySkill += "WHERE skilltable.year = " + requestedYears[1]
+    return querySkill

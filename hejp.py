@@ -320,6 +320,46 @@ def career():
             final = [skill_name, year1count, year2count, growth]
             return render_template("careerResult2.html", requestedYears = requestedYears, requestedInstitution = requestedInstitution, year_range = year_range, institutionType = institutionType, final = final, year2table = year2table[:10])
 
+
+@app.route('/career_breakdown', methods = ["GET", "Post"])
+def career_breakdown():
+    if request.method == "GET":
+        return render_template("career_breakdown.html", year_range = year_range, institutionType = institutionType)
+    else:
+        requestedYears = request.form.getlist('years')
+        requestedInstitution = request.form.get('institutionType')
+        career_df = pd.DataFrame(queryAll(queryCareerBreakout(requestedInstitution,requestedYears)), columns = ['jobid', 'year', 'occupation', 'careerarea', 'isresearch1institution', 'fouryear', 'twoyear'])
+        skill_df = pd.DataFrame(queryAll(querySkill(requestedYears)), columns = ['jobid', 'year', 'skill_cluster_name'])
+        if requestedInstitution == 'All Higher Education':
+            career_df = career_df.drop(columns = ['isresearch1institution', 'twoyear', 'fouryear'])
+        else:
+            career_df = career_df[career_df[getInstitutionType(requestedInstitution)] == 1].drop(columns = ['isresearch1institution', 'twoyear', 'fouryear'])
+        careers = ['Education and Training', 'Science and Research', 'Counseling and Religious Life','Business Management and Operations', 'Analysis']
+        career_top_occupation = []
+        occupation_top_skills = []
+        top_skills_name = []
+        for career in careers:
+            aux_table = career_df[(career_df['careerarea']==career)]
+            occ_1 = pd.DataFrame(aux_table[aux_table['year']== int(requestedYears[0])]['occupation'].value_counts()).reset_index().rename(
+                columns={'occupation':'count_1', 'index':'occupation_1'})
+            occ_2 = pd.DataFrame(aux_table[aux_table['year']== int(requestedYears[1])]['occupation'].value_counts()).reset_index().rename(
+                columns={'occupation':'count_2', 'index':'occupation_2'})
+            occ_total = occ_1[:10].join(occ_2[:10])
+            # print(occ_total)
+            combine = []
+            combine.append(occ_total.values.tolist())
+            career_top_occupation += combine
+            # get the top skills
+            career_table = aux_table[(aux_table['year']== int(requestedYears[1]))&(aux_table['occupation']==occ_2.iloc[0]['occupation_2'])]
+            top_skills_name.append(occ_2.iloc[0]['occupation_2'])
+            career_table = career_table.merge(skill_df, how='inner', on='jobid')
+            output = pd.DataFrame(career_table['skill_cluster_name'].value_counts()[:10])
+            output = output.reset_index().rename(columns={'skill_cluster_name':'count', 'index':'skill_cluster_name'})
+            top_skills = []
+            top_skills.append(output.values.tolist())
+            occupation_top_skills += top_skills
+        return render_template("career_breakdown_result.html", career_top_occupation = career_top_occupation, requestedYears = requestedYears, requestedInstitution = requestedInstitution, careers = careers, occupation_top_skills = occupation_top_skills, top_skills_name = top_skills_name)
+
 @app.route('/careerResult', methods = ["GET", "Post"])
 def careerResult():
     if request.method == "GET":
