@@ -243,7 +243,7 @@ def grown_nonfaculty():
             nonfaculty_year2 = nonfaculty_year2.drop(columns='year').groupby(['careerarea']).apply(lambda x: x.careerarea).value_counts().to_frame().reset_index()
             nonfaculty_final = nonfaculty_year1.merge(nonfaculty_year2, on='index', how='inner')
             nonfaculty_final = nonfaculty_final[nonfaculty_final['careerarea_y'] >= 1500]
-            nonfaculty_final['growth'] = round(np.true_divide(nonfaculty_final['careerarea_y']-nonfaculty_final['careerarea_x'], nonfaculty_final['careerarea_x']) * 100, 2)
+            nonfaculty_final['growth'] = round(np.true_divide(nonfaculty_final['careerarea_y']-nonfaculty_final['careerarea_x'], nonfaculty_final['careerarea_x']) * 100, 1)
             nonfaculty_final = nonfaculty_final.sort_values(by='growth', ascending=False).reset_index(drop=True)
             area = list(nonfaculty_final['index'])
             for i in range(0, len(list(nonfaculty_final['growth']))):

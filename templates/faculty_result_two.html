@@ -5,7 +5,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <style>
   div{
-    margin-left: 20px;
+    margin-left: 10px;
     margin-bottom: 20px;
     margin-right: 20px;
     margin-top:40px;
@@ -37,12 +37,12 @@
       ]);
 
       var values_swap =  {
-        {{institution_1_df[0][1]}}: '{{institution_1_df[2][1]}}%',
-        {{institution_1_df[0][0]}}: '{{institution_1_df[2][0]}}%',
-        {{institution_1_df[0][2]}}: '{{institution_1_df[2][2]}}%',
-        {{institution_1_df[1][1]}}: '{{institution_1_df[3][1]}}%',
-        {{institution_1_df[1][0]}}: '{{institution_1_df[3][0]}}%',
-        {{institution_1_df[1][2]}}: '{{institution_1_df[3][2]}}%'
+        {{institution_1_df[0][1]}}: Math.round({{institution_1_df[2][1]}}),
+        {{institution_1_df[0][0]}}: Math.round({{institution_1_df[2][0]}}),
+        {{institution_1_df[0][2]}}: Math.round({{institution_1_df[2][2]}}),
+        {{institution_1_df[1][1]}}: Math.round({{institution_1_df[3][1]}}),
+        {{institution_1_df[1][0]}}: Math.round({{institution_1_df[3][0]}}),
+        {{institution_1_df[1][2]}}: Math.round({{institution_1_df[3][2]}})
       }
 
       var view = new google.visualization.DataView(data);
@@ -50,21 +50,21 @@
                       { calc: function(data, row) {
                         var value = data.getValue(row, 1);
                         var formatted = values_swap[value];
-                        return formatted;
+                        return formatted.toString() + '%';
                       },
                       type: "string",
                       role: "annotation" },
                       2, { calc: function(data, row) {
                            var value = data.getValue(row, 2);
                            var formatted = values_swap[value];
-                           return formatted;
+                           return formatted.toString() + '%';
                          },
                          type: "string",
                          role: "annotation" },
                       3, { calc: function(data, row) {
                             var value = data.getValue(row, 3);
                             var formatted = values_swap[value];
-                            return formatted;
+                            return formatted.toString() + '%';
                           },
                           type: "string",
                           role: "annotation" }
@@ -74,8 +74,15 @@
          title: 'Share of Faculty vs. Nonfaculty for {{requestedInstitution[0]}} in {{requestedYears[0]}} - {{requestedYears[1]}}',
          isStacked: true,
          height: 300,
+         width: 1200,
          legend: {position: 'top', maxLines: 3},
-         vAxis: {minValue: 0}
+         vAxis: {minValue: 0},
+         annotations: {
+             textStyle: {
+                 fontName: 'Whitney HTF Light',
+                 fontSize: 19,
+             }
+         }
        };
 
       var chart = new google.visualization.BarChart(document.getElementById("barchart_values"));
@@ -91,12 +98,12 @@
         ]);
 
         var values_swap_2 =  {
-          {{institution_2_df[0][1]}}: '{{institution_2_df[2][1]}}%',
-          {{institution_2_df[0][0]}}: '{{institution_2_df[2][0]}}%',
-          {{institution_2_df[0][2]}}: '{{institution_2_df[2][2]}}%',
-          {{institution_2_df[1][1]}}: '{{institution_2_df[3][1]}}%',
-          {{institution_2_df[1][0]}}: '{{institution_2_df[3][0]}}%',
-          {{institution_2_df[1][2]}}: '{{institution_2_df[3][2]}}%'
+          {{institution_2_df[0][1]}}: {{institution_2_df[2][1]}},
+          {{institution_2_df[0][0]}}: {{institution_2_df[2][0]}},
+          {{institution_2_df[0][2]}}: {{institution_2_df[2][2]}},
+          {{institution_2_df[1][1]}}: {{institution_2_df[3][1]}},
+          {{institution_2_df[1][0]}}: {{institution_2_df[3][0]}},
+          {{institution_2_df[1][2]}}: {{institution_2_df[3][2]}}
         }
 
         var view = new google.visualization.DataView(data);
@@ -104,21 +111,21 @@
                         { calc: function(data, row) {
                           var value = data.getValue(row, 1);
                           var formatted = values_swap_2[value];
-                          return formatted;
+                          return formatted.toString() + '%';
                         },
                         type: "string",
                         role: "annotation" },
                         2, { calc: function(data, row) {
                              var value = data.getValue(row, 2);
                              var formatted = values_swap_2[value];
-                             return formatted;
+                             return formatted.toString() + '%';
                            },
                            type: "string",
                            role: "annotation" },
                         3, { calc: function(data, row) {
                               var value = data.getValue(row, 3);
                               var formatted = values_swap_2[value];
-                              return formatted;
+                              return formatted.toString() + '%';
                             },
                             type: "string",
                             role: "annotation" }
@@ -129,8 +136,15 @@
            title: 'Share of Faculty vs. Nonfaculty for {{requestedInstitution[1]}} in {{requestedYears[0]}} - {{requestedYears[1]}}',
            isStacked: true,
            height: 300,
+           width: 1200,
            legend: {position: 'top', maxLines: 3},
-           vAxis: {minValue: 0}
+           vAxis: {minValue: 0},
+           annotations: {
+               textStyle: {
+                   fontName: 'Whitney HTF Light',
+                   fontSize: 19,
+               }
+           }
          };
         var chart = new google.visualization.BarChart(document.getElementById("barchart2_values"));
         chart.draw(view,options_stacked);

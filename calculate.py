@@ -108,8 +108,8 @@ def calculate_faculty_share(faculty_df, institution, requestedYears):
     institution_year2 = institution_df[institution_df['year'] == int(requestedYears[1])].groupby('faculty').apply(lambda x: x.faculty).value_counts().reset_index().rename(columns={'faculty':'count_2'})
     institution_final = institution_year1.merge(institution_year2, on = 'index', how = 'inner')
     institution_final.loc[3] = ['2', postdoc_df.iloc[1, 1], postdoc_df.iloc[0, 1]]
-    institution_final['share_1'] = round(np.true_divide(institution_final['count_1'], sum(institution_final['count_1'])) * 100, 1)
-    institution_final['share_2'] = round(np.true_divide(institution_final['count_2'], sum(institution_final['count_2'])) * 100, 1)
+    institution_final['share_1'] = round(np.true_divide(institution_final['count_1'], sum(institution_final['count_1'])) * 100)
+    institution_final['share_2'] = round(np.true_divide(institution_final['count_2'], sum(institution_final['count_2'])) * 100)
     institution_final_list = [list(institution_final['count_1']),list(institution_final['count_2']), list(institution_final['share_1']), list(institution_final['share_2'])]
     return institution_final_list
 
@@ -126,9 +126,7 @@ def calculate_merge_nsfGrowth(breakdown_year1, breakdown_year2, requestedFields)
     private_df = private_df.sort_values(by=['growth'], ascending=False)
     public_df = public_df.sort_values(by=['growth'], ascending=False)
     total_df = total_df.sort_values(by=['growth'], ascending=False)
-    print(private_df)
-    print(public_df)
-    print(total_df)
+
 
     if len(requestedFields) >= 10:
         top_list = total_df[['field', 'growth']][:10]
