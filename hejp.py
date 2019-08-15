@@ -334,7 +334,8 @@ def career_breakdown():
             career_df = career_df.drop(columns = ['isresearch1institution', 'twoyear', 'fouryear'])
         else:
             career_df = career_df[career_df[getInstitutionType(requestedInstitution)] == 1].drop(columns = ['isresearch1institution', 'twoyear', 'fouryear'])
-        careers = ['Education and Training', 'Science and Research', 'Counseling and Religious Life','Business Management and Operations', 'Analysis']
+        careers = ['Education and Training']
+        # careers = ['Education and Training', 'Science and Research', 'Counseling and Religious Life','Business Management and Operations', 'Analysis']
         career_top_occupation = []
         occupation_top_skills = []
         top_skills_name = []
@@ -342,8 +343,10 @@ def career_breakdown():
             aux_table = career_df[(career_df['careerarea']==career)]
             occ_1 = pd.DataFrame(aux_table[aux_table['year']== int(requestedYears[0])]['occupation'].value_counts()).reset_index().rename(
                 columns={'occupation':'count_1', 'index':'occupation_1'})
+            occ_1 = occ_1[occ_1['occupation_1'] != 'College Professor / Instructor']
             occ_2 = pd.DataFrame(aux_table[aux_table['year']== int(requestedYears[1])]['occupation'].value_counts()).reset_index().rename(
                 columns={'occupation':'count_2', 'index':'occupation_2'})
+            occ_2 = occ_2[occ_2['occupation_2'] != 'College Professor / Instructor']
             occ_total = occ_1[:10].join(occ_2[:10])
             # print(occ_total)
             combine = []
