@@ -149,9 +149,11 @@ def queryFaculty (requestedYears):
 
 # occupational breakout by career area
 def queryCareerBreakout(requestedInstitution, requestedYears):
-    queryCareerBreakout = "SELECT jobid, year, occupation, careerarea, isresearch1institution, fouryear, twoyear "
+    queryCareerBreakout = "SELECT maintable.jobid, maintable.year, occupation, careerarea, isresearch1institution, fouryear, twoyear, faculty, postdoctoral "
     queryCareerBreakout += "From maintable "
-    queryCareerBreakout += "Where " + makeYearsMain(requestedYears)
+    queryCareerBreakout += "INNER JOIN dummytable on maintable.jobid = dummytable.jobid "
+    queryCareerBreakout += "Where " + makeYearsMain(requestedYears) + " "
+    queryCareerBreakout += "AND (faculty = 0 AND postdoctoral != 1)"
     return queryCareerBreakout
 
 def querySkill(requestedYears):

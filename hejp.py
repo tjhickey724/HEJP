@@ -328,7 +328,8 @@ def career_breakdown():
     else:
         requestedYears = request.form.getlist('years')
         requestedInstitution = request.form.get('institutionType')
-        career_df = pd.DataFrame(queryAll(queryCareerBreakout(requestedInstitution,requestedYears)), columns = ['jobid', 'year', 'occupation', 'careerarea', 'isresearch1institution', 'fouryear', 'twoyear'])
+        career_df = pd.DataFrame(queryAll(queryCareerBreakout(requestedInstitution,requestedYears)), columns = ['jobid', 'year', 'occupation', 'careerarea', 'isresearch1institution', 'fouryear', 'twoyear', 'faculty', 'postdoctoral'])
+        career_df = career_df.drop(columns = ['faculty', 'postdoctoral'])
         skill_df = pd.DataFrame(queryAll(querySkill(requestedYears)), columns = ['jobid', 'year', 'skill_cluster_name'])
         if requestedInstitution == 'All Higher Education':
             career_df = career_df.drop(columns = ['isresearch1institution', 'twoyear', 'fouryear'])
