@@ -331,15 +331,18 @@ def career_breakdown():
         career_df = pd.DataFrame(queryAll(queryCareerBreakout(requestedInstitution,requestedYears)), columns = ['jobid', 'year', 'occupation', 'careerarea', 'isresearch1institution', 'fouryear', 'twoyear', 'faculty', 'postdoctoral'])
         career_df = career_df.drop(columns = ['faculty', 'postdoctoral'])
         skill_df = pd.DataFrame(queryAll(querySkill(requestedYears)), columns = ['jobid', 'year', 'skill_cluster_name'])
+        skill_df_year1 = skill_df[skill_df['year'] == int(requestedYears[0])]
+        skill_df_year2 = skill_df[skill_df['year'] == int(requestedYears[1])]
         if requestedInstitution == 'All Higher Education':
             career_df = career_df.drop(columns = ['isresearch1institution', 'twoyear', 'fouryear'])
         else:
             career_df = career_df[career_df[getInstitutionType(requestedInstitution)] == 1].drop(columns = ['isresearch1institution', 'twoyear', 'fouryear'])
-        careers = ['Education and Training']
+        careers = ['Business Management and Operations']
         # careers = ['Education and Training', 'Science and Research', 'Counseling and Religious Life','Business Management and Operations', 'Analysis']
         career_top_occupation = []
         occupation_top_skills = []
         top_skills_name = []
+        growth = []
         for career in careers:
             aux_table = career_df[(career_df['careerarea']==career)]
             occ_1 = pd.DataFrame(aux_table[aux_table['year']== int(requestedYears[0])]['occupation'].value_counts()).reset_index().rename(
@@ -355,14 +358,40 @@ def career_breakdown():
             career_top_occupation += combine
             # get the top skills
             career_table = aux_table[(aux_table['year']== int(requestedYears[1]))&(aux_table['occupation']==occ_2.iloc[0]['occupation_2'])]
+            career_table_year1 = aux_table[(aux_table['year']== int(requestedYears[0]))&(aux_table['occupation']==occ_1.iloc[0]['occupation_1'])]
+            total_year1 = career_table_year1.shape[0]
+            total_year2 = career_table.shape[0]
+            # career_table_year1['adjusted_share1'] = round(np.true_divide(nonfaculty_final['careerarea_y'], nonfaculty_final['careerarea_x']) * 100, 1)
             top_skills_name.append(occ_2.iloc[0]['occupation_2'])
-            career_table = career_table.merge(skill_df, how='inner', on='jobid')
-            output = pd.DataFrame(career_table['skill_cluster_name'].value_counts()[:10])
+
+            # merge skill table
+            career_table = career_table.merge(skill_df_year2, how='inner', on='jobid')
+            career_table_year1 = career_table_year1.merge(skill_df_year1, how ='inner', on ='jobid')
+            # career_table_year1['adjusted_share1'] = round(np.true_divide(nonfaculty_final['careerarea_y'], nonfaculty_final['careerarea_x']) * 100, 1)
+            growth_table = pd.DataFrame(career_table_year1['skill_cluster_name'].value_counts())
+            growth_table = growth_table.reset_index().rename(columns={'skill_cluster_name':'count_1', 'index':'skill_cluster_name'})
+            growth_table['adjusted_share1'] = round(np.true_divide(growth_table['count_1'], total_year1), 2)
+
+            output = pd.DataFrame(career_table['skill_cluster_name'].value_counts())
             output = output.reset_index().rename(columns={'skill_cluster_name':'count', 'index':'skill_cluster_name'})
+            growth_table = growth_table.merge(output, how = 'inner', on = 'skill_cluster_name')
+            # print(growth_table)
+            # print(growth_table)
+            growth_table['adjusted_share2'] = round(np.true_divide(growth_table['count'], total_year2), 2)
+            print(growth_table)
+            growth_table['growth'] = round(np.true_divide(growth_table['adjusted_share2']-growth_table['adjusted_share1'], growth_table['adjusted_share1']) * 100, 2)
+            growth_table_filtered = growth_table[['skill_cluster_name', 'growth']]
+            growth_table_filtered = growth_table_filtered[growth_table_filtered ['growth'] != float("inf")]
+            growth_table_filtered = growth_table_filtered.sort_values(by ='growth', ascending = False)
+            print(growth_table)
+            growth_occ = []
+            growth_occ.append(growth_table_filtered[:10].values.tolist())
+            growth += growth_occ
+
             top_skills = []
-            top_skills.append(output.values.tolist())
+            top_skills.append(output[:10].values.tolist())
             occupation_top_skills += top_skills
-        return render_template("career_breakdown_result.html", career_top_occupation = career_top_occupation, requestedYears = requestedYears, requestedInstitution = requestedInstitution, careers = careers, occupation_top_skills = occupation_top_skills, top_skills_name = top_skills_name)
+        return render_template("career_breakdown_result.html", career_top_occupation = career_top_occupation, requestedYears = requestedYears, requestedInstitution = requestedInstitution, careers = careers, occupation_top_skills = occupation_top_skills, top_skills_name = top_skills_name, growth = growth)
 
 @app.route('/careerResult', methods = ["GET", "Post"])
 def careerResult():

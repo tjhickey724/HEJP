@@ -158,5 +158,5 @@ def queryCareerBreakout(requestedInstitution, requestedYears):
 
 def querySkill(requestedYears):
     querySkill = "SELECT jobid, skilltable.year, skill_cluster_name FROM skilltable "
-    querySkill += "WHERE skilltable.year = " + requestedYears[1]
+    querySkill += "WHERE skilltable.year = " + requestedYears[0] + " OR skilltable.year = " + requestedYears[1]
     return querySkill

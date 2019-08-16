@@ -47,9 +47,9 @@
     <thead>
       <tr>
         <th scope="col">Rank</th>
-        <th scope="col">Top Ten Occupation {{requestedYears[0]}}</th>
+        <th scope="col">Top Ten Occupations {{requestedYears[0]}}</th>
         <th scope="col">Number of Posts {{requestedYears[0]}} </th>
-        <th scope="col">Top Ten Occupation {{requestedYears[1]}}</th>
+        <th scope="col">Top Ten Occupations {{requestedYears[1]}}</th>
         <th scope="col">Number of Posts {{requestedYears[1]}}</th>
       </tr>
     </thead>
@@ -68,6 +68,7 @@
     </tbody>
   </table>
 </div>
+<div class = "col-sm-10">
 <div class = "col-sm-6">
 <h5>Top Ten Skills for {{top_skills_name[career_title[0]]}}</h5>
 <table class="table table-bordered">
@@ -90,6 +91,30 @@
     {% endfor%}
   </tbody>
 </table>
+</div>
+<div class = "col-sm-4">
+<h5>Fastest Growing Skills</h5>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th scope="col">Rank</th>
+      <th scope="col">Fastest Growing Skills</th>
+      <th scope="col">Growth</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% set count_z = [0] %}
+      {% for grow in growth[career_title[0]] %}
+        {% if count_z.append(count_z.pop() + 1) %} {% endif %}
+        <tr>
+          <th scope="row">{{count_z[0]}}</th>
+          <td>{{grow[0]}}</td>
+          <td>{{grow[1]}}%</td>
+        </tr>
+    {% endfor%}
+  </tbody>
+</table>
+</div>
 </div>
 {% if career_title.append(career_title.pop() + 1) %} {% endif %}
 {% endfor %}
