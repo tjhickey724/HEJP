@@ -370,14 +370,14 @@ def career_breakdown():
             # career_table_year1['adjusted_share1'] = round(np.true_divide(nonfaculty_final['careerarea_y'], nonfaculty_final['careerarea_x']) * 100, 1)
             growth_table = pd.DataFrame(career_table_year1['skill_cluster_name'].value_counts())
             growth_table = growth_table.reset_index().rename(columns={'skill_cluster_name':'count_1', 'index':'skill_cluster_name'})
-            growth_table['adjusted_share1'] = round(np.true_divide(growth_table['count_1'], total_year1), 2)
+            growth_table['adjusted_share1'] = np.true_divide(growth_table['count_1'], total_year1)
 
             output = pd.DataFrame(career_table['skill_cluster_name'].value_counts())
             output = output.reset_index().rename(columns={'skill_cluster_name':'count', 'index':'skill_cluster_name'})
             growth_table = growth_table.merge(output, how = 'inner', on = 'skill_cluster_name')
             # print(growth_table)
             # print(growth_table)
-            growth_table['adjusted_share2'] = round(np.true_divide(growth_table['count'], total_year2), 2)
+            growth_table['adjusted_share2'] = np.true_divide(growth_table['count'], total_year2)
             print(growth_table)
             growth_table['growth'] = round(np.true_divide(growth_table['adjusted_share2']-growth_table['adjusted_share1'], growth_table['adjusted_share1']) * 100, 2)
             growth_table_filtered = growth_table[['skill_cluster_name', 'growth']]
@@ -423,6 +423,15 @@ def nonfaculty_phd():
 @app.route('/nonfaculty-phd-result', methods = ["GET", "Post"])
 def nonfaculty_phd_result():
     return render_template("nonfaculty-phd-result.html")
+
+@app.route('/exploration_tool', methods = ["GET", "Post"])
+def exploration_tool():
+    if request.method == "GET":
+        category = ['Career Area', 'Occupation', 'IPEDS Institution Name', 'Year', 'Metropolitan Statistical Area', 'R1', '2-Year', '4-Year', 'Faculty']
+        return render_template("exploration_tool.html", category = category)
+    else:
+        requestedCategory = request.form.getlist('category_value')
+        return render_template("exploration_tool_2.html")
 
 @app.route('/mentalandhealth', methods = ["GET", "POST"])
 def mentalandhealth():
