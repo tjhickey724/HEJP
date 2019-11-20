@@ -43,6 +43,8 @@ def demo4a():
     else:
         requestedYears = request.form.getlist('years')
         requestedInstitution = request.form.getlist('institutionType')
+        if len(requestedYears) < 2 or len(requestedInstitution) > 2:
+            return render_template("Error.html")
         facultyResult = queryAll(queryFaculty(requestedYears))
         if (facultyResult==[]) :
             return render_template("noResults.html",query=query)
@@ -66,6 +68,8 @@ def nsfGrowth():
         requestedYears = request.form.getlist('years')
         requestedFields = request.form.getlist('nsf_subject')
         requestedInstitution = request.form.get('institutionType')
+        if len(requestedYears) < 2:
+            return render_template('Error.html')
         column_name = ['year', 'twoyear', 'fouryear', 'isresearch1institution', 'public', 'private']
         field_string = makeFields(requestedFields)
         column_name += field_string[0:len(field_string) - 1].split(', ')
@@ -123,7 +127,6 @@ def largestNSF():
         fieldArray = fieldArray[0: len(fieldArray)-2]
         queryLargestNSFResult = queryAll(queryLargestNSF(fieldString, fieldArray))
         resultList = list(queryLargestNSFResult[0])
-        print(resultList)
         return render_template("largestNSF.html", largestNSF = largestNSF, largestNSFResult = resultList)
 
 @app.route('/science', methods=["GET","Post"])
@@ -134,6 +137,8 @@ def science_opening():
         requestedScience = request.form.getlist('sciences')
         requestedInstitution = request.form.get('institutionType')
         requestedYears = request.form.getlist('years')
+        if len(requestedYears) < 2:
+            return render_template("Error.html")
         science_df = pd.DataFrame(queryAll(queryScienceOpening(requestedYears)), columns = ['year', 'isresearch1institution', 'fouryear', 'twoyear', 'biologicalandbiomedicalsciences', 'chemistry', 'computerandinformationsciences', 'geosciencesatmosphericandoceansc', 'mathematicsandstatistics', 'physicsandastronomy', 'healthsciences', 'numberofdetailedfieldsofstudy', 'faculty', 'postdoctoral', 'tenure_line', 'contingent'])
         science_df = science_df.drop(columns = ['numberofdetailedfieldsofstudy', 'postdoctoral', 'faculty'])
         if requestedInstitution != "All Higher Education":
@@ -171,6 +176,8 @@ def grown_nonfaculty():
     else:
         requestedInstitution = request.form.get('institutionType')
         requestedYears = request.form.getlist('years')
+        if len(requestedYears) < 2:
+            return render_template("Error.html")
         nonfaculty_df = pd.DataFrame(queryAll(queryNonFaculty(requestedYears, requestedInstitution)), columns = ['year', requestedInstitution, 'careerarea', 'faculty', 'postdoctoral', 'public', 'private'])
         if requestedInstitution == "4-year Institutions" or requestedInstitution == "R1 Universities":
             nonfaculty_df = nonfaculty_df.drop(columns = [requestedInstitution, 'faculty', 'postdoctoral'])
