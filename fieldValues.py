@@ -1,5 +1,6 @@
 faculty_status =['Tenure Line Positions', 'Full-Time Contingent Positions', 'Part-Time Contingent Positions']
 
+job_status = ['Faculty', 'Non-faculty', 'Post-Doctoral']
 
 year_range = ['2007','2010','2011','2012','2013','2014','2015','2016','2017']
 

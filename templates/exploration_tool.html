@@ -24,13 +24,85 @@
   <div class="form-group">
     <h4>Welcome to the Exploration Tool!</h4>
     <h4>Which fields would you like to define?</h4>
-    {% for item in category %}
-          <input type="checkbox" name="category_value" value="{{item}}">
-          <label>{{item}}</label><br>
-    {% endfor%}
+    <div id="accordion">
+      <div class="card">
+        <div class="card-header" id="headingOne">
+          <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="#collapseOne">
+            <input type="checkbox" name="category_value" value="Career Area">
+            <label>Career Area</label><br>
+          </button>
+        </div>
+        <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+          <div class="card-body">
+            {% for item in careerareas %}
+              <input type="checkbox" name="careerareas" value="{{item}}">
+              <label>{{item}}</label><br>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div id="accordion">
+        <div class="card">
+          <div class="card-header" id="headingFive">
+            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="#collapseFive">
+              <input type="checkbox" name="category_value" value="Occupation">
+              <label>Occupation</label><br>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingTwo">
+          <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+            <input type="checkbox" name="category_value" value="job_status">
+            <label>Job Status</label>
+          </button>
+        </div>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+          <div class="card-body">
+            {% for item in job_status %}
+              <input type="checkbox" name="job_status" value="{{item}}">
+              <label>{{item}}</label><br>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingThree">
+          <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="#collapseThree">
+            <input type="checkbox" name="category_value" value="Year">
+            <label>Year</label><br>
+          </button>
+        </div>
+        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+          <div class="card-body">
+            {% for item in year_range %}
+              <input type="checkbox" name="year" value="{{item}}">
+              <label>{{item}}</label><br>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingFour">
+          <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="#collapseFour">
+            <input type="checkbox" name="category_value" value="Institution Type">
+            <label>Institution Type</label><br>
+          </button>
+        </div>
+        <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
+          <div class="card-body">
+            {% for item in institutionType %}
+              <input type="checkbox" name="institutionType" value="{{item}}">
+              <label>{{item}}</label><br>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="form-group">
-    <button type="submit" class="btn btn-info">Submit</button>
+    <button type="submit" class="btn btn-info">Next</button>
   </div>
 </form>
 </html>

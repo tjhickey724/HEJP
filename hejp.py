@@ -427,11 +427,15 @@ def nonfaculty_phd_result():
 @app.route('/exploration_tool', methods = ["GET", "Post"])
 def exploration_tool():
     if request.method == "GET":
-        category = ['Career Area', 'Occupation', 'IPEDS Institution Name', 'Year', 'Metropolitan Statistical Area', 'R1', '2-Year', '4-Year', 'Faculty']
-        return render_template("exploration_tool.html", category = category)
+        category = ['Career Area', 'Occupation', 'IPEDS Institution Name', 'Year', 'Metropolitan Statistical Area', 'Institution Type', 'Faculty']
+        return render_template("exploration_tool.html", category = category, year_range = year_range, careerareas = careerareas, institutionType = institutionType, job_status = job_status)
     else:
         requestedCategory = request.form.getlist('category_value')
-        return render_template("exploration_tool_2.html")
+        requestedCareers = request.form.getlist('careerareas')
+        requestedYear = request.form.getlist('year')
+        requestedInstitution = request.form.getlist('institutionType')
+        requestedFaculty = request.form.getlist('job_status')
+        return render_template("exploration_tool_2.html", requestedCategory = requestedCategory)
 
 @app.route('/mentalandhealth', methods = ["GET", "POST"])
 def mentalandhealth():
