@@ -34,7 +34,7 @@ def home():
 
 @app.route('/test',methods=["GET"])
 def test():
-    result = queryAll("select * from maintable limit 5")
+    result = queryAll("Select * from maintable limit 5")
     return render_template("test.html",result=result)
 
 @app.route('/about',methods=["GET"])
