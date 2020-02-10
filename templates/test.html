@@ -25,9 +25,16 @@ path {
 
 <body>
 
-    <h1>Testing </h1>
-
-
-{{result}}
+    <h1>Testing DB queries </h1>
+<ol>
+{% for r in result %}
+<li>{{r}}
+<ul> {% for k in r %}
+  <li> {{k}}</li>
+{% endfor %}
+</ul>
+</li>
+{% endfor %}
+</ol>
 </body>
 </html>
