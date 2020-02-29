@@ -48,7 +48,8 @@ def queryAll(query):
     try:
         # read connection parameters
         # conn_string = "host='localhost' dbname='HEJP' user='postgres' password='a12s34d56'"
-        conn_string = "dbname='hejp' user='tim' password='HeJp19-20zz!!**'"
+        conn_string = "dbname='hejp' user='tim' password='none'"
+        #conn_string = "dbname='hejp' user='tim' password='HeJp19-20zz!!**'"
 
 
         # connect to the PostgreSQL server
